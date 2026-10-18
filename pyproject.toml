@@ -31,6 +31,7 @@ opendeal = "opendeal.cli:main"
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
     "build>=1.0.0",
     "wheel>=0.40.0",
 ]
@@ -54,3 +55,8 @@ where = ["src"]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-v --strict-markers"
+markers = [
+    "asyncio: mark test as an asyncio coroutine",
+    "integration: mark test as integration test",
+    "unit: mark test as unit test",
+]
