@@ -311,7 +311,7 @@
     "tests/unit/test_orchestrator.py": "1d28294f5a36878c054e4fd8d9d9a1286c9d89248f7cd9199faedef9c3899ae3",
     "tests/unit/test_peak_sandbox.py": "a3ae75a73cf78b80d33b38e1aa45ff8dd6060247fbf0ede60790fc515a41d374",
     "tests/unit/test_phase10_1_corrections.py": "f02406ce89996e2c45b4af2bca5bd4ce0a4ffe3bf63bd1d83e5050fb4d6f576e",
-    "tests/unit/test_phase10_2_final_acceptance.py": "12db8cf2bfed28396b51af34aff159660e0ac52bf6e130d38ff8c7565a1253f1",
+    "tests/unit/test_phase10_2_final_acceptance.py": "18ad3ee0545a1b2412eebe45268745a080aa06bdcbea8109bcec715166a98e70",
     "tests/unit/test_phase10_3_terminal_immutability.py": "0718c333d09ad53a0fc8b9a55fd03ba6036d6cc29a3d7da3914dc70bd9e84c01",
     "tests/unit/test_phase11_1_database_defaults_and_states.py": "d6fb105634b867258ec4e04207fdca85de985f2fc13b324c56161b20b503ba4b",
     "tests/unit/test_phase11_release_readiness.py": "d96e7faff3e822327a2320687e6ad03efa630202c9299680097ff733a447a69e",
