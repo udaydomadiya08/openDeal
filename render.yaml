@@ -14,7 +14,7 @@ services:
     startCommand: opendeal demo --host 0.0.0.0 --allow-remote
     healthCheckPath: /healthz
     plan: free
-    autoDeploy: false
+    autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
