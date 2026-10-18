@@ -26,9 +26,9 @@
 
 ---
 
-## Live Interactive Demo
+## Live Platform Deployment
 
-> **Live Hosted Sandbox**: [Launch OpenDeal Public Demo](https://opendeal-demo.onrender.com) • **API Health**: [`/healthz`](https://opendeal-demo.onrender.com/healthz)  
+> **Live Hosted Platform**: [Launch OpenDeal](https://opendeal-demo.onrender.com) • **API Health**: [`/healthz`](https://opendeal-demo.onrender.com/healthz)  
 
 ---
 
