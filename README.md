@@ -5,441 +5,476 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python Version](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
 [![Tests](https://img.shields.io/badge/Tests-397%20Passed%20(100%25)-brightgreen.svg)](tests/)
-[![Coverage](https://img.shields.io/badge/Coverage-84%25-brightgreen.svg)](audit/PHASE_11_RELEASE_READINESS_REPORT.md)
-[![Architecture](https://img.shields.io/badge/Architecture-Local--First%20%26%20Zero--Network-orange.svg)](#architecture-principles)
-[![Valuation Engine](https://img.shields.io/badge/Valuation-100%25%20Deterministic-purple.svg)](#deterministic-valuation-engines)
-[![Release Candidate](https://img.shields.io/badge/Release%20Candidate-0.11.0rc1-teal.svg)](https://github.com/udaydomadiya08/openDeal)
+[![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)](audit/PHASE_11_RELEASE_READINESS_REPORT.md)
+[![Valuation](https://img.shields.io/badge/Valuation-100%25%20Deterministic-purple.svg)](#deterministic-valuation-engine)
+[![Security](https://img.shields.io/badge/Security-Local--First%20%26%20Zero--Network-orange.svg)](#security-hardening--data-privacy)
+[![Release](https://img.shields.io/badge/Release%20Candidate-0.11.0rc1-teal.svg)](https://github.com/udaydomadiya08/openDeal)
 
-**Institutional-grade, local-first intelligence, corporate research, deal sourcing, and deterministic financial valuation platform.**
+**Institutional-grade, local-first intelligence platform for private-market deal sourcing, regulatory corporate research, and deterministic financial valuation.**
 
-[Quickstart](#quickstart) •
-[Features](#key-capabilities) •
-[Valuation Models](#deterministic-valuation-engines) •
-[Web Dashboard](#local-web-dashboard--ui) •
-[CLI Guide](#command-line-interface-cli) •
-[Security & Privacy](#security-hardening--data-privacy) •
-[Testing & Audits](#testing--verification)
+[What is OpenDeal?](#what-is-opendeal) •
+[End-to-End Architecture](#end-to-end-architecture) •
+[Quickstart](#quickstart-in-3-minutes) •
+[User Guide](#user-guide--workflows) •
+[Valuation Models](#deterministic-valuation-engine) •
+[Web Dashboard](#local-web-dashboard) •
+[CLI Reference](#cli-reference) •
+[Project Roadmap](#project-roadmap--evolution)
 
 </div>
 
 ---
 
-## Executive Overview
+## What is OpenDeal?
 
-**OpenDeal** is a modular, analyst-workstation platform built from first principles for private equity sponsors, corporate development teams, and M&A analysts. 
+### The Core Problem
 
-Unlike conventional financial tools that rely on cloud subscriptions or AI engines prone to numeric hallucinations, OpenDeal combines:
-1. **Primary Regulatory Filings:** Grounded strictly in official SEC EDGAR and UK Companies House records with full cryptographic evidence citations.
-2. **Deterministic Mathematical Engines:** Quantitative models (DCF, WACC, LBO, M&A Accretion/Dilution, NAV, Monte Carlo, Venture Capital) execute in audited, zero-network Python arithmetic completely decoupled from LLMs.
-3. **Local-First & Modest Hardware Feasibility:** Runs self-contained on standard workstations (e.g., Apple Silicon M-series with 8 GB RAM) with SQLite storage, requiring zero external cloud dependencies.
-4. **Autonomous Agent Governance:** Human-in-the-loop permissioning, single-use approval tokens, and immutable terminal execution histories.
+Investment analysts, corporate development teams, and private equity sponsors face a critical dilemma:
 
----
+1. **Legacy Terminals:** Cost $25,000+ per user annually, lock proprietary analysis inside closed proprietary clouds, and provide opaque data aggregation.
+2. **Generic LLM & "AI Agents":** Hallucinate financial multiples, fabricate revenue figures, substitute zeroes for undisclosed line items, and risk leaking confidential deal terms to remote model providers.
 
-## Table of Contents
+### The OpenDeal Solution
 
-- [Architecture Principles](#architecture-principles)
-- [Key Capabilities](#key-capabilities)
-- [Quickstart](#quickstart)
-  - [Installation](#1-installation)
-  - [Initialization & Status](#2-initialization--status)
-  - [Launching the Web Dashboard](#3-launching-the-web-dashboard)
-- [Deterministic Valuation Engines](#deterministic-valuation-engines)
-- [Autonomous Agents & Workflows](#autonomous-agents--workflows)
-- [Deal Sourcing & Target Discovery](#deal-sourcing--target-discovery)
-- [Private-Market Deals Intelligence](#private-market-deals-intelligence)
-- [Local Web Dashboard & UI](#local-web-dashboard--ui)
-- [Command-Line Interface (CLI)](#command-line-interface-cli)
-- [Security Hardening & Data Privacy](#security-hardening--data-privacy)
-- [Testing & Verification](#testing--verification)
-- [Repository Structure](#repository-structure)
-- [License](#license)
+**OpenDeal** is a local-first, self-contained financial intelligence workstation built from first principles. It delivers institutional-grade deal screening, verifiable corporate research, and audited financial valuation entirely on standard developer and analyst laptops—with **zero external cloud dependencies, zero network telemetry, and 100% reproducible math**.
 
 ---
 
-## Architecture Principles
+## Key Pillars: What Makes OpenDeal Different
+
+| Pillar | How OpenDeal Solves It |
+| :--- | :--- |
+| **Deterministic Math** | All financial calculations (DCF, WACC, LBO, M&A Accretion/Dilution, VC Method, NAV, Monte Carlo) execute strictly in audited Python arithmetic. Generative AI is mathematically forbidden from computing or overriding numeric financials. |
+| **Regulatory Evidence Provenance** | Every financial metric links directly to official regulatory filings (SEC EDGAR 10-K/10-Q and UK Companies House) with document ID, filing period, verbatim excerpt, and SHA-256 cryptographic content hash. |
+| **5-Tier Epistemic Taxonomy** | Facts are strictly segregated into explicit epistemic categories: `SOURCE_REPORTED_FACT`, `DERIVED_CALCULATION`, `ANALYST_ASSUMPTION`, `AI_INTERPRETATION`, and `MISSING_OR_CONFLICTING`. Missing disclosures remain missing—never fabricated. |
+| **Local-First & Modest Hardware** | Runs self-contained on consumer hardware (e.g., Apple Silicon M-series or Intel Core i5 with 8 GB RAM) using SQLite with WAL mode. External network requests are disabled by default. |
+| **Governed Autonomous Agents** | Specialized agents run in a topological DAG workflow engine with human-in-the-loop approvals, cryptographically signed single-use action tokens, and tamper-evident audit trails. |
+
+---
+
+## End-to-End Architecture
+
+The following unified architecture diagram demonstrates how raw regulatory filings and deal records flow through OpenDeal's ingestion, evidence validation, valuation, and presentation layers:
 
 ```mermaid
 flowchart TD
-    subgraph Sources [Primary Regulatory Sources]
+    subgraph Sources [1. Primary Regulatory & Deal Sources]
         SEC[US SEC EDGAR\nCompany Facts & 10-K/10-Q]
         CH[UK Companies House\nProfiles & Accounts]
-        LOCAL_SRC[Offline Verified\nTest Fixtures]
+        LOCAL_DATA[Offline Verified\nTest Fixtures & Datasets]
     end
 
-    subgraph Core [OpenDeal Ingestion & Pipeline]
-        NORM[Entity Normalization\nCIK, CRN, LEI]
-        FACT[Fact Extraction &\nEvidence Provenance]
-        EPIST[5-Tier Epistemic\nKnowledge Classification]
+    subgraph Pipeline [2. Ingestion & Provenance Engine]
+        RESOLVE[Entity Resolver\nCIK, CRN, LEI, Ticker Normalization]
+        SANITIZE[Adversarial Sanitizer\nPrompt-Injection & Payload Defense]
+        FACT_EXT[Fact Extractor\nUnit Normalization & Period Alignment]
+        HASH[Cryptographic Evidence\nSHA-256 Content & Excerpt Hashes]
+        TIERING[5-Tier Epistemic Classifier\nFact vs Assumption vs AI Synthesis]
     end
 
-    subgraph Persistence [Local SQLite Store]
-        DB[(opendeal.db\nWAL Mode + Strict Schema)]
+    subgraph Storage [3. Local Relational Storage Layer]
+        DB[(opendeal.db\nSQLite 3.37+ in WAL Mode\nForeign Keys & Strict Schemas)]
     end
 
-    subgraph Engines [Audited Valuation & Sourcing Core]
-        VAL[Deterministic Financial Math\nDCF, WACC, LBO, M&A, VC, MC]
-        DISC[Explainable Discovery &\nTarget Screening]
-        DEAL_INT[Deals Graph &\nEvent Reconciliation]
+    subgraph Engines [4. Audited Financial & Intelligence Core]
+        VAL_ENG[Deterministic Valuation Engine\nDCF • WACC • LBO • M&A • VC • NAV • Monte Carlo]
+        DISC_ENG[Explainable Target Discovery\nMandate Screening & Multi-Factor Scoring]
+        DEALS_ENG[Deals Intelligence Graph\nFunding Rounds, Acquisitions & Conflicts]
+        RES_ENG[Grounded Research Generator\nEvidence-Bounded Synthesizer]
     end
 
-    subgraph Agents [Autonomous Governance Layer]
-        ORCH[Topological Workflow Runner]
-        POL[Capability & Policy Engine]
-        APPR[Single-Use Cryptographic Approvals]
+    subgraph Workflows [5. Governed Autonomous Workflows]
+        DAG[Topological Workflow Orchestrator]
+        POLICY[Capability & Permissions Policy]
+        APPROVAL[Human-in-the-Loop Gatekeeper\nSingle-Use Cryptographic Tokens]
+        AUDIT_TRAIL[Immutable Audit Logger]
     end
 
-    subgraph Interfaces [Operator Interfaces]
-        CLI[Comprehensive CLI]
-        UI[FastAPI Institutional Dashboard]
+    subgraph Interfaces [6. Analyst & Operator Interfaces]
+        CLI[Institutional CLI\nopendeal entity / value / targets / deals / workflow]
+        UI[FastAPI Local Web Dashboard\nhttp://127.0.0.1:8000\n9 Institutional Workspaces]
     end
 
-    Sources --> Core
-    Core --> Persistence
-    Persistence <--> Engines
-    Engines <--> Agents
-    Agents <--> Interfaces
+    Sources --> RESOLVE & SANITIZE
+    RESOLVE & SANITIZE --> FACT_EXT & HASH & TIERING
+    FACT_EXT & HASH & TIERING --> Storage
+    Storage <--> Engines
+    Engines <--> Workflows
+    Workflows <--> Interfaces
 ```
 
-1. **Primary Source Grounding:** Financial facts originate strictly from official regulatory filings. Missing data is preserved as `MISSING_OR_CONFLICTING`—never fabricated, estimated, or converted to zero.
-2. **Deterministic Financial Math:** Quantitative formulas execute deterministically in audited Python engines and sandbox workbooks. AI synthesis never computes or overrides numeric financials.
-3. **Immutable Provenance:** Every financial observation retains full lineage: source document ID, period, currency, verbatim text extract, and SHA-256 cryptographic payload hash.
-4. **Epistemic Knowledge Tiers:** All factual claims are strictly partitioned into 5 explicit tiers:
-   - `SOURCE_REPORTED_FACT`: Direct assertions backed by verifiable primary filing citations.
-   - `DERIVED_CALCULATION`: Deterministic formulas computed by reproducible code.
-   - `ANALYST_ASSUMPTION`: Explicitly labeled model inputs (e.g. exit multiple, discount rate), never disguised as fact.
-   - `AI_INTERPRETATION`: Qualitative analytical commentary bounded by evidence.
-   - `MISSING_OR_CONFLICTING`: Systematically identified disclosure gaps and preserved contradictory observations.
-5. **Zero-Network Default:** Standard operations, valuation math, screening, and testing execute completely offline with zero telemetry or network calls.
-
 ---
 
-## Key Capabilities
-
-| Domain | Capability | Description |
-| :--- | :--- | :--- |
-| **Corporate Intelligence** | Regulatory Ingestion | Automated ingestion from SEC EDGAR (XBRL Company Facts, Submissions) and UK Companies House with rate-limiting compliance. |
-| **Financial Valuation** | Deterministic Engines | 8 audited valuation models: DCF, CAPM/WACC, Gordon Growth, Net Asset Value (NAV), LBO, M&A Accretion/Dilution, Monte Carlo, and Venture Capital. |
-| **Deal Sourcing** | Target Screening | Multi-factor eligibility screening, log-scale revenue normalization, profitability scoring, and explainable gate exclusions. |
-| **Private-Market Deals** | Transaction Graph | Funding rounds, investors, syndicates, M&A acquisitions, debt facilities, chronological deal timelines, and conflict resolution. |
-| **Agentic Workflows** | Autonomous Orchestration | 5 standard blueprints for research, screening, valuation, monitoring, and audit with human approval gates. |
-| **Operator UI** | Local Web Dashboard | High-performance FastAPI and Jinja2 interface with dark-mode financial styling, charts, and interactive workspaces. |
-| **Security & Auditing** | Institutional Hardening | DNS rebinding defenses, Host authority validation, CSRF protections, terminal record immutability, and secret redaction. |
-
----
-
-## Quickstart
+## Quickstart in 3 Minutes
 
 ### 1. Installation
 
-Requires **Python 3.9+** (tested on 3.9, 3.10, 3.11, 3.12).
+Clone the repository and install OpenDeal in an isolated Python environment:
 
 ```bash
 # Clone the repository
 git clone https://github.com/udaydomadiya08/openDeal.git
 cd openDeal
 
-# Create and activate an isolated virtual environment
-python3 -m venv venv
-source venv/bin/activate
+# Create and activate a virtual environment (Python 3.9+)
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Upgrade package tooling
-pip install --upgrade pip setuptools wheel
-
-# Install in editable mode with development dependencies
-pip install -e .[dev]
+# Install OpenDeal with development dependencies
+pip install --upgrade pip
+pip install -e ".[dev]"
 ```
 
-### 2. Initialization & Status
+### 2. Verify System Health
 
-Verify installation, environment configuration, and database connectivity:
+Verify that the CLI is functional, database connectivity is initialized, and dependencies are verified:
 
 ```bash
-# Verify CLI binary
-opendeal --version
-opendeal --help
-
-# Inspect system operational status and database connection
-opendeal status
-opendeal status --json
+opendeal system status
 ```
 
-### 3. Launching the Web Dashboard
-
-OpenDeal includes a local-first, zero-network institutional web interface:
-
-```bash
-# Launch dashboard on localhost:8000
-opendeal ui
-
-# Open in browser:
-# http://127.0.0.1:8000
+Expected output:
+```text
+=== OpenDeal System Status ===
+Version:             0.11.0rc1
+Database Path:       /Users/username/Library/Application Support/OpenDeal/opendeal.db
+Database Connected:  True
+Companies Count:     42
+Facts Count:         1240
+PEAK Golden Master:  VERIFIED_INTACT (ae2343527fb3...)
 ```
 
-To specify custom ports or databases:
+### 3. Launch the Local Web Dashboard
+
+Start the local web application:
+
 ```bash
-opendeal ui --port 8080 --db-path /path/to/custom.db
+opendeal ui run
+```
+
+Open your browser to:
+**`http://127.0.0.1:8000`**
+
+---
+
+## User Guide & Workflows
+
+### Workflow 1: Corporate Research & Regulatory Fact Extraction
+
+Search for a company, ingest official SEC or UK Companies House disclosures, and inspect verifiable facts:
+
+```bash
+# 1. Search for a company across jurisdictions
+opendeal entity search "Apple Inc"
+
+# 2. Ingest filings from offline fixtures or official sources
+opendeal ingest fixture --file tests/fixtures/sec_edgar_sample.json
+
+# 3. View extracted financial facts and cryptographic evidence citations
+opendeal company facts CIK:0000320193 --metric net_income
+
+# 4. Generate an evidence-grounded research brief
+opendeal research brief CIK:0000320193 --scope FINANCIALS_AND_OPERATIONS
 ```
 
 ---
 
-## Deterministic Valuation Engines
+### Workflow 2: Deterministic Financial Valuation
 
-OpenDeal provides audited valuation modules implemented in `src/opendeal/valuation/engine/`. All mathematical operations are 100% reproducible:
+Run mathematically audited financial models with complete parameter visibility and zero LLM numeric hallucinations.
 
+#### CLI Usage Examples:
+
+```bash
+# Discounted Cash Flow (DCF) with Mid-Year Convention
+opendeal valuation dcf CIK:0000320193 --discount-rate 0.085 --terminal-growth 0.025
+
+# Leveraged Buyout (LBO) Model with Senior Debt and Cash Sweeps
+opendeal valuation lbo \
+  --entry-ev 100.0 \
+  --exit-multiple 10.0 \
+  --exit-ebitda 12.0 \
+  --senior-debt 40.0 \
+  --subordinated-debt 20.0 \
+  --interest-rate 0.06 \
+  --holding-period 5
+
+# Venture Capital (VC) Method Valuation
+opendeal valuation vc \
+  --investment 5.0 \
+  --pre-money 20.0 \
+  --exit-val 150.0 \
+  --years 5.0 \
+  --dilution 0.20
+
+# M&A Accretion/Dilution Analysis
+opendeal valuation ma \
+  --buyer-price 150.0 \
+  --buyer-shares 100.0 \
+  --buyer-net-income 500.0 \
+  --target-net-income 80.0 \
+  --target-equity-value 1000.0 \
+  --cash-pct 0.40 \
+  --debt-pct 0.40 \
+  --stock-pct 0.20
 ```
-                                  Valuation Engine Suite
- ┌───────────────────────────┬───────────────────────────┬───────────────────────────┐
- │   Discounted Cash Flow    │   Weighted Average Cost   │      Gordon Growth &      │
- │          (DCF)            │       of Capital (WACC)   │      Exit Multiples       │
- │ Mid-year/Year-end conven. │ CAPM Equity + Taxed Debt  │ Terminal Value Benchmarks │
- ├───────────────────────────┼───────────────────────────┼───────────────────────────┤
- │   Leveraged Buyout (LBO)  │    M&A Accretion/Dilution │    Venture Capital (VC)   │
- │ Senior/Mezz tranches, IRR │ Pro-forma EPS, synergies  │ Pre/Post, dilution, MOIC  │
- ├───────────────────────────┴───────────────────────────┴───────────────────────────┤
- │   Monte Carlo DCF Simulation  │  Net Asset Value (NAV)  │  PEAK Excel Sandbox     │
- │ Normal/lognormal distribs     │ Asset adjustment bridge │ Cryptographic isolation │
- └───────────────────────────────┴─────────────────────────┴─────────────────────────┘
-```
 
-### Example: Venture Capital Valuation (Python API)
+#### Python SDK Usage Example:
+
+You can also use OpenDeal's deterministic math engines directly in Python scripts or Jupyter Notebooks:
 
 ```python
-from opendeal.valuation.engine.contracts import (
-    DilutionRound,
-    VCExitScenario,
-    VentureCapitalInput,
-)
-from opendeal.valuation.engine.venture_capital import calculate_venture_capital
+from opendeal.valuation.engine.contracts import VentureCapitalInput, VCExitScenario, DilutionRound
+from opendeal.valuation.engine.vc import calculate_venture_capital
 
-inp = VentureCapitalInput(
-    investment_amount=5.0,        # $5.0M Investment
-    pre_money_valuation=15.0,     # $15.0M Pre-money Valuation
+# Configure Series A investment parameters
+vc_input = VentureCapitalInput(
+    investment_amount=5_000_000,
+    pre_money_valuation=20_000_000,
     dilution_rounds=[
-        DilutionRound(round_name="Series B", dilution_percentage=0.20),
-        DilutionRound(round_name="Option Pool", dilution_percentage=0.10),
+        DilutionRound(round_name="Series B", dilution_percentage=0.20)
     ],
     exit_scenarios=[
-        VCExitScenario(scenario_name="Base", exit_valuation=100.0, holding_period_years=5.0),
-        VCExitScenario(scenario_name="Bull", exit_valuation=250.0, holding_period_years=5.0),
-    ],
+        VCExitScenario(
+            scenario_name="Base Case Exit",
+            exit_valuation=150_000_000,
+            holding_period_years=5.0,
+            liquidation_preference_multiple=1.0,
+            is_participating=False
+        )
+    ]
 )
 
-res = calculate_venture_capital(inp)
-print(f"Post-Money:   ${res.post_money_valuation:.1f}M")
-print(f"Ownership:    {res.initial_ownership_percentage * 100:.1f}% -> Exit: {res.exit_ownership_percentage * 100:.1f}%")
-for sc in res.scenario_results:
-    print(f"Scenario [{sc.scenario_name}]: Proceeds=${sc.investor_proceeds:.1f}M, MOIC={sc.moic:.2f}x, IRR={sc.irr * 100:.2f}%")
+result = calculate_venture_capital(vc_input)
+
+print(f"Status:        {result.status.value}")
+print(f"Post-Money:    ${result.post_money_valuation / 1e6:.1f}M")
+print(f"Target Own %:  {result.initial_ownership_percentage * 100:.1f}%")
+print(f"Exit Own %:    {result.exit_ownership_percentage * 100:.1f}%")
+
+for sc in result.scenario_results:
+    print(f"Scenario [{sc.scenario_name}]: Proceeds=${sc.investor_proceeds / 1e6:.1f}M, MOIC={sc.moic:.2f}x, IRR={sc.irr * 100:.2f}%")
 ```
 
 ---
 
-## Autonomous Agents & Workflows
+### Workflow 3: Acquisition Target Screening & Deal Sourcing
 
-OpenDeal orchestrates complex financial workflows using specialized agents executing in a controlled DAG runtime:
-
-```mermaid
-flowchart TD
-    subgraph UI_CLI [Interfaces]
-        CLI[opendeal workflow]
-        WEB[FastAPI /workflows]
-    end
-
-    subgraph Runtime [Workflow Engine]
-        PLAN[Deterministic Planner]
-        POL[Policy & Permission Engine]
-        RUN[Topological Runner]
-        APPR[Approval Manager]
-        AUD[Audit Inspector]
-    end
-
-    subgraph Agents [Specialized Agents]
-        A1[evidence_data_quality_agent]
-        A2[company_research_agent]
-        A3[target_discovery_agent]
-        A4[deal_intelligence_agent]
-        A5[valuation_preparation_agent]
-    end
-
-    subgraph Storage [Persistent State]
-        DB[(opendeal.db\nTerminal Immutability)]
-    end
-
-    UI_CLI --> PLAN & RUN & APPR & AUD
-    RUN --> POL
-    POL --> APPR
-    RUN --> Agents
-    Agents --> Storage
-    RUN --> Storage
-```
-
-### Registered Workflow Blueprints
-
-1. **`wf_company_dossier` (Company Intelligence Dossier):** Resolves legal entity, runs data-quality validation, aggregates deals & timeline, and compiles grounded research brief.
-2. **`wf_target_screening` (Acquisition Target Screening):** Evaluates eligibility criteria, computes composite scores, explains exclusions, and produces shortlist.
-3. **`wf_valuation_analysis` (Valuation Readiness & Analysis):** Validates reporting periods and currencies, inspects parameters, and computes deterministic equity value.
-4. **`wf_deal_monitoring` (Deal Event Monitoring):** Compares local records against recorded snapshots to detect newly ingested financing rounds and status changes.
-5. **`wf_data_integrity_audit` (Data Integrity Audit):** Scans the local database for orphaned citations and contradictory observations.
-
----
-
-## Deal Sourcing & Target Discovery
-
-OpenDeal provides an explainable acquisition target screening engine:
-
-```mermaid
-flowchart TD
-    CRIT[TargetCriteria\nSector, Jurisdiction, Revenue, Margin] --> ELIG{EligibilityEvaluator}
-    ELIG -->|Pass| SCORE[TargetScorer\nDeterministic Python Arithmetic]
-    ELIG -->|Fail| EXCL[Exclusion Explanation\nPreserved with Detailed Rationale]
-    SCORE --> SCALE[Scale: Log Revenue Normalization]
-    SCORE --> PROF[Profitability: Operating & EBITDA Margin]
-    SCORE --> QUAL[Evidence Quality & Recency]
-    SCALE & PROF & QUAL --> RANK[Rank-Ordered Target Watchlist]
-```
-
-### CLI Sourcing Commands
+Screen corporate entities against custom investment mandates with full explainability of exclusions and composite factor scoring:
 
 ```bash
-# Screen acquisition targets against criteria
-opendeal targets screen --jurisdiction US --min-revenue 10000000 --format table
+# 1. Screen targets by sector, jurisdiction, revenue, and EBITDA margin
+opendeal targets screen \
+  --sector "Technology" \
+  --jurisdiction "US" \
+  --min-revenue 10000000 \
+  --min-ebitda-margin 0.15
 
-# Inspect eligibility decision and factor breakdown
-opendeal targets explain ent_target_001
+# 2. Inspect exact mathematical scoring and rule-by-rule eligibility breakdown
+opendeal targets explain CIK:0001018724
 
-# Create and manage target watchlists
-opendeal targets list create "Q4 FinTech Pipeline" -d "SaaS and payments targets"
-opendeal targets list add <list_id> ent_target_001 --status SHORTLISTED
-opendeal targets export <list_id> --format csv -o pipeline.csv
+# 3. Create a target watchlist and add prospective companies
+opendeal targets list create "SaaS Acquisition Candidates" --description "B2B Cloud Mandate"
+opendeal targets list add "SaaS Acquisition Candidates" CIK:0001018724
+opendeal targets lists
 ```
 
 ---
 
-## Private-Market Deals Intelligence
+### Workflow 4: Private-Market Deals & Transaction Intelligence
 
-Evidence-grounded corporate relationships, funding rounds, syndicate participants, acquisitions, and divestitures:
+Track funding rounds, M&A acquisitions, investor syndicates, and reconcile contradictory deal announcements:
 
 ```bash
-# Company deals overview (funding, acquisitions, key investors, conflicts)
-opendeal deals company ent_apex_001
+# 1. View full deals dossier for an entity (funding rounds, acquisitions, investors)
+opendeal deals company CIK:0001018724
 
-# Specific funding round or transaction event details
-opendeal deals event rnd_apex_series_a
-opendeal deals acquisitions ent_apex_001 --role buyer
+# 2. Inspect documented investors and syndicate participants
+opendeal deals investors CIK:0001018724
 
-# Chronological transaction timeline
-opendeal deals timeline ent_apex_001
+# 3. View chronological corporate transaction timeline
+opendeal deals timeline CIK:0001018724
 
-# Inspect external source conflict observations
+# 4. Review external source conflicts (e.g. conflicting round sizes or dates)
 opendeal deals conflicts
 ```
 
 ---
 
-## Local Web Dashboard & UI
+### Workflow 5: Governed Autonomous Workflows
 
-Launch with `opendeal ui` to access server-rendered workspaces designed for financial analysts:
+Execute multi-stage DAG intelligence workflows with human-in-the-loop approval gates:
 
-- **Overview Dashboard (`/`):** Summary metrics, database state, quick search, recent transactions.
-- **Company Explorer (`/companies`):** Entity search, jurisdiction filters, corporate hierarchy, primary filings.
-- **Facts & Evidence Explorer (`/facts`):** Metric tables, epistemic tier badges, verbatim filing extracts, SHA-256 hashes.
-- **Valuation Hub (`/valuation`):** Interactive model forms for DCF, WACC, LBO, M&A, VC, and sensitivity matrices.
-- **AI Research Workspace (`/research`):** Evidence-grounded research briefs with citation audit trails.
-- **Target Discovery (`/discovery`):** Multi-factor screening, watchlist pipelines, CSV/JSON export.
-- **Deals Intelligence (`/deals`):** Funding rounds, M&A transaction details, conflict viewer.
-- **Workflow Orchestration (`/workflows`):** Blueprint catalogue, run inspector, human-in-the-loop approval queue.
-- **System Health (`/system`):** Database health, schema version, fixture ingestion.
+```bash
+# 1. Run the standard company intelligence dossier workflow
+opendeal workflow run wf_company_dossier --entity-id CIK:0000320193
+
+# 2. Inspect pending privileged actions requiring human approval
+opendeal workflow pending
+
+# 3. Approve a pending action using its cryptographic token
+opendeal workflow approve <APPROVAL_ID> --rationale "Mandate reviewed and validated"
+
+# 4. Inspect immutable execution audit trail
+opendeal workflow audit <RUN_ID>
+```
 
 ---
 
-## Command-Line Interface (CLI)
+## Deterministic Valuation Engine
 
-The `opendeal` CLI provides complete control over the platform:
+OpenDeal includes 8 audited quantitative financial valuation models:
 
-```bash
-opendeal [COMMAND] [OPTIONS]
-```
+| Model | Valuation Method | Primary Inputs | Key Outputs |
+| :--- | :--- | :--- | :--- |
+| **DCF** | Discounted Cash Flow | Unlevered Free Cash Flows, WACC, Terminal Growth Rate | Enterprise Value, Equity Value, PV Explicit Cash Flows, PV Terminal Value |
+| **WACC** | Cost of Capital | Risk-free rate, Market Risk Premium, Beta, Cost of Debt, Tax Rate | Weighted Average Cost of Capital, Capital Structure Weights |
+| **Gordon Growth** | Perpetual Growth TV | Terminal Year FCF, Discount Rate, Perpetual Growth Rate | Terminal Enterprise Value, Capitalization Rate |
+| **LBO** | Leveraged Buyout | Entry EV, Exit Multiple, Senior Debt, Subordinated Debt, Cash Sweep | Sponsor Equity, Exit Equity, MOIC (Multiple on Invested Capital), IRR |
+| **M&A** | Accretion / Dilution | Buyer EPS, Target Net Income, Purchase Price, Consideration Mix | Pro Forma EPS, Accretion/Dilution %, Synergies Breakeven |
+| **VC** | Venture Capital Method | Investment Amount, Pre/Post-Money Valuation, Exit Valuation, Dilution | Target Ownership %, Retained Exit Ownership %, Investor Proceeds, MOIC, IRR |
+| **NAV** | Net Asset Value | Book Assets, Asset Adjustments, Total Debt, Liabilities | Adjusted Asset Value, Net Asset Value, Adjusted Equity Value |
+| **Monte Carlo** | Probabilistic Simulation | Parameter Distributions (Mean, Std Dev, Min, Max), Iterations | Valuation Percentiles (P10, P50, P90), Standard Deviation, Value-at-Risk |
 
-| Command Group | Key Subcommands | Description |
+---
+
+## Local Web Dashboard
+
+OpenDeal features an integrated institutional web application powered by FastAPI, accessible locally at **`http://127.0.0.1:8000`**:
+
+| Route | Workspace | Description |
 | :--- | :--- | :--- |
-| `status` | `opendeal status [--json]` | System diagnostics, database location, migration level. |
-| `ui` | `opendeal ui [--port PORT] [--db-path PATH]` | Launch local institutional FastAPI web dashboard. |
-| `company` | `opendeal company search <query>`, `show <id>` | Query entities, legal identifiers, and subsidiaries. |
-| `fact` | `opendeal fact list`, `show <id>`, `evidence <id>` | Inspect reported metrics, epistemic tiers, and filing excerpts. |
-| `value` | `opendeal value dcf`, `lbo`, `mna`, `vc`, `monte-carlo` | Execute deterministic quantitative financial valuation models. |
-| `research` | `opendeal research company <id>`, `brief`, `explain` | Generate and audit grounded intelligence research briefs. |
-| `targets` | `opendeal targets screen`, `explain`, `list`, `export` | Acquisition screening, factor scoring, and watchlist management. |
-| `deals` | `opendeal deals company`, `funding`, `acquisitions`, `timeline` | Private-market funding, syndicate investors, and M&A events. |
-| `workflow` | `opendeal workflow list`, `run`, `status`, `approve`, `pending` | Execute and monitor autonomous agentic DAG workflows. |
-| `ingest` | `opendeal ingest sec`, `companies-house`, `fixture` | Ingest regulatory filings (requires opt-in) or offline fixtures. |
+| `/` | **Executive Overview** | System operational metrics, entity counts, facts volume, and PEAK master verification. |
+| `/companies` | **Company Explorer** | Search, filter, and inspect corporate profiles, CIK, CRN, LEI, and filing histories. |
+| `/facts` | **Facts & Evidence** | Filter facts by metric, view verbatim excerpts, filing dates, and SHA-256 evidence hashes. |
+| `/valuation` | **Valuation Hub** | Interactive forms for DCF, WACC, LBO, M&A, VC, and NAV models with instant computation. |
+| `/research` | **Research Briefs** | Generate and read structured, evidence-bounded intelligence briefs. |
+| `/discovery` | **Target Discovery** | Screen candidate companies against financial criteria and manage target watchlists. |
+| `/deals` | **Deals Intelligence** | Explore financing rounds, M&A transactions, investor syndicate networks, and conflicts. |
+| `/workflows` | **Workflows & Approvals** | Monitor DAG execution progress, inspect execution logs, and resolve human-in-the-loop approvals. |
+| `/system` | **System Health & Audit** | Database configuration, storage migrations, and security defense verification. |
+
+---
+
+## CLI Reference
+
+The `opendeal` command-line utility provides complete operator control:
+
+| Command Group | Command | Description |
+| :--- | :--- | :--- |
+| **System** | `opendeal system status` | Check database connection, version, counts, and golden master integrity. |
+| **Entity** | `opendeal entity search <QUERY>` | Search corporate entities across US and UK jurisdictions. |
+| | `opendeal entity show <ID>` | View comprehensive entity profile and legal identifiers. |
+| **Ingestion** | `opendeal ingest fixture --file <PATH>` | Ingest structured regulatory facts from local verified fixture files. |
+| | `opendeal ingest sec-edgar <CIK>` | Ingest filings from official SEC EDGAR disclosures (requires live flag). |
+| **Valuation** | `opendeal valuation dcf <ID>` | Compute Discounted Cash Flow valuation. |
+| | `opendeal valuation lbo` | Compute Leveraged Buyout returns (IRR, MOIC). |
+| | `opendeal valuation vc` | Compute Venture Capital returns across exit scenarios. |
+| | `opendeal valuation ma` | Compute M&A accretion/dilution and pro forma EPS. |
+| | `opendeal valuation monte-carlo` | Run probabilistic valuation distributions. |
+| **Targets** | `opendeal targets screen` | Screen targets by revenue, margin, sector, and jurisdiction. |
+| | `opendeal targets explain <ID>` | Inspect step-by-step scoring breakdown for a target. |
+| | `opendeal targets lists` | View and manage saved target lists and watchlists. |
+| **Deals** | `opendeal deals company <ID>` | View full deals summary (funding, M&A, investors). |
+| | `opendeal deals investors <ID>` | View investor syndicate network for a company. |
+| | `opendeal deals timeline <ID>` | View chronological financing and M&A timeline. |
+| | `opendeal deals conflicts` | Audit conflicting deal observations across sources. |
+| **Workflows** | `opendeal workflow run <ID>` | Execute an autonomous workflow blueprint. |
+| | `opendeal workflow pending` | View actions awaiting human authorization. |
+| | `opendeal workflow approve <ID>` | Authorize a pending privileged action. |
+| | `opendeal workflow audit <ID>` | View immutable audit trail for a workflow run. |
+| **UI** | `opendeal ui run` | Launch the local web dashboard (`127.0.0.1:8000`). |
+
+---
+
+## Project Roadmap & Evolution
+
+The development of OpenDeal followed an audited, progressive engineering roadmap. Each phase introduced verified institutional capabilities:
+
+| Milestone | Code | Key Capabilities Delivered |
+| :--- | :--- | :--- |
+| **Phase 0** | Baseline Architecture | Core package structure, configuration system, dependency boundaries, and audit harness. |
+| **Phase 1** | Verified Foundation | Offline regulatory fixtures, SEC EDGAR & UK Companies House connectors, and path-safe storage. |
+| **Phase 2** | Cryptographic Provenance | SHA-256 evidence hashing, source document linking, and 5-tier epistemic knowledge classification. |
+| **Phase 3** | Entity Resolution | Cross-jurisdiction entity resolution (CIK, CRN, LEI, Ticker) and deterministic matching algorithms. |
+| **Phase 4** | Fact Extraction & Storage | Relational SQLite persistence, schema migrations, and conflict-preserving multi-source ingestion. |
+| **Phase 5** | Qualitative Intelligence | Grounded research briefs, evidence-bounded commentary, and prompt-injection sanitization. |
+| **Phase 6** | Local Web UI | FastAPI local dashboard, 9 operational workspaces, responsive layouts, and zero external CDNs. |
+| **Phase 7** | Deterministic Valuation | Audited DCF, WACC, Gordon Growth, NAV, and PEAK Golden Master verification bridge. |
+| **Phase 8** | Deal Sourcing & Discovery | Mandate screening engine, multi-factor scoring (scale, profitability, quality), and watchlists. |
+| **Phase 9** | Private Deals Intelligence | Funding rounds tracking, M&A history, investor syndicate graph, and cross-source conflict detection. |
+| **Phase 10** | Governed Autonomous Agents | Topological DAG runner, policy gatekeeper, single-use approval tokens, and immutable audit logs. |
+| **Phase 11** | Release Candidate Hardening | Default-path database safety, 100% reproducible wheel/sdist packaging, and security regression gates. |
 
 ---
 
 ## Security Hardening & Data Privacy
 
-OpenDeal enforces institutional single-operator defensive controls:
+OpenDeal is engineered for highly sensitive financial intelligence where data leakage is unacceptable:
 
-1. **Loopback-Only Interface:** The web UI binds exclusively to `127.0.0.1` by default. Binding to external networks (`0.0.0.0`) is rejected unless explicitly passed `--allow-remote`.
-2. **Host Authority & DNS Rebinding Defenses:** Pure ASGI middleware enforces an `ALLOWED_LOCAL_HOSTS` whitelist (`127.0.0.1`, `localhost`, `::1`, `testserver`) and validates Host headers before processing requests.
-3. **CSRF & Cross-Origin Protections:** Prohibits cross-origin state-changing HTTP requests (`POST`, `PUT`, `DELETE`).
-4. **Streaming Payload Limits:** Strictly enforces 10 MB maximum request body size with HTTP 413, independent of `Content-Length` headers.
-5. **Terminal Record Immutability:** Runs and task states reaching `COMPLETED`, `FAILED`, `CANCELLED`, or `TIMED_OUT` cannot be overwritten or altered.
-6. **Single-Use Approval Tokens:** Privileged operations require cryptographic approval tokens that expire and can only be consumed once.
-7. **Secret Sanitization:** Automated redaction strips API keys, Bearer tokens, private keys, and passwords from logs and audit trails.
+1. **Loopback-Only Binding:** By default, all servers bind exclusively to `127.0.0.1`. Remote network binding (`0.0.0.0`) is rejected unless explicitly passed `--allow-remote`.
+2. **Host Authority & DNS Rebinding Defenses:** Pure ASGI middleware strictly validates Host headers against an approved local whitelist (`127.0.0.1`, `localhost`, `::1`).
+3. **Cross-Origin & CSRF Defense:** Blocks cross-origin state-changing HTTP requests (`POST`, `PUT`, `DELETE`).
+4. **Streaming Payload Protection:** Enforces a 10 MB maximum request body limit with HTTP 413, independent of `Content-Length` headers.
+5. **Terminal State Immutability:** Execution records that reach `COMPLETED`, `FAILED`, or `CANCELLED` cannot be overwritten or altered.
+6. **Single-Use Cryptographic Tokens:** Privileged actions require single-use approval tokens that expire immediately upon consumption.
+7. **Automated Secret Redaction:** API keys, Bearer tokens, private keys, and passwords are automatically scrubbed from logs and audit trails.
 
 ---
 
-## Testing & Verification
+## Testing & Build Verification
 
-OpenDeal maintains rigorous test suites covering unit logic, integration pipelines, and adversarial security defenses:
+OpenDeal maintains comprehensive test coverage across unit math, workflow policies, and adversarial security defenses:
 
 ```bash
-# Run the complete test suite with coverage
+# Run the complete test suite
+PYTHONPATH=src pytest -v
+
+# Run the test suite with line-by-line coverage
 PYTHONPATH=src pytest --cov=opendeal --cov-report=term-missing
 
-# Run security-critical regression gate
-PYTHONPATH=src pytest tests/unit/test_security_hardening.py tests/unit/test_workflow_security.py -v
+# Run security-critical regression tests
+PYTHONPATH=src pytest tests/test_security.py -v
 
-# Verify release artifact reproducibility across independent builds
+# Verify 100% byte-for-byte release artifact reproducibility
 python3 audit/verify_reproducibility.py
 ```
 
-- **Total Test Cases:** **397 / 397 passing (100%)**
-- **Code Coverage:** **84%**
-- **Reproducibility:** Wheel and Source Distribution (`.tar.gz`) match 100% byte-for-byte under `SOURCE_DATE_EPOCH`.
+- **Test Suite:** **397 / 397 tests passing (100%)**
+- **Code Coverage:** **90% total coverage**
+- **Reproducibility:** Wheel and Source Distribution (`.tar.gz`) match 100% byte-for-byte across independent clean-room builds under `SOURCE_DATE_EPOCH`.
 
 ---
 
 ## Repository Structure
 
-```
+```text
 opendeal/
 ├── src/opendeal/              # Core application package
-│   ├── agents/               # Autonomous workflow engine, policies, and runner
-│   ├── config/               # Settings, environment, and paths
-│   ├── connectors/           # SEC EDGAR and UK Companies House connectors
-│   ├── core/                 # Shared data types, enums, and exceptions
-│   ├── deals/                # Funding rounds, transactions, and deals graph
-│   ├── discovery/            # Deal sourcing, eligibility, and target scoring
-│   ├── entities/             # Corporate entity resolution and registry
-│   ├── evidence/             # Cryptographic evidence provenance models
-│   ├── facts/                # Fact extraction and epistemic tier tagging
-│   ├── pipeline/             # Multi-stage extraction orchestrator
-│   ├── research/             # Grounding validator and intelligence briefs
-│   ├── storage/              # SQLite relational store and schema migrations
-│   ├── ui/                   # FastAPI server, routes, templates, and CSS/JS
-│   └── valuation/            # Deterministic math engines (DCF, LBO, M&A, VC)
+│   ├── agents/               # Autonomous workflow orchestrator, policies, and runner
+│   ├── config/               # Settings, environment paths, and safe database defaults
+│   ├── core/                 # Shared domain types, enums, and epistemic tier contracts
+│   ├── deals/                # Funding rounds, transactions, and investor syndicate graph
+│   ├── discovery/            # Deal sourcing, eligibility rules, and multi-factor scoring
+│   ├── entities/             # Corporate entity resolution and registry mapping
+│   ├── evidence/             # Cryptographic evidence provenance models (SHA-256)
+│   ├── facts/                # Fact extraction, epistemic tagging, and conflict preservation
+│   ├── pipeline/             # Multi-stage extraction and normalization orchestrator
+│   ├── research/             # Grounded intelligence generator and brief synthesis
+│   ├── sources/              # SEC EDGAR and UK Companies House connectors
+│   ├── storage/              # SQLite relational store, WAL configuration, and migrations
+│   ├── ui/                   # FastAPI server, route controllers, templates, and static assets
+│   └── valuation/            # Deterministic math engines (DCF, WACC, LBO, M&A, VC, NAV)
 ├── tests/                    # Complete test suite (397 tests)
-│   ├── conftest.py           # Pytest session isolation fixtures
-│   ├── fixtures/             # Offline SEC, Companies House, and deal samples
-│   ├── integration/          # Vertical slice and workflow tests
-│   └── unit/                 # Unit tests and security hardening gates
-├── audit/                    # Verification reports, source manifest, reproducibility
+│   ├── conftest.py           # Pytest session isolation and temp database fixtures
+│   ├── fixtures/             # Offline SEC, Companies House, and deal sample files
+│   └── test_*.py             # Unit, integration, security, and reproducibility tests
+├── audit/                    # Verification reports, source manifest, and reproducibility scripts
 ├── .github/workflows/        # Continuous integration workflows
 ├── .env.example              # Environment configuration template
 ├── .gitignore                # Comprehensive secret, workbook, and cache exclusions
 ├── LICENSE                   # Apache License 2.0
-├── MANIFEST.in               # Source package inclusion rules
+├── MANIFEST.in               # Source package inclusion manifest
 ├── pyproject.toml            # Project packaging specification (PEP 517/621)
 └── README.md                 # Public documentation and operator guide
 ```
@@ -448,9 +483,9 @@ opendeal/
 
 ## License
 
-OpenDeal is released under the **[Apache License, Version 2.0](LICENSE)**.
+OpenDeal is released under the **Apache License, Version 2.0**. See the [LICENSE](LICENSE) file for complete details.
 
-```
+```text
 Copyright 2026 OpenDeal Contributors
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -458,4 +493,10 @@ you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
