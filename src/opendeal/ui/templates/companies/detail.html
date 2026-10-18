@@ -130,7 +130,12 @@
                   <td>{{ f.accounting_standard.value if f.accounting_standard else 'GAAP' }}</td>
                   <td class="num">
                     {% if f.reported_value is not none %}
-                      {{ "{:,.2f}".format(f.reported_value) }} {{ f.currency.value }}
+                      {% if f.reported_value is number %}
+                        {{ "{:,.2f}".format(f.reported_value) }}
+                      {% else %}
+                        {{ f.reported_value }}
+                      {% endif %}
+                      {{ f.currency.value if f.currency and f.currency.value else (f.currency or '') }}
                     {% else %}
                       <span style="color: var(--text-muted);">None</span>
                     {% endif %}

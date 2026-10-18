@@ -802,6 +802,7 @@ class WorkflowRunner:
 
     def recover_stale_runs(self) -> List[str]:
         """Detect and recover runs left in RUNNING state due to application restart or crash."""
+        # pyrefly: ignore[missing-attribute]
         cursor = self.storage.conn.cursor()
         cursor.execute("SELECT run_id FROM workflow_runs WHERE state = 'RUNNING'")
         stale_ids = [row["run_id"] for row in cursor.fetchall()]

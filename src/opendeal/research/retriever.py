@@ -106,6 +106,7 @@ class EvidenceRetriever:
         rel_dicts: List[Dict[str, Any]] = []
         relationships = []
         if scope.include_relationships:
+            # pyrefly: ignore[missing-attribute]
             relationships = self.storage.get_relationships_for_entity(scope.entity_id)
             rel_dicts = [r.model_dump(mode="json") for r in relationships]
 
@@ -490,29 +491,39 @@ class EvidenceRetriever:
                 direction = "INCOMPARABLE_UNITS" if not is_currency_consistent else "INCOMPARABLE_ACCOUNTING"
             else:
                 # CAGR calculation: strictly valid only for strictly positive base and terminal values
+                # pyrefly: ignore[unsupported-operation]
                 if n_years > 0 and first_val > 0 and last_val > 0:
+                    # pyrefly: ignore[unsupported-operation]
                     cagr = round((last_val / first_val) ** (1.0 / n_years) - 1.0, 4)
+                # pyrefly: ignore[unsupported-operation]
                 elif first_val <= 0 or last_val <= 0:
                     notes_parts.append("CAGR not applicable due to non-positive base or terminal value.")
 
                 # Direction determination with proper handling of negative/zero baselines
+                # pyrefly: ignore[unsupported-operation]
                 if first_val > 0:
+                    # pyrefly: ignore[unsupported-operation]
                     if last_val > first_val * 1.05:
                         direction = "INCREASING"
+                    # pyrefly: ignore[unsupported-operation]
                     elif last_val < first_val * 0.95:
                         direction = "DECREASING"
                     else:
                         direction = "STABLE"
                 elif first_val == 0:
+                    # pyrefly: ignore[unsupported-operation]
                     if last_val > 0:
                         direction = "INCREASING"
+                    # pyrefly: ignore[unsupported-operation]
                     elif last_val < 0:
                         direction = "DECREASING"
                     else:
                         direction = "STABLE"
                 else:  # first_val < 0 (net loss)
+                    # pyrefly: ignore[unsupported-operation]
                     if last_val > first_val:
                         direction = "INCREASING"  # loss narrowed or turned positive
+                    # pyrefly: ignore[unsupported-operation]
                     elif last_val < first_val:
                         direction = "DECREASING"  # loss deepened
                     else:

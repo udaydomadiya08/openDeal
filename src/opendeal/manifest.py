@@ -289,6 +289,7 @@ def normalize_sdist_archive(tar_gz_path: Path, output_path: Path, epoch: int = 1
     members_data = []
     with tarfile.open(tar_gz_path, "r:gz") as tar_in:
         for m in sorted(tar_in.getmembers(), key=lambda x: x.name):
+            # pyrefly: ignore[missing-attribute]
             content = tar_in.extractfile(m).read() if m.isfile() else b""
             ti = tarfile.TarInfo(name=m.name)
             ti.size = len(content) if m.isfile() else 0

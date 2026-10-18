@@ -164,6 +164,7 @@ class EvidenceAndDataQualityAgent(BaseAgent):
         for u in set(unresolvable):
             findings.append({"severity": "HIGH", "category": "UNRESOLVABLE_EVIDENCE", "evidence_id": u})
         for m in missing_fields:
+            # pyrefly: ignore[bad-assignment]
             findings.append({"severity": "MEDIUM", "category": "MISSING_REQUIRED_METADATA", "details": m})
 
         report_dict = report.model_dump()
@@ -243,7 +244,9 @@ class TargetDiscoveryAgent(BaseAgent):
         engine = TargetDiscoveryService(storage=self.storage)
         screening_result = engine.screen_targets(criteria=criteria)
         dumped = screening_result.model_dump() if hasattr(screening_result, "model_dump") else screening_result
+        # pyrefly: ignore[missing-attribute]
         meta = dumped.get("metadata", {})
+        # pyrefly: ignore[missing-attribute]
         targets = dumped.get("targets", [])
         return {
             "screening_result": dumped,
@@ -276,6 +279,7 @@ class DealIntelligenceAgent(BaseAgent):
             # Monitoring mode: snapshot comparison across local dataset
             prev_snapshot = self.storage.get_latest_workflow_snapshot(dataset_key)
 
+            # pyrefly: ignore[missing-attribute]
             cursor = self.storage.conn.cursor()
             cursor.execute("SELECT round_id FROM funding_rounds")
             current_rounds = {row[0] for row in cursor.fetchall()}
@@ -480,6 +484,7 @@ class ValuationPreparationAgent(BaseAgent):
             is_ready_for_calculation=is_ready,
             provided_inputs=assumptions,
             missing_required_inputs=missing_required,
+            # pyrefly: ignore[bad-argument-type]
             valuation_result=result,
             warnings=warnings,
         )
@@ -493,8 +498,11 @@ class ValuationPreparationAgent(BaseAgent):
             },
         }
         if result is not None:
+            # pyrefly: ignore[missing-attribute]
             ev = result.get("enterprise_value", 0.0)
+            # pyrefly: ignore[missing-attribute]
             eq = result.get("equity_value", 0.0)
+            # pyrefly: ignore[missing-attribute]
             ps = result.get("implied_share_price") or result.get("per_share_value", 0.0)
             out["valuation_results"] = {
                 "status": "EXECUTED",

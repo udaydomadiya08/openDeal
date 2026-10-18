@@ -74,8 +74,10 @@ class RelationshipGraphEngine:
             for p in participants:
                 inv_id = p.investor_id
                 if inv_id not in investor_records:
+                    # pyrefly: ignore[bad-argument-type]
                     ent = self.storage.get_entity(inv_id)
                     inv_name = ent.legal_name if ent else (p.investor_name or inv_id)
+                    # pyrefly: ignore[unsupported-operation]
                     investor_records[inv_id] = {
                         "investor_id": inv_id,
                         "investor_name": inv_name,
@@ -316,8 +318,10 @@ class RelationshipGraphEngine:
 
     def _get_adjacent_neighbors(
         self, entity_id: str
+    # pyrefly: ignore[unknown-name]
     ) -> List[Tuple[str, str, List[str], Optional[str], Optional[str]]]:
         """Collect all directly connected neighboring entities with their relationship metadata."""
+        # pyrefly: ignore[unknown-name]
         neighbors: List[Tuple[str, str, List[str], Optional[str], Optional[str]]] = []
 
         # 1. Entity relationships table

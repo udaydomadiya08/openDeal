@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Set
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -71,18 +71,64 @@ def parse_host_authority(host_header: str) -> Optional[str]:
         return None
 
 
+def is_host_allowed(host: str, allowed_hosts: Set[str]) -> bool:
+    """Check if host matches any allowed host or wildcard/subdomain pattern."""
+    if not host:
+        return False
+    host = host.lower().strip()
+    if host in allowed_hosts:
+        return True
+    for allowed in allowed_hosts:
+        if allowed.startswith("."):
+            if host.endswith(allowed) or host == allowed[1:]:
+                return True
+        elif allowed.startswith("*."):
+            suffix = allowed[1:]
+            if host.endswith(suffix):
+                return True
+    return False
+
+
 class SecurityHeadersMiddleware:
     """Pure ASGI middleware enforcing secure institutional HTTP response headers, host policy, and streaming limits."""
 
     ALLOWED_LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1", "testserver"}
     MAX_REQUEST_BODY_BYTES = 10_000_000  # 10 MB
 
-    def __init__(self, app) -> None:
+    def __init__(self, app, allowed_hosts: Optional[Set[str]] = None, demo_mode: bool = False) -> None:
         self.app = app
+        self.demo_mode = demo_mode
+        self.allowed_hosts = set(self.ALLOWED_LOCAL_HOSTS)
+        if allowed_hosts:
+            self.allowed_hosts.update(h.strip().lower() for h in allowed_hosts if h.strip())
 
     async def __call__(self, scope, receive, send) -> None:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
+            return
+
+        # 0. Health check fast-path (unauthenticated platform probe)
+        path = scope.get("path", "")
+        if path in ("/healthz", "/api/health"):
+            import json
+            body = json.dumps({
+                "status": "healthy",
+                "version": __version__,
+                "mode": "demo" if self.demo_mode else "local",
+            }).encode("utf-8")
+            await send({
+                "type": "http.response.start",
+                "status": 200,
+                "headers": [
+                    (b"content-type", b"application/json"),
+                    (b"content-length", str(len(body)).encode("ascii")),
+                    (b"cache-control", b"no-cache"),
+                ],
+            })
+            await send({
+                "type": "http.response.body",
+                "body": body,
+            })
             return
 
         headers = dict(scope.get("headers", []))
@@ -90,7 +136,7 @@ class SecurityHeadersMiddleware:
 
         # 1. Host header validation to prevent DNS rebinding attacks (handles ports and IPv6 brackets)
         parsed_host = parse_host_authority(host_header)
-        if parsed_host is None or (parsed_host and parsed_host not in self.ALLOWED_LOCAL_HOSTS):
+        if parsed_host is None or not is_host_allowed(parsed_host, self.allowed_hosts):
             response_body = b"403 Forbidden: Host header rejected by local security policy."
             await send({
                 "type": "http.response.start",
@@ -137,7 +183,7 @@ class SecurityHeadersMiddleware:
             if origin:
                 parsed_origin = urllib.parse.urlparse(origin)
                 origin_host = (parsed_origin.hostname or "").lower()
-                if origin_host and origin_host not in self.ALLOWED_LOCAL_HOSTS:
+                if origin_host and not is_host_allowed(origin_host, self.allowed_hosts):
                     response_body = b"403 Forbidden: Cross-Origin state-changing requests are prohibited."
                     await send({
                         "type": "http.response.start",
@@ -157,7 +203,7 @@ class SecurityHeadersMiddleware:
                 if referer:
                     parsed_ref = urllib.parse.urlparse(referer)
                     ref_host = (parsed_ref.hostname or "").lower()
-                    if ref_host and ref_host not in self.ALLOWED_LOCAL_HOSTS:
+                    if ref_host and not is_host_allowed(ref_host, self.allowed_hosts):
                         response_body = b"403 Forbidden: Cross-Origin state-changing requests are prohibited."
                         await send({
                             "type": "http.response.start",
@@ -226,23 +272,59 @@ class SecurityHeadersMiddleware:
                 })
 
 
-def create_app(storage: Optional[SQLiteStorage] = None, db_path: Optional[str] = None) -> FastAPI:
+def create_app(
+    storage: Optional[SQLiteStorage] = None,
+    db_path: Optional[str] = None,
+    demo_mode: Optional[bool] = None,
+    allowed_hosts: Optional[Set[str]] = None,
+) -> FastAPI:
     """Create and configure the OpenDeal FastAPI application."""
+    if demo_mode is None:
+        demo_mode = os.environ.get("OPENDEAL_DEMO_MODE", "").strip().lower() in ("1", "true", "yes")
+
+    # Determine allowed hosts for security middleware
+    effective_allowed_hosts: Set[str] = set()
+    if allowed_hosts:
+        effective_allowed_hosts.update(allowed_hosts)
+    env_hosts = os.environ.get("OPENDEAL_ALLOWED_HOSTS", "").strip()
+    if env_hosts:
+        effective_allowed_hosts.update(h.strip().lower() for h in env_hosts.split(",") if h.strip())
+    render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME", "").strip().lower()
+    if render_host:
+        effective_allowed_hosts.add(render_host)
+    if demo_mode:
+        effective_allowed_hosts.add(".onrender.com")
+
     app = FastAPI(
-        title="OpenDeal Financial Intelligence Platform",
+        title="OpenDeal Financial Intelligence Platform" + (" (Demo Mode)" if demo_mode else ""),
         version=__version__,
         docs_url=None,  # Disabled in production UI for security
         redoc_url=None,
     )
 
-    # Add security headers
-    app.add_middleware(SecurityHeadersMiddleware)
+    # Add security headers and host validation middleware
+    app.add_middleware(
+        SecurityHeadersMiddleware,
+        allowed_hosts=effective_allowed_hosts,
+        demo_mode=demo_mode,
+    )
 
     # Initialize storage if not injected
     if storage is None:
-        actual_db = resolve_database_path(db_path)
-        storage = SQLiteStorage(database_path=actual_db)
-        storage.initialize()
+        if demo_mode:
+            if db_path is None and "OPENDEAL_DATABASE_PATH" not in os.environ:
+                import tempfile
+                actual_db = str(Path(tempfile.gettempdir()) / "opendeal_demo.db")
+            else:
+                actual_db = resolve_database_path(db_path)
+            storage = SQLiteStorage(database_path=actual_db)
+            storage.initialize()
+            from opendeal.demo.dataset import seed_demo_database
+            seed_demo_database(storage)
+        else:
+            actual_db = resolve_database_path(db_path)
+            storage = SQLiteStorage(database_path=actual_db)
+            storage.initialize()
 
     # Mount static assets
     if STATIC_DIR.exists():
@@ -251,10 +333,12 @@ def create_app(storage: Optional[SQLiteStorage] = None, db_path: Optional[str] =
     # Configure template engine
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
     templates.env.globals["app_version"] = __version__
+    templates.env.globals["demo_mode"] = demo_mode
 
     # Attach storage and templates to app state
     app.state.storage = storage
     app.state.templates = templates
+    app.state.demo_mode = demo_mode
 
     # Register routers
     app.include_router(dashboard.router)
@@ -267,12 +351,30 @@ def create_app(storage: Optional[SQLiteStorage] = None, db_path: Optional[str] =
     app.include_router(workflows.router)
     app.include_router(system.router)
 
+    # Health check route
+    @app.get("/healthz", response_class=HTMLResponse)
+    async def health_check_route():
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            content={
+                "status": "healthy",
+                "version": __version__,
+                "mode": "demo" if demo_mode else "local",
+            }
+        )
+
+    # Convenience alias redirect for single /company/{entity_id} -> /companies/{entity_id}
+    @app.get("/company/{entity_id}")
+    async def company_redirect_alias(entity_id: str):
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url=f"/companies/{entity_id}", status_code=302)
+
     # Global 404 Exception Handler
     @app.exception_handler(404)
     async def not_found_handler(request: Request, exc: HTTPException):
         return templates.TemplateResponse(
-        request,
-        "error.html",
+            request,
+            "error.html",
             {
                 "request": request,
                 "error_code": 404,
@@ -287,8 +389,8 @@ def create_app(storage: Optional[SQLiteStorage] = None, db_path: Optional[str] =
     async def global_exception_handler(request: Request, exc: Exception):
         # Prevent stack trace leakage in institutional UI
         return templates.TemplateResponse(
-        request,
-        "error.html",
+            request,
+            "error.html",
             {
                 "request": request,
                 "error_code": 500,

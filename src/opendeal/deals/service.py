@@ -142,9 +142,11 @@ class DealsIntelligenceService:
                     lead_investors.append(lname)
 
             for p in r.participants:
+                # pyrefly: ignore[bad-argument-type]
                 ent = self.storage.get_entity(p.investor_id)
                 pname = ent.legal_name if ent else (p.investor_name or p.investor_id)
                 if pname not in all_investors:
+                    # pyrefly: ignore[bad-argument-type]
                     all_investors.append(pname)
 
         # Build chronological timeline with deterministic tie-breaking
@@ -154,6 +156,7 @@ class DealsIntelligenceService:
         for r in funding_rounds:
             cparties = []
             for p in r.participants:
+                # pyrefly: ignore[bad-argument-type]
                 ent = self.storage.get_entity(p.investor_id)
                 cparties.append(ent.legal_name if ent else (p.investor_name or p.investor_id))
 
@@ -172,6 +175,7 @@ class DealsIntelligenceService:
                     disclosed_amount=r.disclosed_amount,
                     currency=r.currency,
                     status=r.verification_status.value,
+                    # pyrefly: ignore[bad-argument-type]
                     counterparties=cparties,
                     evidence_ids=r.evidence_ids,
                     has_conflicts=len(r.conflicts) > 0,

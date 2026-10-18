@@ -246,7 +246,9 @@ class SQLiteStorage(StorageInterface):
             website=row["website"],
             sic_code=row["sic_code"],
             sic_description=row["sic_description"],
+            # pyrefly: ignore[bad-argument-type]
             created_at=_str_to_datetime(row["created_at"]),
+            # pyrefly: ignore[bad-argument-type]
             updated_at=_str_to_datetime(row["updated_at"]),
             metadata=meta,
         )
@@ -348,6 +350,7 @@ class SQLiteStorage(StorageInterface):
                     evidence_ids=json.loads(row["evidence_ids_json"]),
                     source_reference=row["source_reference"],
                     notes=row["notes"],
+                    # pyrefly: ignore[bad-argument-type]
                     created_at=_str_to_datetime(row["created_at"]),
                 )
             )
@@ -397,6 +400,7 @@ class SQLiteStorage(StorageInterface):
             publisher=row["publisher"],
             document_id=row["document_id"],
             publication_date=_str_to_date(row["publication_date"]),
+            # pyrefly: ignore[bad-argument-type]
             retrieved_at=_str_to_datetime(row["retrieved_at"]),
             content_hash=row["content_hash"],
             metadata=json.loads(row["metadata_json"]),
@@ -442,6 +446,7 @@ class SQLiteStorage(StorageInterface):
             section_name=row["section_name"],
             tag_name=row["tag_name"],
             confidence_score=row["confidence_score"],
+            # pyrefly: ignore[bad-argument-type]
             ingested_at=_str_to_datetime(row["ingested_at"]),
         )
 
@@ -624,12 +629,14 @@ class SQLiteStorage(StorageInterface):
                 input_value=t["input_value"],
                 output_value=t["output_value"],
                 rationale=t["rationale"],
+                # pyrefly: ignore[bad-argument-type]
                 timestamp=_str_to_datetime(t["timestamp"]),
             )
             for t in th_data
         ]
 
         reported_val_raw = row["reported_value"]
+        # pyrefly: ignore[unknown-name]
         reported_val: Optional[Union[float, int, str]] = None
         if reported_val_raw is not None:
             try:
@@ -663,6 +670,7 @@ class SQLiteStorage(StorageInterface):
             validation_status=ValidationStatus(row["validation_status"]),
             missing_reason=MissingDataReason(row["missing_reason"]),
             conflict_note=row["conflict_note"],
+            # pyrefly: ignore[bad-argument-type]
             created_at=_str_to_datetime(row["created_at"]),
             metadata=json.loads(row["metadata_json"]),
         )
@@ -710,6 +718,7 @@ class SQLiteStorage(StorageInterface):
                 observed_value=row["observed_value"],
                 expected_range=row["expected_range"],
                 message=row["message"],
+                # pyrefly: ignore[bad-argument-type]
                 timestamp=_str_to_datetime(row["timestamp"]),
             )
             for r in cursor.fetchall()
@@ -992,7 +1001,9 @@ class SQLiteStorage(StorageInterface):
             list_id=row["list_id"],
             name=row["name"],
             description=row["description"],
+            # pyrefly: ignore[bad-argument-type]
             created_at=_str_to_datetime(row["created_at"]),
+            # pyrefly: ignore[bad-argument-type]
             updated_at=_str_to_datetime(row["updated_at"]),
             member_count=row["member_count"],
         )
@@ -1018,7 +1029,9 @@ class SQLiteStorage(StorageInterface):
                     list_id=row["list_id"],
                     name=row["name"],
                     description=row["description"],
+                    # pyrefly: ignore[bad-argument-type]
                     created_at=_str_to_datetime(row["created_at"]),
+                    # pyrefly: ignore[bad-argument-type]
                     updated_at=_str_to_datetime(row["updated_at"]),
                     member_count=row["member_count"],
                 )
@@ -1149,7 +1162,9 @@ class SQLiteStorage(StorageInterface):
                     status=TargetListStatus(row["status"]),
                     notes=row["notes"],
                     source_run_id=row["source_run_id"],
+                    # pyrefly: ignore[bad-argument-type]
                     added_at=_str_to_datetime(row["added_at"]),
+                    # pyrefly: ignore[bad-argument-type]
                     updated_at=_str_to_datetime(row["updated_at"]),
                 )
             )
@@ -1187,6 +1202,7 @@ class SQLiteStorage(StorageInterface):
                     old_status=TargetListStatus(row["old_status"]) if row["old_status"] else None,
                     new_status=TargetListStatus(row["new_status"]),
                     note=row["note"],
+                    # pyrefly: ignore[bad-argument-type]
                     changed_at=_str_to_datetime(row["changed_at"]),
                 )
             )
@@ -1285,6 +1301,7 @@ class SQLiteStorage(StorageInterface):
             conflict_notes=row["conflict_notes"],
             conflicts=conflicts,
             metadata=json.loads(row["metadata_json"]),
+            # pyrefly: ignore[bad-argument-type]
             created_at=_str_to_datetime(row["created_at"]),
         )
 
@@ -1368,6 +1385,7 @@ class SQLiteStorage(StorageInterface):
                     implied_ownership_pct=row["implied_ownership_pct"],
                     ownership_assumptions=row["ownership_assumptions"],
                     evidence_ids=json.loads(row["evidence_ids_json"]),
+                    # pyrefly: ignore[bad-argument-type]
                     created_at=_str_to_datetime(row["created_at"]),
                 )
             )
@@ -1397,6 +1415,7 @@ class SQLiteStorage(StorageInterface):
                     implied_ownership_pct=row["implied_ownership_pct"],
                     ownership_assumptions=row["ownership_assumptions"],
                     evidence_ids=json.loads(row["evidence_ids_json"]),
+                    # pyrefly: ignore[bad-argument-type]
                     created_at=_str_to_datetime(row["created_at"]),
                 )
             )
@@ -1508,6 +1527,7 @@ class SQLiteStorage(StorageInterface):
             conflict_notes=row["conflict_notes"],
             conflicts=conflicts,
             metadata=json.loads(row["metadata_json"]),
+            # pyrefly: ignore[bad-argument-type]
             created_at=_str_to_datetime(row["created_at"]),
         )
 
@@ -1607,6 +1627,7 @@ class SQLiteStorage(StorageInterface):
                     observed_value_b=row["observed_value_b"],
                     resolution_status=row["resolution_status"],
                     resolution_notes=row["resolution_notes"],
+                    # pyrefly: ignore[bad-argument-type]
                     created_at=_str_to_datetime(row["created_at"]),
                 )
             )

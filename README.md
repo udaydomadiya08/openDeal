@@ -12,17 +12,48 @@
 
 **Institutional-grade, local-first intelligence platform for private-market deal sourcing, regulatory corporate research, and deterministic financial valuation.**
 
+[Interactive Demo](#interactive-public-demo--interview-demonstration) •
+[Interview Kit](docs/demo/INTERVIEW_DEMO_SCRIPT.md) •
 [What is OpenDeal?](#what-is-opendeal) •
 [End-to-End Architecture](#end-to-end-architecture) •
 [Quickstart](#quickstart-in-3-minutes) •
-[User Guide](#user-guide--workflows) •
 [Global Coverage](#global--multi-jurisdictional-coverage) •
 [Valuation Models](#deterministic-valuation-engine) •
 [Web Dashboard](#local-web-dashboard) •
-[CLI Reference](#cli-reference) •
-[Project Roadmap](#project-roadmap--evolution)
+[CLI Reference](#cli-reference)
 
 </div>
+
+---
+
+## Interactive Public Demo & Interview Demonstration
+
+> **Public Hosted Demo**: [Launch OpenDeal Interactive Demo (Pending Hosted Deployment)](https://opendeal-demo.onrender.com) *(Pending deployment approval — run locally in 5 seconds below)*  
+> **Demo Walkthrough Video**: [Watch 5-Minute Video Walkthrough (Pending Recording)](docs/demo/DEMO_SCENARIOS.md#macos-demo-recording-guide)  
+> **Interview Demo Kit**: [Interview Script (5–7 Mins)](docs/demo/INTERVIEW_DEMO_SCRIPT.md) • [Deterministic Scenarios](docs/demo/DEMO_SCENARIOS.md) • [macOS Operator Guide](docs/demo/DEMO_GUIDE.md)
+
+### One-Command Instant Local Demo
+Experience the full interactive demonstration sandbox locally with a pre-seeded, air-gapped dataset and zero configuration:
+
+```bash
+# 1. Launch safe demo mode (creates an isolated sandbox database in /tmp/opendeal_demo.db)
+opendeal demo
+
+# 2. Open http://127.0.0.1:8000 in your browser
+```
+
+### What You Can Explore in Demo Mode
+- **Executive Dashboard (`/`):** View portfolio key performance indicators, recent corporate events, and a guided 4-step walkthrough for first-time visitors.
+- **Corporate Entity Explorer (`/companies/DEMO-NEXUS`):** Inspect normalized financials across 5 synthetic companies (`DEMO-NEXUS`, `DEMO-APEX`, `DEMO-VITA`, `DEMO-HELIOS`, `DEMO-MERIDIAN`) with cryptographic SHA-256 evidence provenance.
+- **Deterministic Valuation Workspace (`/valuation`):** Run DCF, WACC, LBO, Comparable Valuation, and M&A Accretion models using 1-click preset buttons. Every calculation runs on the real deterministic math engine.
+- **Explainable M&A Screening (`/discovery`):** Review candidate eligibility, quantitative ranking, and transparent missing-data handling (e.g., `DEMO-VITA` excluded for revenue threshold failure, `DEMO-MERIDIAN` missing cash flow disclosures flagged without fabricating estimates).
+- **Deals Intelligence Graph (`/deals`):** Explore cross-company transaction histories, funding rounds, and investor syndicate relationships.
+- **Governed Audit Trail (`/workflows`):** Inspect historical DAG workflow runs, cryptographic approval tokens, and immutable audit events.
+
+### Demo Safety & Isolation Guarantees
+- **Synthetic Data Notice:** All demo companies, financial metrics, and evidence excerpts are **synthetic demonstration fixtures** clearly identified with `DEMO-*` prefixes. OpenDeal never fabricates regulatory filings or presents synthetic data as genuine SEC/Companies House disclosures.
+- **Air-Gapped Isolation:** Demo mode writes exclusively to an ephemeral SQLite database (`/tmp/opendeal_demo.db`). Your personal local data at `~/Library/Application Support/OpenDeal` is completely untouched.
+- **Hardened Hosted Security:** Public live ingestion (`/system/ingest/live`), fixture uploads, destructive database wipes, and privileged workflow runs are strictly blocked with `403 Institutional Notice` responses.
 
 ---
 

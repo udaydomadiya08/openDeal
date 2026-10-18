@@ -160,6 +160,7 @@ async def discovery_run_detail_view(request: Request, run_id: str):
                 "detail": detail_str,
             })
 
+    # pyrefly: ignore[no-matching-overload]
     ranked_candidates = sorted(ranked_candidates, key=lambda x: x["composite_score"], reverse=True)
 
     metadata = run_data.get("metadata", {})

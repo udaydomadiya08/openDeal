@@ -1,0 +1,26 @@
+# Render Deployment Blueprint for OpenDeal Public Interactive Demo
+#
+# Requirements & Architecture:
+# - Runs OpenDeal in explicit Public Demo Mode with pre-populated synthetic dataset.
+# - Air-gapped: Does not require paid API keys, SEC credentials, or external network access.
+# - Ephemeral-safe: Re-seeds clean synthetic institutional data on startup into /tmp/opendeal_demo.db.
+# - Security: Enforces HTTP security headers, 10MB payload limit, and DNS rebinding protections.
+
+services:
+  - type: web
+    name: opendeal-demo
+    runtime: python
+    buildCommand: pip install -U pip && pip install -e .
+    startCommand: opendeal demo --host 0.0.0.0 --allow-remote
+    healthCheckPath: /healthz
+    plan: free
+    autoDeploy: false
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: OPENDEAL_DEMO_MODE
+        value: "1"
+      - key: OPENDEAL_ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: OPENDEAL_DATABASE_PATH
+        value: "/tmp/opendeal_demo.db"

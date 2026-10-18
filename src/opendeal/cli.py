@@ -2044,6 +2044,88 @@ def ui_command(host: str, port: int, reload_server: bool, db_path: Optional[str]
     )
 
 
+@cli.command("demo")
+@click.option("--host", default=None, help="Host address to bind (default: 127.0.0.1, or 0.0.0.0 in cloud/allow-remote)")
+@click.option("--port", default=None, type=int, help="Port to listen on (default: $PORT or 8000)")
+@click.option("--db-path", default=None, help="Dedicated SQLite database file path for demo")
+@click.option("--allow-remote", is_flag=True, default=False, help="Explicit authorization required to bind non-loopback interfaces")
+def demo_command(host: Optional[str], port: Optional[int], db_path: Optional[str], allow_remote: bool) -> None:
+    """Launch the OpenDeal Interactive Demo with pre-populated synthetic dataset."""
+    import os
+    import socket
+    import tempfile
+    import uvicorn  # type: ignore
+    from pathlib import Path
+    from opendeal.ui.app import create_app
+    from opendeal.storage.sqlite import SQLiteStorage
+    from opendeal.demo.dataset import seed_demo_database
+
+    # Determine port: CLI option > PORT env var > 8000
+    effective_port = port
+    if effective_port is None:
+        env_port = os.environ.get("PORT", "").strip()
+        effective_port = int(env_port) if env_port.isdigit() else 8000
+
+    # Determine host: CLI option > (0.0.0.0 if cloud/allow_remote else 127.0.0.1)
+    effective_host = host
+    is_cloud_env = bool(os.environ.get("PORT")) or bool(os.environ.get("RENDER")) or allow_remote
+    if effective_host is None:
+        effective_host = "0.0.0.0" if is_cloud_env else "127.0.0.1"
+
+    # Enforce loopback binding security unless explicitly authorized
+    if effective_host not in ("127.0.0.1", "localhost", "::1"):
+        if not is_cloud_env:
+            click.echo(
+                f"Security Policy Rejection: Binding to non-loopback interface '{effective_host}' requires the '--allow-remote' flag or cloud environment ($PORT).\n"
+                f"OpenDeal enforces loopback-only binding by default to prevent unauthorized network exposure.",
+                err=True,
+            )
+            sys.exit(1)
+
+    # Check if port is already in use
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.bind((effective_host, effective_port))
+        sock.close()
+    except OSError:
+        click.echo(
+            f"Error: Port {effective_port} on {effective_host} is already in use by another process.\n"
+            f"Action: Choose an alternate port with '--port <PORT>', e.g. 'opendeal demo --port {effective_port + 1}'.",
+            err=True,
+        )
+        sys.exit(1)
+
+    # Dedicated demo database path
+    if db_path is None:
+        db_path = os.environ.get("OPENDEAL_DATABASE_PATH") or str(Path(tempfile.gettempdir()) / "opendeal_demo.db")
+
+    os.environ["OPENDEAL_DEMO_MODE"] = "1"
+    storage = SQLiteStorage(database_path=db_path)
+    storage.initialize()
+    seed_demo_database(storage)
+
+    app = create_app(storage=storage, demo_mode=True)
+
+    click.echo("\n================================================================================")
+    click.echo("🚀 OPENDEAL INTERACTIVE DEMO (Institutional Financial Intelligence)")
+    click.echo("================================================================================")
+    display_host = "localhost" if effective_host == "0.0.0.0" else effective_host
+    click.echo(f"URL:              http://{display_host}:{effective_port}")
+    click.echo(f"Demo Database:    {db_path}")
+    click.echo("Mode:             Interactive Public Demo (Synthetic Dataset)")
+    click.echo("Valuation Math:   100% Deterministic Audited Python Engine")
+    click.echo("Safety Status:    Live Ingestion & Privileged Workflows Gated")
+    click.echo("================================================================================\n")
+    click.echo("Press Ctrl+C to stop the server.")
+
+    uvicorn.run(
+        app,
+        host=effective_host,
+        port=effective_port,
+        log_level="info",
+    )
+
+
 # ── Workflow Automation Commands (Phase 9) ─────────────────────────────────
 
 @cli.group("workflow")

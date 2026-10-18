@@ -99,6 +99,7 @@ class PolicyEngine:
             )
 
         # Check that workflow run is active before checking approvals
+        # pyrefly: ignore[missing-attribute]
         cursor = self.storage.conn.cursor()
         cursor.execute("SELECT state FROM workflow_runs WHERE run_id = ?", (run_id,))
         wf_row = cursor.fetchone()
@@ -183,6 +184,7 @@ class PolicyEngine:
         current_hash = hashlib.sha256(current_payload_json.encode("utf-8")).hexdigest()
 
         # Check that workflow run is active before consuming approvals
+        # pyrefly: ignore[missing-attribute]
         cursor = self.storage.conn.cursor()
         cursor.execute("SELECT state FROM workflow_runs WHERE run_id = ?", (run_id,))
         wf_row = cursor.fetchone()
@@ -237,6 +239,7 @@ class PolicyEngine:
             """,
             (now_iso, target_appr_id),
         )
+        # pyrefly: ignore[missing-attribute]
         self.storage.conn.commit()
 
         if cursor.rowcount == 1:

@@ -131,6 +131,7 @@ async def company_timeline_view(request: Request, entity_id: str):
     overview = deals_service.get_company_deals_overview(entity_id)
 
     events = []
+    # pyrefly: ignore[missing-attribute]
     for item in overview.timeline:
         events.append({
             "date": item.event_date,

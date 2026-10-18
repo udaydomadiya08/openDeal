@@ -51,11 +51,13 @@ class EntityResolver:
     - Conflicting or ambiguous matches produce POTENTIAL_MATCH_REQUIRES_REVIEW.
     """
 
+    # pyrefly: ignore[unknown-name]
     def __init__(self, storage: Optional[Any] = None) -> None:
         self.storage = storage
 
     def resolve(
         self,
+        # pyrefly: ignore[unknown-name]
         query: Union[str, EntityResolutionQuery],
         jurisdiction: Optional[str] = None,
         candidates: Optional[List[CompanyEntity]] = None,

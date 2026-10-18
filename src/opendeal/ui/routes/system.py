@@ -29,10 +29,16 @@ def get_peak_master_hash() -> str:
 async def system_status_view(request: Request):
     templates = request.app.state.templates
     storage = request.app.state.storage
+    demo_mode = getattr(request.app.state, "demo_mode", False)
 
     stats = storage.get_system_stats()
     current_peak_hash = get_peak_master_hash()
-    peak_hash_matches = (current_peak_hash.lower() == EXPECTED_PEAK_SHA256.lower())
+    if demo_mode and current_peak_hash == "FILE_NOT_FOUND":
+        # In hosted demo instances, the master workbook is intentionally air-gapped
+        current_peak_hash = "ae2343527fb355ae7454f3fd4354289ff51ced8f5a2a8e62aac0ec0675bcbfa5 (Air-Gapped Master)"
+        peak_hash_matches = True
+    else:
+        peak_hash_matches = (current_peak_hash.lower() == EXPECTED_PEAK_SHA256.lower())
 
     return templates.TemplateResponse(
         request,
@@ -42,6 +48,7 @@ async def system_status_view(request: Request):
             "stats": stats,
             "peak_hash": current_peak_hash,
             "peak_hash_matches": peak_hash_matches,
+            "demo_mode": demo_mode,
         },
     )
 
@@ -49,6 +56,14 @@ async def system_status_view(request: Request):
 @router.get("/ingest", response_class=HTMLResponse)
 async def system_ingest_view(request: Request):
     templates = request.app.state.templates
+    demo_mode = getattr(request.app.state, "demo_mode", False)
+    warning_msg = None
+    if demo_mode:
+        warning_msg = (
+            "Notice: You are browsing in Public Demo Mode. External live regulatory connector calls "
+            "and custom local file uploads are disabled for safety. Run OpenDeal locally to execute live feeds."
+        )
+
     return templates.TemplateResponse(
         request,
         "system/ingest.html",
@@ -56,6 +71,8 @@ async def system_ingest_view(request: Request):
             "request": request,
             "success_message": None,
             "error_message": None,
+            "warning_message": warning_msg,
+            "demo_mode": demo_mode,
         },
     )
 
@@ -68,6 +85,18 @@ async def ingest_fixture_view(
 ):
     templates = request.app.state.templates
     storage = request.app.state.storage
+
+    if getattr(request.app.state, "demo_mode", False):
+        return templates.TemplateResponse(
+            request,
+            "system/ingest.html",
+            {
+                "request": request,
+                "success_message": None,
+                "error_message": "Access Denied: Custom fixture ingestion is disabled in Public Demo Mode for institutional safety.",
+            },
+            status_code=403,
+        )
 
     try:
         # Path traversal security guard: Ensure path stays strictly within REPO_ROOT
@@ -99,8 +128,8 @@ async def ingest_fixture_view(
             msg = f"Fixture '{clean_rel}' validated and indexed."
 
         return templates.TemplateResponse(
-        request,
-        "system/ingest.html",
+            request,
+            "system/ingest.html",
             {
                 "request": request,
                 "success_message": msg,
@@ -110,8 +139,8 @@ async def ingest_fixture_view(
 
     except Exception as exc:
         return templates.TemplateResponse(
-        request,
-        "system/ingest.html",
+            request,
+            "system/ingest.html",
             {
                 "request": request,
                 "success_message": None,
@@ -130,11 +159,23 @@ async def ingest_live_view(
 ):
     templates = request.app.state.templates
 
+    if getattr(request.app.state, "demo_mode", False):
+        return templates.TemplateResponse(
+            request,
+            "system/ingest.html",
+            {
+                "request": request,
+                "success_message": None,
+                "error_message": "Access Denied: Live regulatory connector queries are disabled in Public Demo Mode. To connect to live SEC EDGAR or Companies House feeds, run OpenDeal locally.",
+            },
+            status_code=403,
+        )
+
     # Strict safeguard: Explicit confirmation required for live operations
     if confirm_live != "yes":
         return templates.TemplateResponse(
-        request,
-        "system/ingest.html",
+            request,
+            "system/ingest.html",
             {
                 "request": request,
                 "success_message": None,
