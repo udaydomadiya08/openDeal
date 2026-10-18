@@ -251,7 +251,7 @@ class TestDemoCorePagesRender:
         assert resp.status_code == 200
         html = resp.text
         assert "INTERACTIVE DEMO" in html
-        assert "Guided 4-Step Tour" in html
+        assert "Institutional Sandbox Workspaces" in html
         assert "Quick Valuation Presets" in html
 
     def test_company_profile_renders_synthetic_labels(self, demo_client: TestClient):

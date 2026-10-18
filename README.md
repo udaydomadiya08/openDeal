@@ -13,8 +13,7 @@
 
 **Institutional-grade, local-first intelligence platform for private-market deal sourcing, regulatory corporate research, and deterministic financial valuation.**
 
-[Interactive Demo (Live)](https://opendeal-demo.onrender.com) •
-[Interview Kit](docs/demo/INTERVIEW_DEMO_SCRIPT.md) •
+[Live Hosted Demo](https://opendeal-demo.onrender.com) •
 [What is OpenDeal?](#what-is-opendeal) •
 [End-to-End Architecture](#end-to-end-architecture) •
 [Quickstart](#quickstart-in-3-minutes) •
@@ -27,11 +26,9 @@
 
 ---
 
-## Interactive Public Demo & Interview Demonstration
+## Live Interactive Demo
 
-> **Public Hosted Demo**: [Launch OpenDeal Interactive Demo (Live on Render)](https://opendeal-demo.onrender.com) • **Health Status**: [`/healthz`](https://opendeal-demo.onrender.com/healthz)  
-> **Demo Walkthrough Video**: [Watch 5-Minute Video Walkthrough (Pending Recording)](docs/demo/DEMO_SCENARIOS.md#macos-demo-recording-guide)  
-> **Interview Demo Kit**: [Interview Script (5–7 Mins)](docs/demo/INTERVIEW_DEMO_SCRIPT.md) • [Deterministic Scenarios](docs/demo/DEMO_SCENARIOS.md) • [macOS Operator Guide](docs/demo/DEMO_GUIDE.md)
+> **Live Hosted Sandbox**: [Launch OpenDeal Public Demo](https://opendeal-demo.onrender.com) • **API Health**: [`/healthz`](https://opendeal-demo.onrender.com/healthz)  
 
 ### One-Command Instant Local Demo
 Experience the full interactive demonstration sandbox locally with a pre-seeded, air-gapped dataset and zero configuration:
@@ -44,7 +41,7 @@ opendeal demo
 ```
 
 ### What You Can Explore in Demo Mode
-- **Executive Dashboard (`/`):** View portfolio key performance indicators, recent corporate events, and a guided 4-step walkthrough for first-time visitors.
+- **Executive Dashboard (`/`):** View portfolio key performance indicators, recent corporate events, and live financial metrics.
 - **Corporate Entity Explorer (`/companies/DEMO-NEXUS`):** Inspect normalized financials across 5 synthetic companies (`DEMO-NEXUS`, `DEMO-APEX`, `DEMO-VITA`, `DEMO-HELIOS`, `DEMO-MERIDIAN`) with cryptographic SHA-256 evidence provenance.
 - **Deterministic Valuation Workspace (`/valuation`):** Run DCF, WACC, LBO, Comparable Valuation, and M&A Accretion models using 1-click preset buttons. Every calculation runs on the real deterministic math engine.
 - **Explainable M&A Screening (`/discovery`):** Review candidate eligibility, quantitative ranking, and transparent missing-data handling (e.g., `DEMO-VITA` excluded for revenue threshold failure, `DEMO-MERIDIAN` missing cash flow disclosures flagged without fabricating estimates).
