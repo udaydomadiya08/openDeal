@@ -16,6 +16,7 @@
 [End-to-End Architecture](#end-to-end-architecture) •
 [Quickstart](#quickstart-in-3-minutes) •
 [User Guide](#user-guide--workflows) •
+[Global Coverage](#global--multi-jurisdictional-coverage) •
 [Valuation Models](#deterministic-valuation-engine) •
 [Web Dashboard](#local-web-dashboard) •
 [CLI Reference](#cli-reference) •
@@ -47,6 +48,7 @@ Investment analysts, corporate development teams, and private equity sponsors fa
 | **Deterministic Math** | All financial calculations (DCF, WACC, LBO, M&A Accretion/Dilution, VC Method, NAV, Monte Carlo) execute strictly in audited Python arithmetic. Generative AI is mathematically forbidden from computing or overriding numeric financials. |
 | **Regulatory Evidence Provenance** | Every financial metric links directly to official regulatory filings (SEC EDGAR 10-K/10-Q and UK Companies House) with document ID, filing period, verbatim excerpt, and SHA-256 cryptographic content hash. |
 | **5-Tier Epistemic Taxonomy** | Facts are strictly segregated into explicit epistemic categories: `SOURCE_REPORTED_FACT`, `DERIVED_CALCULATION`, `ANALYST_ASSUMPTION`, `AI_INTERPRETATION`, and `MISSING_OR_CONFLICTING`. Missing disclosures remain missing—never fabricated. |
+| **Global & Multi-Jurisdiction** | Native indexing of international conglomerates via SEC Form 20-F, UK Companies House, global LEI (ISO 17442), multi-currency tagging (USD, EUR, GBP, JPY, INR, CAD, AUD, CHF, CNY, HKD, SGD), and IFRS / local GAAP accounting standards. |
 | **Local-First & Modest Hardware** | Runs self-contained on consumer hardware (e.g., Apple Silicon M-series or Intel Core i5 with 8 GB RAM) using SQLite with WAL mode. External network requests are disabled by default. |
 | **Governed Autonomous Agents** | Specialized agents run in a topological DAG workflow engine with human-in-the-loop approvals, cryptographically signed single-use action tokens, and tamper-evident audit trails. |
 
@@ -166,10 +168,43 @@ OpenDeal can analyze **any company** across three primary operational modes:
 | Company Type | Source & Valuation Workflow | Example Command |
 | :--- | :--- | :--- |
 | **Any US Public Company** | Pulls live 10-K/10-Q XBRL statements directly from official SEC EDGAR. | `opendeal ingest sec AAPL --live` |
+| **Global Foreign Issuers (FPIs)** | Pulls live Form 20-F/6-K filings for international giants (TSMC, ASML, SAP, BABA). | `opendeal ingest sec TSM --live` |
 | **Any UK Registered Company** | Pulls official corporate profiles and accounts from UK Companies House. | `opendeal ingest companies-house 00102498 --live` |
 | **Any Private Company / Startup** | Runs valuation models directly on your custom parameters without filing data. | `opendeal valuation lbo --entry-ev 150 ...` |
 | **Custom Private Dataset** | Ingests proprietary financial JSON/CSV files into your local database. | `opendeal ingest fixture --file my_deal.json` |
 | **Interactive Web UI** | Fill in financial assumptions and calculate returns in your browser. | `http://127.0.0.1:8000/valuation` |
+
+---
+
+### Global & Multi-Jurisdictional Coverage
+
+OpenDeal is engineered from first principles for **cross-border institutional analysis across worldwide markets**:
+
+1. **Foreign Private Issuers (FPIs):** Non-US global corporations that file annual Form 20-F and current Form 6-K statements with the SEC can be ingested directly:
+   - **TSMC (Taiwan):** `opendeal ingest sec TSM --live`
+   - **ASML (Netherlands):** `opendeal ingest sec ASML --live`
+   - **Alibaba Group (China):** `opendeal ingest sec BABA --live`
+   - **AstraZeneca (UK / Sweden):** `opendeal ingest sec AZN --live`
+   - **SAP SE (Germany):** `opendeal ingest sec SAP --live`
+   - **Sony Group (Japan):** `opendeal ingest sec SONY --live`
+   - **Toyota Motor Corp (Japan):** `opendeal ingest sec TM --live`
+   - **Infosys (India):** `opendeal ingest sec INFY --live`
+
+2. **International Legal Entity Identifiers:** The entity resolution engine natively indexes global identity standards:
+   - **`LEI` (Legal Entity Identifier):** 20-character ISO 17442 standard managed by GLEIF across 200+ countries.
+   - **`TICKER`:** International exchange tickers (NYSE, NASDAQ, LSE, Euronext, TSX, Tokyo, HKEX, NSE, SGX).
+   - **`CIN`:** Corporate Identity Number (India).
+   - **`SIREN` / `SIRET`:** Official registry numbers (France).
+   - **`COMPANIES_HOUSE`:** 8-digit Company Registration Number (UK).
+   - **`CIK` / `IRS_EIN`:** Central Index Key & Federal Tax ID (US).
+
+3. **Multi-Currency Engine (ISO 4217):** Native support for all major global currencies with strict currency tagging to prevent erroneous cross-currency arithmetic:
+   - `USD`, `EUR`, `GBP`, `JPY`, `INR`, `CAD`, `AUD`, `CHF`, `CNY`, `HKD`, `SGD`.
+
+4. **Global Accounting Standards:** Financial facts are contextualized by their governing standard:
+   - `IFRS` (International Financial Reporting Standards), `US-GAAP`, `UK-GAAP`, `IND-AS`, and `LOCAL-GAAP`.
+
+5. **Currency-Agnostic Quantitative Math:** All valuation models (DCF, WACC, LBO, VC, M&A Accretion/Dilution, NAV, Monte Carlo) execute deterministically on any currency denomination with zero mathematical loss of precision.
 
 ---
 
