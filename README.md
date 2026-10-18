@@ -159,6 +159,20 @@ Open your browser to:
 
 ## User Guide & Workflows
 
+### How to Analyze Any Company (Public, Private, or Target)
+
+OpenDeal can analyze **any company** across three primary operational modes:
+
+| Company Type | Source & Valuation Workflow | Example Command |
+| :--- | :--- | :--- |
+| **Any US Public Company** | Pulls live 10-K/10-Q XBRL statements directly from official SEC EDGAR. | `opendeal ingest sec AAPL --live` |
+| **Any UK Registered Company** | Pulls official corporate profiles and accounts from UK Companies House. | `opendeal ingest companies-house 00102498 --live` |
+| **Any Private Company / Startup** | Runs valuation models directly on your custom parameters without filing data. | `opendeal valuation lbo --entry-ev 150 ...` |
+| **Custom Private Dataset** | Ingests proprietary financial JSON/CSV files into your local database. | `opendeal ingest fixture --file my_deal.json` |
+| **Interactive Web UI** | Fill in financial assumptions and calculate returns in your browser. | `http://127.0.0.1:8000/valuation` |
+
+---
+
 ### Workflow 1: Corporate Research & Regulatory Fact Extraction
 
 Search for a company, ingest official SEC or UK Companies House disclosures, and inspect verifiable facts:
@@ -167,7 +181,13 @@ Search for a company, ingest official SEC or UK Companies House disclosures, and
 # 1. Search for a company across jurisdictions
 opendeal entity search "Apple Inc"
 
-# 2. Ingest filings from offline fixtures or official sources
+# 2. Ingest live filings for any US public company (e.g. AAPL, MSFT, TSLA)
+opendeal ingest sec AAPL --live
+
+# Or ingest live registry records for any UK registered company
+opendeal ingest companies-house 00102498 --live
+
+# Or ingest from an offline verified fixture / custom private dataset
 opendeal ingest fixture --file tests/fixtures/sec_edgar_sample.json
 
 # 3. View extracted financial facts and cryptographic evidence citations
