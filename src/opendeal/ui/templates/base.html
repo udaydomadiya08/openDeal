@@ -8,25 +8,11 @@
   {% block head %}{% endblock %}
 </head>
 <body>
-  {% if demo_mode %}
-  <div class="demo-banner">
-    <div class="demo-banner-content">
-      <span class="demo-badge">INTERACTIVE DEMO</span>
-      <span>Pre-populated with 5 synthetic companies, verified multi-year facts, and cryptographic evidence.</span>
-    </div>
-    <div class="demo-banner-actions">
-      <a href="/valuation" class="demo-banner-link">Valuation Engine</a>
-      <span>&bull;</span>
-      <span style="color: #c7d2fe;">Deterministic Math Active</span>
-    </div>
-  </div>
-  {% endif %}
-
   <!-- Top Navigation -->
   <nav class="navbar">
     <a href="/" class="nav-brand">
       <span>OpenDeal</span>
-      <span class="brand-badge">{% if demo_mode %}Public Sandbox{% else %}Local-First{% endif %}</span>
+      <span class="brand-badge">Institutional Platform</span>
     </a>
     <ul class="nav-links">
       <li><a href="/" class="{% if active_tab == 'dashboard' %}active{% endif %}">Dashboard</a></li>
@@ -53,13 +39,8 @@
       {% block breadcrumbs %}{% endblock %}
     </div>
     <div class="subnav-badges">
-      {% if demo_mode %}
-        <span class="badge" style="background-color: #4f46e5; color: #ffffff;">Synthetic Demo Sandbox</span>
-        <span class="badge badge-derived">Deterministic Valuation</span>
-      {% else %}
-        <span class="badge badge-source">Offline Mode</span>
-        <span class="badge badge-derived">Deterministic Math</span>
-      {% endif %}
+      <span class="badge badge-source">Institutional Engine</span>
+      <span class="badge badge-derived">Deterministic Valuation</span>
     </div>
   </div>
 
@@ -81,18 +62,10 @@
   <!-- Footer -->
   <footer class="footer">
     <div>
-      {% if demo_mode %}
-        <strong>OpenDeal</strong> Institutional Platform v{{ app_version }} &bull; Public Interactive Demo &bull; Synthetic dataset with audited deterministic valuation engine.
-      {% else %}
-        <strong>OpenDeal</strong> Institutional Platform v{{ app_version }} • Local-first, private-market intelligence.
-      {% endif %}
+      <strong>OpenDeal</strong> Institutional Platform v{{ app_version }} &bull; Audited deterministic valuation engine.
     </div>
     <div class="footer-hash">
-      {% if demo_mode %}
-        Master Golden Standard: <span style="color: #059669;">Air-Gapped & Verified (ae2343527fb3...)</span>
-      {% else %}
-        PEAK Master Integrity: <span style="color: #059669;">Verified (ae2343527fb3...)</span>
-      {% endif %}
+      PEAK Master Integrity: <span style="color: #059669;">Verified (ae2343527fb3...)</span>
     </div>
   </footer>
 

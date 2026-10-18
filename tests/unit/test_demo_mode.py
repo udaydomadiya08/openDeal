@@ -246,13 +246,13 @@ class TestDemoCorePagesRender:
         )
         return TestClient(app)
 
-    def test_dashboard_renders_with_tour_and_badge(self, demo_client: TestClient):
+    def test_dashboard_renders_clean_institutional_layout(self, demo_client: TestClient):
         resp = demo_client.get("/")
         assert resp.status_code == 200
         html = resp.text
-        assert "INTERACTIVE DEMO" in html
-        assert "Institutional Sandbox Workspaces" in html
-        assert "Quick Valuation Presets" in html
+        assert "Platform Intelligence Overview" in html
+        assert "Indexed Companies" in html
+        assert "Financial Facts" in html
 
     def test_company_profile_renders_synthetic_labels(self, demo_client: TestClient):
         resp = demo_client.get("/companies/DEMO-NEXUS")
