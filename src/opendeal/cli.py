@@ -3,16 +3,13 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 import click
 
 from opendeal import __version__
 from opendeal.config.paths import resolve_database_path
-from opendeal.config.settings import settings
-from opendeal.entities.models import EntityResolutionQuery
 from opendeal.entities.resolution import EntityResolver
 from opendeal.pipeline.orchestrator import IngestionOrchestrator
 from opendeal.research.contracts import ResearchScope, ResearchStatus
@@ -151,7 +148,7 @@ def company_search(query: str, jurisdiction: Optional[str], json_output: bool) -
 
     if result.entity:
         e = result.entity
-        click.echo(f"\nResolved Entity:")
+        click.echo("\nResolved Entity:")
         click.echo(f"  ID:           {e.entity_id}")
         click.echo(f"  Legal Name:   {e.legal_name}")
         click.echo(f"  Jurisdiction: {e.jurisdiction}")
@@ -159,7 +156,7 @@ def company_search(query: str, jurisdiction: Optional[str], json_output: bool) -
         if e.legal_identifiers:
             click.echo(f"  Identifiers:  {', '.join([f'{i.scheme}:{i.identifier}' for i in e.legal_identifiers])}")
     elif result.candidate_entities:
-        click.echo(f"\nPotential Candidates Requiring Review:")
+        click.echo("\nPotential Candidates Requiring Review:")
         for c in result.candidate_entities:
             click.echo(f"  - [{c.entity_id}] {c.legal_name} ({c.jurisdiction}) | Ticker: {c.ticker or 'N/A'}")
     else:
@@ -386,6 +383,9 @@ def value_dcf(entity_id: str, discount_rate: Optional[float], terminal_growth: O
             click.echo(f"Incomplete Result: {msg}", err=True)
         sys.exit(1)
 
+    assert discount_rate is not None
+    assert terminal_growth is not None
+
     storage = get_storage()
     entity = storage.get_entity(entity_id)
     if not entity:
@@ -527,6 +527,10 @@ def value_lbo(
             click.echo(f"Incomplete Result: {msg}", err=True)
         sys.exit(1)
 
+    assert entry_ev is not None
+    assert exit_multiple is not None
+    assert exit_ebitda is not None
+
     debt_tranches = []
     if senior_debt > 0:
         debt_tranches.append(
@@ -651,6 +655,12 @@ def value_monte_carlo(
             click.echo(f"Incomplete Result: {msg}", err=True)
         sys.exit(1)
 
+    assert base_fcf is not None
+    assert wacc_mean is not None
+    assert growth_mode is not None
+    assert growth_min is not None
+    assert growth_max is not None
+
     base_dcf = DCFInput(
         forecast_cash_flows=[base_fcf * (1.05 ** i) for i in range(1, years + 1)],
         discount_rate=wacc_mean,
@@ -754,6 +764,9 @@ def value_venture_capital(
         else:
             click.echo(f"Incomplete Result: {msg}", err=True)
         sys.exit(1)
+
+    assert investment is not None
+    assert exit_val is not None
 
     dilution_rounds = []
     if dilution > 0.0:
@@ -865,6 +878,12 @@ def value_accretion_dilution(
         else:
             click.echo(f"Incomplete Result: {msg}", err=True)
         sys.exit(1)
+
+    assert buyer_price is not None
+    assert buyer_shares is not None
+    assert buyer_net_income is not None
+    assert eq_val is not None
+    assert target_net_income is not None
 
     if abs((cash_pct + debt_pct + stock_pct) - 1.0) > 1e-4:
         msg = f"Consideration mix must sum to 100% (1.0), got {cash_pct + debt_pct + stock_pct:.4f}"
@@ -1114,7 +1133,6 @@ def research_explain(research_id: str, json_output: bool) -> None:
                     src = storage.get_source(ev.source_id) if ev.source_id else None
                     pub = src.publisher if src else "Unknown Publisher"
                     doc = src.document_id if src else "N/A"
-                    url = src.source_url if src else "N/A"
                     hash_val = src.content_hash[:16] + "..." if (src and src.content_hash) else "UNHASHED"
                     click.echo(f"    - [{ev.evidence_id}] Publisher: {pub} | Doc: {doc} | Hash: {hash_val}")
                     content_text = getattr(ev, "raw_content", "") or getattr(ev, "verbatim_excerpt", "")
@@ -1207,7 +1225,7 @@ def targets_screen(
     # Table / Human-readable output
     meta = result.metadata
     click.echo("================================================================================")
-    click.echo(f"                  OPENDEAL TARGET DISCOVERY SCREENING REPORT                    ")
+    click.echo("                  OPENDEAL TARGET DISCOVERY SCREENING REPORT                    ")
     click.echo("================================================================================")
     click.echo(f"Run ID:            {meta.run_id}")
     click.echo(f"Timestamp:         {meta.created_at.isoformat()}")
@@ -1232,6 +1250,8 @@ def targets_screen(
             cand = t.candidate
             ent = cand.entity
             sc = t.scoring
+            if not sc:
+                continue
             scale_s = sc.factor_breakdowns.get("scale")
             profit_s = sc.factor_breakdowns.get("profitability")
             fit_s = sc.factor_breakdowns.get("fit")
@@ -1350,7 +1370,7 @@ def targets_explain(entity_id: str, run_id: Optional[str], output_format: str) -
     sc = target_match.scoring
 
     click.echo("================================================================================")
-    click.echo(f"                 TARGET EXPLANATION & SCORING AUDIT                             ")
+    click.echo("                 TARGET EXPLANATION & SCORING AUDIT                             ")
     click.echo("================================================================================")
     click.echo(f"Entity ID:         {cand.entity.entity_id}")
     click.echo(f"Legal Name:        {cand.entity.legal_name}")
@@ -1404,7 +1424,7 @@ def targets_lists(output_format: str) -> None:
     lists = manager.list_lists()
 
     if output_format.lower() == "json":
-        click.echo(json.dumps([l.model_dump(mode="json") for l in lists], indent=2))
+        click.echo(json.dumps([lst.model_dump(mode="json") for lst in lists], indent=2))
         return
 
     click.echo("=== Saved Target Lists & Watchlists ===")
@@ -1414,9 +1434,9 @@ def targets_lists(output_format: str) -> None:
 
     click.echo(f"{'List ID':<20} {'Name':<30} {'Members':<8} {'Created At':<22} {'Description'}")
     click.echo("-" * 90)
-    for l in lists:
-        desc = l.description or ""
-        click.echo(f"{l.list_id:<20} {l.name[:28]:<30} {l.member_count:<8} {l.created_at.strftime('%Y-%m-%d %H:%M'):<22} {desc}")
+    for lst in lists:
+        desc = lst.description or ""
+        click.echo(f"{lst.list_id:<20} {lst.name[:28]:<30} {lst.member_count:<8} {lst.created_at.strftime('%Y-%m-%d %H:%M'):<22} {desc}")
 
 
 @targets_group.group("list")
@@ -1596,6 +1616,9 @@ def deals_company(entity_id: str, output_format: str) -> None:
 
     service = DealsIntelligenceService(storage)
     overview = service.get_company_deals_overview(entity_id)
+    if not overview:
+        click.echo(f"Error: Deals overview could not be generated for '{entity_id}'.", err=True)
+        sys.exit(1)
 
     if output_format.lower() == "json":
         click.echo(overview.model_dump_json(indent=2))
@@ -1780,7 +1803,8 @@ def deals_investors(entity_id: str, output_format: str) -> None:
         role_label = "LEAD INVESTOR" if inv.is_lead else "PARTICIPANT"
         fund = inv.fund_id or "Direct / None"
         own = f"{inv.implied_ownership_pct:.1f}%" if inv.implied_ownership_pct is not None else "Undisclosed"
-        click.echo(f"{inv.investor_name[:32]:<34} {role_label:<14} {fund[:22]:<24} {own}")
+        inv_name = (inv.investor_name or "Unknown")[:32]
+        click.echo(f"{inv_name:<34} {role_label:<14} {fund[:22]:<24} {own}")
 
 
 @deals_group.command("timeline")
@@ -1798,6 +1822,9 @@ def deals_timeline(entity_id: str, output_format: str) -> None:
 
     service = DealsIntelligenceService(storage)
     overview = service.get_company_deals_overview(entity_id)
+    if not overview:
+        click.echo(f"Error: Deals overview could not be generated for '{entity_id}'.", err=True)
+        sys.exit(1)
     timeline = overview.timeline
 
     if output_format.lower() == "json":
@@ -1932,7 +1959,7 @@ def deals_ingest(source: str, file_path: Optional[str], live: bool, entity_id: O
             click.echo(json.dumps(summary, indent=2))
             return
 
-        click.echo(f"=== Fixture Ingestion Complete ===")
+        click.echo("=== Fixture Ingestion Complete ===")
         click.echo(f"Source File:         {summary['source_file']}")
         click.echo(f"Entities Created:    {summary['entities_created']}")
         click.echo(f"Relationships:       {summary['relationships_created']}")
