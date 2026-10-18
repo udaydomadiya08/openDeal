@@ -3,8 +3,9 @@
 <div align="center">
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![CI](https://github.com/udaydomadiya08/openDeal/actions/workflows/ci.yml/badge.svg)](https://github.com/udaydomadiya08/openDeal/actions/workflows/ci.yml)
 [![Python Version](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/Tests-397%20Passed%20(100%25)-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-413%20Passed%20(100%25)-brightgreen.svg)](https://github.com/udaydomadiya08/openDeal/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)](audit/PHASE_11_RELEASE_READINESS_REPORT.md)
 [![Valuation](https://img.shields.io/badge/Valuation-100%25%20Deterministic-purple.svg)](#deterministic-valuation-engine)
 [![Security](https://img.shields.io/badge/Security-Local--First%20%26%20Zero--Network-orange.svg)](#security-hardening--data-privacy)
@@ -12,7 +13,7 @@
 
 **Institutional-grade, local-first intelligence platform for private-market deal sourcing, regulatory corporate research, and deterministic financial valuation.**
 
-[Interactive Demo](#interactive-public-demo--interview-demonstration) •
+[Interactive Demo (Live)](https://opendeal-demo.onrender.com) •
 [Interview Kit](docs/demo/INTERVIEW_DEMO_SCRIPT.md) •
 [What is OpenDeal?](#what-is-opendeal) •
 [End-to-End Architecture](#end-to-end-architecture) •
@@ -28,7 +29,7 @@
 
 ## Interactive Public Demo & Interview Demonstration
 
-> **Public Hosted Demo**: [Launch OpenDeal Interactive Demo (Pending Hosted Deployment)](https://opendeal-demo.onrender.com) *(Pending deployment approval — run locally in 5 seconds below)*  
+> **Public Hosted Demo**: [Launch OpenDeal Interactive Demo (Live on Render)](https://opendeal-demo.onrender.com) • **Health Status**: [`/healthz`](https://opendeal-demo.onrender.com/healthz)  
 > **Demo Walkthrough Video**: [Watch 5-Minute Video Walkthrough (Pending Recording)](docs/demo/DEMO_SCENARIOS.md#macos-demo-recording-guide)  
 > **Interview Demo Kit**: [Interview Script (5–7 Mins)](docs/demo/INTERVIEW_DEMO_SCRIPT.md) • [Deterministic Scenarios](docs/demo/DEMO_SCENARIOS.md) • [macOS Operator Guide](docs/demo/DEMO_GUIDE.md)
 
