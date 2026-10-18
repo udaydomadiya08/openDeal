@@ -69,6 +69,7 @@ class TestPEAKInputRegistry:
             )
         assert "Ambiguous mapping collision" in str(exc_info.value)
 
+    @pytest.mark.skipif(not MASTER_WORKBOOK.exists(), reason="Requires local PEAK master workbook on developer machine")
     def test_verify_registry_against_master_workbook(self):
         """Confirm that none of the default registered cells collide with formulas in PEAK."""
         registry = PEAKInputRegistry.default()
@@ -188,6 +189,7 @@ class TestValuationInputAcceptance:
         assert "No authorized PEAK mapping exists" in str(exc.value)
 
 
+@pytest.mark.skipif(not MASTER_WORKBOOK.exists(), reason="Requires local PEAK master workbook on developer machine")
 class TestPEAKSandboxRunner:
     """Test PEAK sandbox runner execution and integrity validation."""
 

@@ -304,6 +304,9 @@ class TestFilesystemAndPathTraversalHardening:
     def test_peak_sandbox_run_id_path_traversal_blocked(self, tmp_path):
         from opendeal.valuation.peak_sandbox import PEAKSandboxRunner
         master_path = Path("/Users/uday/Documents/uday_projects/tester1/PEAK_Ultimate_Institutional_Valuation_System_FIXED.xlsx")
+        if not master_path.exists():
+            master_path = tmp_path / "dummy_peak.xlsx"
+            master_path.write_bytes(b"PK\x03\x04")
 
         runs_root = tmp_path / "sandbox_runs"
         runs_root.mkdir()
