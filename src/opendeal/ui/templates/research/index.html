@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Research Workspace — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Research Workspace</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Evidence-Grounded Research Workspace</h1>
+        <p class="page-subtitle">Synthesize institutional research briefs grounded in verifiable facts and explicit evidence</p>
+    </div>
+</div>
+
+<div class="grid grid-2" style="margin-bottom: 2rem;">
+    <!-- Generate New Brief Form -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Generate Company Research Brief</h2>
+            <span class="badge badge-ai">Phase 5 Generator</span>
+        </div>
+        <div class="card-body">
+            {% if error %}
+            <div class="alert alert-danger" style="margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/research/generate">
+                <div class="form-group">
+                    <label for="entity_id" class="form-label">Subject Company / Entity *</label>
+                    <select name="entity_id" id="entity_id" class="form-select" required>
+                        <option value="">-- Select Target Entity --</option>
+                        {% for ent in entities %}
+                        <option value="{{ ent.entity_id }}" {% if selected_entity_id == ent.entity_id %}selected{% endif %}>
+                            {{ ent.canonical_name }} ({{ ent.legal_jurisdiction }} / {{ ent.entity_id }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">Research Scope & Evidence Inclusions</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                            <input type="checkbox" name="include_financials" value="yes" checked>
+                            Include Structured Financial Facts & Metrics
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                            <input type="checkbox" name="include_relationships" value="yes" checked>
+                            Include Corporate Relationships & Subsidiaries
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                            <input type="checkbox" name="include_valuations" value="yes" checked>
+                            Include Stored Valuation & Transaction History
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="max_evidence_items" class="form-label">Max Evidence Items to Retrieve</label>
+                    <input type="number" name="max_evidence_items" id="max_evidence_items" class="form-control" value="25" min="5" max="100">
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 1.25rem; font-size: 0.85rem;">
+                    <strong>Offline Local-First Policy:</strong> Synthesis uses local grounded retrieval and deterministic parsing. No external network calls or third-party AI APIs are made.
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" id="generate-brief-btn">Generate Evidence-Grounded Brief</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Overview / Information Gaps & Tiers -->
+    <div>
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+                <h2 class="card-title">Epistemic Knowledge Architecture</h2>
+            </div>
+            <div class="card-body">
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    OpenDeal enforces strict classification of all research assertions to prevent hallucination and false confidence:
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="badge badge-reported">TIER 1 &bull; REPORTED</span>
+                        <span style="font-size: 0.85rem;">Verbatim facts directly extracted from regulatory filings, audit reports, or official sources.</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="badge badge-derived">TIER 2 &bull; DERIVED</span>
+                        <span style="font-size: 0.85rem;">Deterministically calculated from Tier 1 facts using verifiable mathematical formulas.</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="badge badge-analyst">TIER 3 &bull; ANALYST ASSUMPTION</span>
+                        <span style="font-size: 0.85rem;">Explicit forward-looking parameters supplied by investment analysts (e.g. WACC, exit multiples).</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="badge badge-ai">TIER 4 &bull; AI INTERPRETATION</span>
+                        <span style="font-size: 0.85rem;">Synthesized narrative observations grounded in verified evidence items.</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="badge badge-conflict">TIER 5 &bull; CONFLICT</span>
+                        <span style="font-size: 0.85rem;">Contradictory values reported across distinct sources or periods requiring analyst reconciliation.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Recent Stored Research Briefs</h2>
+            </div>
+            <div class="card-body">
+                {% if recent_briefs %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Entity</th>
+                                <th>Generated</th>
+                                <th>Claims</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in recent_briefs %}
+                            <tr>
+                                <td><strong>{{ b.entity_id }}</strong></td>
+                                <td class="text-muted">{{ b.created_at }}</td>
+                                <td>{{ b.claims_count }}</td>
+                                <td>
+                                    <a href="/research/briefs/{{ b.research_id }}" class="btn btn-secondary btn-sm">View Brief</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>No research briefs generated in this session yet. Select an entity above to produce your first evidence-backed brief.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

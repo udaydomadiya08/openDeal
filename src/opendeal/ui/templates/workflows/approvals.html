@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Approval Queue — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span>/</span> <a href="/workflows">Workflows</a>
+  <span>/</span> <span>Approvals</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 2rem;">
+  <h1 class="page-title">Human-in-the-Loop Approval Queue</h1>
+  <p class="text-muted" style="margin: 0.25rem 0 0 0;">
+    Explicit authorization gate for privileged agent actions (target list mutation, live connector calls, database updates).
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Pending Authorizations ({{ pending_approvals|length }})</h2>
+    <span class="badge badge-warning">Zero Autonomous Execution Beyond Boundaries</span>
+  </div>
+  <div class="card-body">
+    {% if pending_approvals %}
+      {% for appr in pending_approvals %}
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; font-weight: 600; color: var(--text-primary);">
+              Action: {{ appr.action_type }}
+            </h3>
+            <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.25rem;">
+              Scope: <strong>{{ appr.scope }}</strong> &bull; Requested: {{ appr.requested_at[:19] }}
+            </div>
+          </div>
+          <div>
+            <a href="/workflows/runs/{{ appr.run_id }}" class="font-mono" style="font-weight: 600; font-size: 0.9rem;">
+              Run: {{ appr.run_id }} &rarr;
+            </a>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 0.35rem;">
+            Action Proposed Payload:
+          </div>
+          <pre class="font-mono" style="background: var(--bg-card); padding: 0.75rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto; margin: 0;">{{ appr.action_payload | tojson(indent=2) }}</pre>
+        </div>
+
+        <form action="/workflows/approvals/{{ appr.approval_id }}" method="post" style="display: flex; gap: 1rem; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <input
+            type="text"
+            name="rationale"
+            placeholder="Document mandatory approval / rejection rationale for the audit log..."
+            required
+            style="flex: 1; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-card); color: var(--text-primary); font-size: 0.85rem;"
+          >
+          <input type="hidden" name="decided_by" value="ui_partner">
+          <button type="submit" name="decision" value="approve" class="btn btn-success" style="font-weight: 600;">
+            Approve Action
+          </button>
+          <button type="submit" name="decision" value="reject" class="btn btn-danger" style="font-weight: 600;">
+            Reject
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <p>No actions currently require human approval. All workflow runs are operating within pre-authorized read/compute policies.</p>
+        <a href="/workflows" class="btn btn-secondary" style="margin-top: 1rem;">View Workflow Catalogue</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

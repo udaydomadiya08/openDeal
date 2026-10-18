@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}Configure {{ model_name }} — Valuation Workspace — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/valuation">Valuation Workspace</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">{{ model_name }}</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ model_name }}</h1>
+        <p class="page-subtitle">{{ model_description }}</p>
+    </div>
+    <div class="page-actions">
+        <a href="/valuation" class="btn btn-secondary">Switch Model</a>
+    </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger" style="margin-bottom: 1.5rem;">
+    <strong>Calculation / Validation Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Model Assumptions & Inputs</h2>
+        <span class="badge badge-derived">Deterministic Engine</span>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="/valuation/{{ model_key }}/calculate">
+            {% if entities %}
+            <div class="form-group" style="margin-bottom: 1.5rem; background: var(--bg-surface-elevated); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <label for="entity_id" class="form-label" style="font-weight: 600;">Optional: Associate with Known Entity</label>
+                <select name="entity_id" id="entity_id" class="form-select">
+                    <option value="">-- Standalone Calculation (No Entity Linked) --</option>
+                    {% for ent in entities %}
+                    <option value="{{ ent.entity_id }}" {% if selected_entity_id == ent.entity_id %}selected{% endif %}>
+                        {{ ent.canonical_name }} ({{ ent.legal_jurisdiction }} / {{ ent.entity_id }})
+                    </option>
+                    {% endfor %}
+                </select>
+                <span class="form-help">Selecting an entity associates the calculation inputs and outputs for auditing and reference.</span>
+            </div>
+            {% endif %}
+
+            <!-- Dynamic Model Fields -->
+            {% if model_key == "dcf" %}
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="forecast_cash_flows" class="form-label">Explicit Forecast Cash Flows (Comma-separated, USD) *</label>
+                    <input type="text" name="forecast_cash_flows" id="forecast_cash_flows" class="form-control" placeholder="1000000, 1200000, 1400000, 1600000, 1800000" value="{{ form_data.forecast_cash_flows if form_data else '1000000, 1200000, 1450000, 1750000, 2100000' }}" required>
+                    <span class="form-help">Enter sequential yearly Free Cash Flows (e.g. Y1 to Y5).</span>
+                </div>
+                <div class="form-group">
+                    <label for="discount_rate" class="form-label">Discount Rate / WACC (Decimal, e.g. 0.085 for 8.5%) *</label>
+                    <input type="number" step="0.0001" name="discount_rate" id="discount_rate" class="form-control" placeholder="0.08" value="{{ form_data.discount_rate if form_data else '0.08' }}" required>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="terminal_growth_rate" class="form-label">Perpetual Terminal Growth Rate (Decimal, e.g. 0.025 for 2.5%) *</label>
+                    <input type="number" step="0.0001" name="terminal_growth_rate" id="terminal_growth_rate" class="form-control" placeholder="0.025" value="{{ form_data.terminal_growth_rate if form_data else '0.025' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="discounting_convention" class="form-label">Discounting Timing Convention *</label>
+                    <select name="discounting_convention" id="discounting_convention" class="form-select">
+                        <option value="MID_YEAR" selected>Mid-Year Convention (t - 0.5)</option>
+                        <option value="YEAR_END">Year-End Convention (t)</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1rem; margin-top: 1.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.25rem;">Enterprise to Equity Value Bridge Adjustments</h3>
+            <div class="grid grid-3">
+                <div class="form-group">
+                    <label for="cash_and_equivalents" class="form-label">Cash & Equivalents (USD)</label>
+                    <input type="number" step="any" name="cash_and_equivalents" id="cash_and_equivalents" class="form-control" value="{{ form_data.cash_and_equivalents if form_data else '0.0' }}">
+                </div>
+                <div class="form-group">
+                    <label for="total_debt" class="form-label">Total Financial Debt (USD)</label>
+                    <input type="number" step="any" name="total_debt" id="total_debt" class="form-control" value="{{ form_data.total_debt if form_data else '0.0' }}">
+                </div>
+                <div class="form-group">
+                    <label for="shares_outstanding" class="form-label">Diluted Shares Outstanding (Optional)</label>
+                    <input type="number" step="any" name="shares_outstanding" id="shares_outstanding" class="form-control" placeholder="e.g. 1000000" value="{{ form_data.shares_outstanding if form_data else '' }}">
+                </div>
+            </div>
+            {% elif model_key == "wacc" %}
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="cost_of_equity" class="form-label">Direct Cost of Equity (Decimal, optional if CAPM inputs provided)</label>
+                    <input type="number" step="0.0001" name="cost_of_equity" id="cost_of_equity" class="form-control" placeholder="0.10" value="{{ form_data.cost_of_equity if form_data else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="risk_free_rate" class="form-label">Risk-Free Rate (Decimal, e.g. 0.042)</label>
+                    <input type="number" step="0.0001" name="risk_free_rate" id="risk_free_rate" class="form-control" placeholder="0.04" value="{{ form_data.risk_free_rate if form_data else '0.04' }}">
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="beta" class="form-label">Equity Beta (β)</label>
+                    <input type="number" step="0.01" name="beta" id="beta" class="form-control" placeholder="1.15" value="{{ form_data.beta if form_data else '1.10' }}">
+                </div>
+                <div class="form-group">
+                    <label for="market_risk_premium" class="form-label">Market Risk Premium (ERP, Decimal, e.g. 0.055)</label>
+                    <input type="number" step="0.0001" name="market_risk_premium" id="market_risk_premium" class="form-control" placeholder="0.055" value="{{ form_data.market_risk_premium if form_data else '0.055' }}">
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="pre_tax_cost_of_debt" class="form-label">Pre-Tax Cost of Debt (Decimal, e.g. 0.065) *</label>
+                    <input type="number" step="0.0001" name="pre_tax_cost_of_debt" id="pre_tax_cost_of_debt" class="form-control" placeholder="0.06" value="{{ form_data.pre_tax_cost_of_debt if form_data else '0.06' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="tax_rate" class="form-label">Effective Marginal Tax Rate (Decimal, e.g. 0.25) *</label>
+                    <input type="number" step="0.0001" name="tax_rate" id="tax_rate" class="form-control" placeholder="0.25" value="{{ form_data.tax_rate if form_data else '0.25' }}" required>
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="equity_weight" class="form-label">Equity Weight (E/V, Decimal, e.g. 0.70)</label>
+                    <input type="number" step="0.001" name="equity_weight" id="equity_weight" class="form-control" placeholder="0.70" value="{{ form_data.equity_weight if form_data else '0.70' }}">
+                </div>
+                <div class="form-group">
+                    <label for="debt_weight" class="form-label">Debt Weight (D/V, Decimal, e.g. 0.30)</label>
+                    <input type="number" step="0.001" name="debt_weight" id="debt_weight" class="form-control" placeholder="0.30" value="{{ form_data.debt_weight if form_data else '0.30' }}">
+                </div>
+            </div>
+            {% elif model_key == "gordon" %}
+            <div class="grid grid-3">
+                <div class="form-group">
+                    <label for="final_year_fcf" class="form-label">Final Year FCF (USD) *</label>
+                    <input type="number" step="any" name="final_year_fcf" id="final_year_fcf" class="form-control" placeholder="5000000" value="{{ form_data.final_year_fcf if form_data else '5000000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="growth_rate" class="form-label">Perpetual Growth Rate (Decimal) *</label>
+                    <input type="number" step="0.0001" name="growth_rate" id="growth_rate" class="form-control" placeholder="0.025" value="{{ form_data.growth_rate if form_data else '0.025' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="discount_rate" class="form-label">Discount Rate / WACC (Decimal) *</label>
+                    <input type="number" step="0.0001" name="discount_rate" id="discount_rate" class="form-control" placeholder="0.08" value="{{ form_data.discount_rate if form_data else '0.08' }}" required>
+                </div>
+            </div>
+            {% elif model_key == "nav" %}
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="book_value_assets" class="form-label">Book Value of Assets (USD) *</label>
+                    <input type="number" step="any" name="book_value_assets" id="book_value_assets" class="form-control" value="{{ form_data.book_value_assets if form_data else '50000000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="book_value_liabilities" class="form-label">Book Value of Liabilities (USD) *</label>
+                    <input type="number" step="any" name="book_value_liabilities" id="book_value_liabilities" class="form-control" value="{{ form_data.book_value_liabilities if form_data else '20000000' }}" required>
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="asset_adjustment_total" class="form-label">Net Fair Value Asset Adjustment (USD)</label>
+                    <input type="number" step="any" name="asset_adjustment_total" id="asset_adjustment_total" class="form-control" value="{{ form_data.asset_adjustment_total if form_data else '5000000' }}">
+                </div>
+                <div class="form-group">
+                    <label for="liability_adjustment_total" class="form-label">Net Fair Value Liability Adjustment (USD)</label>
+                    <input type="number" step="any" name="liability_adjustment_total" id="liability_adjustment_total" class="form-control" value="{{ form_data.liability_adjustment_total if form_data else '0.0' }}">
+                </div>
+            </div>
+            {% elif model_key == "comps" %}
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="subject_metric_value" class="form-label">Target Financial Metric Value (USD) *</label>
+                    <input type="number" step="any" name="subject_metric_value" id="subject_metric_value" class="form-control" placeholder="e.g. 10000000 (EBITDA)" value="{{ form_data.subject_metric_value if form_data else '10000000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="metric_name" class="form-label">Metric Name *</label>
+                    <input type="text" name="metric_name" id="metric_name" class="form-control" value="{{ form_data.metric_name if form_data else 'EBITDA' }}" required>
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="peer_multiples" class="form-label">Peer Multiples (Comma-separated) *</label>
+                    <input type="text" name="peer_multiples" id="peer_multiples" class="form-control" placeholder="8.5, 9.2, 10.0, 11.4, 12.1" value="{{ form_data.peer_multiples if form_data else '8.5, 9.2, 10.0, 11.4, 12.1' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="multiple_type" class="form-label">Multiple Type Identifier *</label>
+                    <input type="text" name="multiple_type" id="multiple_type" class="form-control" value="{{ form_data.multiple_type if form_data else 'EV/EBITDA' }}" required>
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="total_debt" class="form-label">Target Total Debt (USD)</label>
+                    <input type="number" step="any" name="total_debt" id="total_debt" class="form-control" value="{{ form_data.total_debt if form_data else '15000000' }}">
+                </div>
+                <div class="form-group">
+                    <label for="cash_and_equivalents" class="form-label">Target Cash & Equivalents (USD)</label>
+                    <input type="number" step="any" name="cash_and_equivalents" id="cash_and_equivalents" class="form-control" value="{{ form_data.cash_and_equivalents if form_data else '5000000' }}">
+                </div>
+            </div>
+            {% elif model_key == "lbo" %}
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="purchase_enterprise_value" class="form-label">Purchase Enterprise Value (USD) *</label>
+                    <input type="number" step="any" name="purchase_enterprise_value" id="purchase_enterprise_value" class="form-control" value="{{ form_data.purchase_enterprise_value if form_data else '100000000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="exit_multiple" class="form-label">Exit EV / EBITDA Multiple *</label>
+                    <input type="number" step="0.1" name="exit_multiple" id="exit_multiple" class="form-control" value="{{ form_data.exit_multiple if form_data else '10.0' }}" required>
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="senior_debt_amount" class="form-label">Senior Debt Borrowing (USD)</label>
+                    <input type="number" step="any" name="senior_debt_amount" id="senior_debt_amount" class="form-control" value="{{ form_data.senior_debt_amount if form_data else '50000000' }}">
+                </div>
+                <div class="form-group">
+                    <label for="senior_debt_rate" class="form-label">Senior Debt Coupon (Decimal, e.g. 0.06)</label>
+                    <input type="number" step="0.001" name="senior_debt_rate" id="senior_debt_rate" class="form-control" value="{{ form_data.senior_debt_rate if form_data else '0.06' }}">
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="ebitda_projections" class="form-label">Projected Yearly EBITDA (Comma-separated, 5 Years) *</label>
+                    <input type="text" name="ebitda_projections" id="ebitda_projections" class="form-control" value="{{ form_data.ebitda_projections if form_data else '12000000, 13500000, 15000000, 16800000, 18500000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="cash_sweep_percentage" class="form-label">Cash Sweep Percentage (Decimal, 0.0 - 1.0)</label>
+                    <input type="number" step="0.05" name="cash_sweep_percentage" id="cash_sweep_percentage" class="form-control" value="{{ form_data.cash_sweep_percentage if form_data else '1.0' }}">
+                </div>
+            </div>
+            {% elif model_key == "vc" %}
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="investment_amount" class="form-label">Investment Amount (USD) *</label>
+                    <input type="number" step="any" name="investment_amount" id="investment_amount" class="form-control" value="{{ form_data.investment_amount if form_data else '5000000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="pre_money_valuation" class="form-label">Pre-Money Valuation (USD) *</label>
+                    <input type="number" step="any" name="pre_money_valuation" id="pre_money_valuation" class="form-control" value="{{ form_data.pre_money_valuation if form_data else '20000000' }}" required>
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="exit_valuation" class="form-label">Target Exit Valuation (USD) *</label>
+                    <input type="number" step="any" name="exit_valuation" id="exit_valuation" class="form-control" value="{{ form_data.exit_valuation if form_data else '100000000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="holding_period_years" class="form-label">Holding Period to Liquidity (Years) *</label>
+                    <input type="number" step="0.5" name="holding_period_years" id="holding_period_years" class="form-control" value="{{ form_data.holding_period_years if form_data else '5.0' }}" required>
+                </div>
+            </div>
+            {% elif model_key == "accretion_dilution" %}
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="buyer_share_price" class="form-label">Buyer Share Price (USD) *</label>
+                    <input type="number" step="0.01" name="buyer_share_price" id="buyer_share_price" class="form-control" value="{{ form_data.buyer_share_price if form_data else '50.0' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="buyer_shares_outstanding" class="form-label">Buyer Shares Outstanding *</label>
+                    <input type="number" step="any" name="buyer_shares_outstanding" id="buyer_shares_outstanding" class="form-control" value="{{ form_data.buyer_shares_outstanding if form_data else '10000000' }}" required>
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="buyer_net_income" class="form-label">Buyer Standalone Net Income (USD) *</label>
+                    <input type="number" step="any" name="buyer_net_income" id="buyer_net_income" class="form-control" value="{{ form_data.buyer_net_income if form_data else '50000000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="target_net_income" class="form-label">Target Standalone Net Income (USD) *</label>
+                    <input type="number" step="any" name="target_net_income" id="target_net_income" class="form-control" value="{{ form_data.target_net_income if form_data else '12000000' }}" required>
+                </div>
+            </div>
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="target_purchase_equity_value" class="form-label">Target Purchase Equity Value (USD) *</label>
+                    <input type="number" step="any" name="target_purchase_equity_value" id="target_purchase_equity_value" class="form-control" value="{{ form_data.target_purchase_equity_value if form_data else '150000000' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="stock_percentage" class="form-label">Stock Consideration % (0.0 to 1.0)</label>
+                    <input type="number" step="0.05" name="stock_percentage" id="stock_percentage" class="form-control" value="{{ form_data.stock_percentage if form_data else '0.70' }}">
+                </div>
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; align-items: center;">
+                <button type="submit" class="btn btn-primary" id="calculate-btn">Run Deterministic Valuation</button>
+                <a href="/valuation" class="btn btn-secondary">Cancel</a>
+                <span class="text-muted" style="font-size: 0.85rem;">Deterministic Python engine &bull; No zero substitution &bull; Exact formulas</span>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

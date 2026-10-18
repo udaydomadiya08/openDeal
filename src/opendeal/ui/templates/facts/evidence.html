@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Evidence {{ evidence.evidence_id }} — OpenDeal Audit{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="/facts">Facts</a>
+  <span class="sep">/</span>
+  <span>Evidence {{ evidence.evidence_id }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>Primary Evidence Provenance</h1>
+    <div class="page-subtitle">Evidence Record: <code>{{ evidence.evidence_id }}</code> • Source: {{ evidence.source_locator or 'Regulatory Filing' }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Verbatim Source Excerpt</h2>
+    <span class="badge badge-source">Direct Quote</span>
+  </div>
+  <div style="background-color: #f8fafc; border: 1px solid var(--border-subtle); padding: 1.25rem; border-radius: var(--radius-sm); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.875rem; white-space: pre-wrap; line-height: 1.6;">
+{{ evidence.raw_content or evidence.verbatim_extract or evidence.excerpt }}
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+  <div class="card" style="margin-bottom: 0;">
+    <div class="metric-label">Cryptographic Provenance</div>
+    <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem;">
+      <div>
+        <div style="color: var(--text-muted); margin-bottom: 0.2rem;">SHA-256 Content Hash:</div>
+        <code style="word-break: break-all;">{{ evidence.content_hash }}</code>
+      </div>
+      <div class="alert alert-info" style="margin-top: 0.5rem; margin-bottom: 0; font-size: 0.75rem;">
+        <strong>Audit Notice:</strong> A SHA-256 cryptographic hash authenticates content identity and file integrity; it does not constitute proof that the underlying factual assertions are truthful.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div class="metric-label">Source Metadata</div>
+    <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem;">
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Source Locator:</span>
+        <strong>{{ evidence.source_locator or 'Document' }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Source Reference ID:</span>
+        <code>{{ evidence.source_reference_id or 'None' }}</code>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Timestamp:</span>
+        <span>{{ evidence.created_at.strftime('%Y-%m-%d %H:%M UTC') if evidence.created_at else '—' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

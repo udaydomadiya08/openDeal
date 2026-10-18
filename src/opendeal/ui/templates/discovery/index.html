@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Target Discovery & Screening — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Target Discovery</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">M&A Target Discovery & Screening</h1>
+        <p class="page-subtitle">Configure institutional screening filters and run deterministic scoring across indexed entities</p>
+    </div>
+    <div class="page-actions">
+        <a href="/discovery/watchlists" class="btn btn-secondary">Saved Watchlists</a>
+    </div>
+</div>
+
+<div class="grid grid-2" style="margin-bottom: 2rem;">
+    <!-- Screening Form -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Configure Screening Criteria</h2>
+            <span class="badge badge-derived">Phase 6 Engine</span>
+        </div>
+        <div class="card-body">
+            {% if error %}
+            <div class="alert alert-danger" style="margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/discovery/screen">
+                <div class="form-group">
+                    <label for="jurisdictions" class="form-label">Target Jurisdictions (Comma-separated ISO codes)</label>
+                    <input type="text" name="jurisdictions" id="jurisdictions" class="form-control" placeholder="US, GB, DE, SG" value="US, GB">
+                    <span class="form-help">Leave blank to evaluate all jurisdictions.</span>
+                </div>
+
+                <div class="grid grid-2" style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label for="min_revenue" class="form-label">Minimum Revenue (USD)</label>
+                        <input type="number" step="any" name="min_revenue" id="min_revenue" class="form-control" placeholder="e.g. 5000000" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="max_revenue" class="form-label">Maximum Revenue (USD)</label>
+                        <input type="number" step="any" name="max_revenue" id="max_revenue" class="form-control" placeholder="e.g. 100000000" value="">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="sectors" class="form-label">Sectors / Industry Tags (Comma-separated)</label>
+                    <input type="text" name="sectors" id="sectors" class="form-control" placeholder="Software, Healthcare, Logistics" value="">
+                </div>
+
+                <div class="grid grid-2" style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label for="max_candidates" class="form-label">Max Candidates to Return</label>
+                        <input type="number" name="max_candidates" id="max_candidates" class="form-control" value="25" min="5" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="missing_data_penalty" class="form-label">Missing Data Penalty Weight (0.0 - 1.0)</label>
+                        <input type="number" step="0.05" name="missing_data_penalty" id="missing_data_penalty" class="form-control" value="0.20">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                        <input type="checkbox" name="require_active" value="yes" checked>
+                        Require Active Operating Status (Exclude dissolved/inactive entities)
+                    </label>
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 1.25rem; font-size: 0.85rem;">
+                    <strong>Scoring Principle:</strong> OpenDeal's deterministic scoring ranks candidates based on financial profile and data completeness. A higher score reflects criteria fit—not a guarantee of investment quality.
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" id="run-screening-btn">Execute Screening Run</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Prior Runs / Context -->
+    <div>
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+                <h2 class="card-title">Deterministic Screening Pipeline</h2>
+            </div>
+            <div class="card-body">
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Target discovery executes in two transparent, auditable stages:
+                </p>
+                <ol style="margin-left: 1.25rem; font-size: 0.875rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li><strong>Eligibility Filtering:</strong> Binary inclusion/exclusion gates (jurisdiction, active status, mandatory financial thresholds). Excluded candidates receive explicit reasons.</li>
+                    <li><strong>Multi-Factor Scoring:</strong> Eligible candidates are scored from 0 to 100 based on strategic alignment, financial scale, and penalization for missing unverified metrics.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Recent Screening Runs</h2>
+            </div>
+            <div class="card-body">
+                {% if recent_runs %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Run ID</th>
+                                <th>Executed</th>
+                                <th>Candidates</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in recent_runs %}
+                            <tr>
+                                <td class="font-mono"><strong>{{ r.run_id[:8] }}...</strong></td>
+                                <td class="text-muted">{{ r.created_at }}</td>
+                                <td>{{ r.screened_count }}</td>
+                                <td>
+                                    <a href="/discovery/runs/{{ r.run_id }}" class="btn btn-secondary btn-sm">Inspect</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>No screening runs recorded yet. Define your criteria and run your first screen.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

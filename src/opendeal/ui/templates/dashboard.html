@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <span>Dashboard</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>Platform Intelligence Overview</h1>
+    <div class="page-subtitle">Local-first repository state derived from stored corporate filings and transaction records.</div>
+  </div>
+  <div style="display: flex; gap: 0.5rem;">
+    <a href="/valuation" class="btn btn-secondary">New Valuation</a>
+    <a href="/discovery" class="btn btn-primary">Screen Targets</a>
+  </div>
+</div>
+
+<!-- Metrics Row -->
+<div class="grid-metrics">
+  <div class="metric-card">
+    <div class="metric-label">Indexed Companies</div>
+    <div class="metric-value">{{ total_entities }}</div>
+    <div class="metric-sub">Canonical entities registered in local store</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Financial Facts</div>
+    <div class="metric-value">{{ total_facts }}</div>
+    <div class="metric-sub">Evidence-backed financial disclosures</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Funding Rounds</div>
+    <div class="metric-value">{{ total_funding_rounds }}</div>
+    <div class="metric-sub">Documented seed to growth equity rounds</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">M&A Transactions</div>
+    <div class="metric-value">{{ total_transactions }}</div>
+    <div class="metric-sub">Acquisitions, divestitures & exits</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Target Watchlists</div>
+    <div class="metric-value">{{ total_target_lists }}</div>
+    <div class="metric-sub">Sourcing lists & tracked candidates</div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-label">Research Briefs</div>
+    <div class="metric-value">{{ total_research_briefs }}</div>
+    <div class="metric-sub">Synthesized epistemic briefs</div>
+  </div>
+</div>
+
+<!-- Quick Actions & Recent Activity -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+  
+  <!-- Quick Actions Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Quick Intelligence Actions</h2>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <a href="/companies" class="btn btn-secondary" style="justify-content: flex-start;">
+        🔍 <strong>Company Explorer:</strong> Search entities, canonical IDs, and subsidiaries
+      </a>
+      <a href="/valuation" class="btn btn-secondary" style="justify-content: flex-start;">
+        📐 <strong>Valuation Workspace:</strong> Run DCF, WACC, LBO, Monte Carlo, VC & M&A models
+      </a>
+      <a href="/research" class="btn btn-secondary" style="justify-content: flex-start;">
+        📑 <strong>Research Briefs:</strong> Generate evidence-grounded company profiles
+      </a>
+      <a href="/discovery" class="btn btn-secondary" style="justify-content: flex-start;">
+        🎯 <strong>Deal Sourcing:</strong> Filter targets with deterministic multi-factor scoring
+      </a>
+      <a href="/deals" class="btn btn-secondary" style="justify-content: flex-start;">
+        🤝 <strong>Transaction Networks:</strong> Explore syndicates, funding timelines & conflicts
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Indexed Entities -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Recently Indexed Companies</h2>
+      <a href="/companies" style="font-size: 0.8125rem; color: var(--primary); text-decoration: none;">View All →</a>
+    </div>
+    {% if recent_entities %}
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Entity ID</th>
+              <th>Legal Name</th>
+              <th>Jurisdiction</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ent in recent_entities %}
+              <tr>
+                <td><code>{{ ent.entity_id }}</code></td>
+                <td><strong>{{ ent.legal_name }}</strong></td>
+                <td><span class="badge badge-source">{{ ent.jurisdiction }}</span></td>
+                <td><a href="/companies/{{ ent.entity_id }}" class="btn btn-sm btn-secondary">Inspect</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state-text">No companies indexed in local storage yet.</div>
+        <a href="/system/ingest" class="btn btn-sm btn-primary">Ingest Sample Fixture</a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Recent Deals & Transactions -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Recent Documented Private-Market Events</h2>
+    <a href="/deals" style="font-size: 0.8125rem; color: var(--primary); text-decoration: none;">View Deals Explorer →</a>
+  </div>
+  {% if recent_deals %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Event ID</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Counterparty / Target</th>
+            <th class="num">Disclosed Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for deal in recent_deals %}
+            <tr>
+              <td><code>{{ deal.event_id }}</code></td>
+              <td><span class="badge badge-derived">{{ deal.event_type }}</span></td>
+              <td>{{ deal.category }}</td>
+              <td>{{ deal.target_name or deal.company_id }}</td>
+              <td class="num">
+                {% if deal.amount is number %}
+                  {{ "{:,.2f}".format(deal.amount) }} {{ deal.currency }}
+                {% elif deal.amount %}
+                  {{ deal.amount }}
+                {% else %}
+                  <span style="color: var(--text-muted);">Undisclosed</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if deal.status == 'COMPLETED' or deal.status == 'VERIFIED_PRIMARY_SOURCE' %}
+                  <span class="badge badge-completed">{{ deal.status }}</span>
+                {% elif deal.status == 'ANNOUNCED' %}
+                  <span class="badge badge-announced">{{ deal.status }}</span>
+                {% else %}
+                  <span class="badge badge-unverified">{{ deal.status }}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-text">No funding rounds or M&A transactions recorded yet.</div>
+      <a href="/system/ingest" class="btn btn-sm btn-secondary">Load Sample Deals Fixture</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

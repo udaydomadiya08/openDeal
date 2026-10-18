@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Error — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <span>Error</span>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 3rem auto; text-align: center;">
+  <div class="card-header" style="justify-content: center;">
+    <h2 class="card-title" style="color: var(--danger);">{{ error_code or status_code or 500 }} — {{ error_title or "Application Error" }}</h2>
+  </div>
+  <div style="padding: 1rem 0;">
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+      {{ error_message or error_detail or "The requested operation could not be completed. Detailed error information is restricted to preserve security." }}
+    </p>
+    <div style="display: flex; gap: 0.75rem; justify-content: center;">
+      <a href="/" class="btn btn-secondary">Return to Dashboard</a>
+      <a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

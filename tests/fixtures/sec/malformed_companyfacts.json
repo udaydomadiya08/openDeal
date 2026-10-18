@@ -1,0 +1,12 @@
+{
+  "cik": "INVALID_CIK",
+  "entityName": "Corrupt Corp",
+  "facts": {
+    "dei": {
+      "EntityCommonStockSharesOutstanding": {
+        "label": "Entity Common Stock, Shares Outstanding",
+        "units": {}
+      }
+    }
+  }
+}

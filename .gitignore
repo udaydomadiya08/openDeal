@@ -1,0 +1,60 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments and credentials
+.env
+.env.*
+!.env.example
+venv/
+.venv/
+env/
+ENV/
+*.pem
+*.key
+*.secret
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# Local databases and SQLite files
+*.db
+*.sqlite
+*.sqlite3
+data/
+opendeal.db
+
+# Generated execution artifacts and temporary runs
+runs/
+scratch/
+tmp/
+temp/
+*.log
+
+# Financial models and workbooks
+*.xlsx
+*.xls
+*.xlsm
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Distribution and packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/

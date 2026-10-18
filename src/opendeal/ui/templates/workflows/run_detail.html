@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Run {{ run.run_id }} — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span>/</span> <a href="/workflows">Workflows</a>
+  <span>/</span> <span>Run {{ run.run_id }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+  <div>
+    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+      <h1 class="page-title" style="margin: 0;">Run {{ run.run_id }}</h1>
+      {% if run.state == 'SUCCEEDED' %}
+        <span class="badge badge-verified" style="font-size: 0.9rem;">SUCCEEDED</span>
+      {% elif run.state == 'RUNNING' %}
+        <span class="badge badge-derived" style="font-size: 0.9rem;">RUNNING</span>
+      {% elif run.state == 'WAITING_FOR_APPROVAL' %}
+        <span class="badge badge-warning" style="font-size: 0.9rem;">WAITING FOR APPROVAL</span>
+      {% elif run.state == 'FAILED' %}
+        <span class="badge badge-danger" style="font-size: 0.9rem;">FAILED</span>
+      {% elif run.state == 'CANCELLED' %}
+        <span class="badge" style="background: var(--border-color); color: var(--text-muted); font-size: 0.9rem;">CANCELLED</span>
+      {% else %}
+        <span class="badge badge-source" style="font-size: 0.9rem;">{{ run.state }}</span>
+      {% endif %}
+    </div>
+    <p class="text-muted" style="margin: 0;">
+      Workflow: <strong>{{ workflow.name if workflow else run.workflow_id }}</strong> (v{{ run.version }}) &bull; Initiator: {{ run.initiator }}
+    </p>
+  </div>
+  <div>
+    {% if run.state in ['QUEUED', 'RUNNING', 'WAITING_FOR_APPROVAL'] %}
+    <form action="/workflows/runs/{{ run.run_id }}/cancel" method="post" style="display: inline;">
+      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Cancel this workflow execution?');">
+        Cancel Run
+      </button>
+    </form>
+    {% endif %}
+    <a href="/workflows" class="btn btn-secondary btn-sm" style="margin-left: 0.5rem;">&larr; Back to Catalogue</a>
+  </div>
+</div>
+
+<!-- Pending Approval Card (If Waiting) -->
+{% if pending_approvals %}
+<div class="card" style="border-left: 4px solid var(--color-warning); margin-bottom: 2rem;">
+  <div class="card-header">
+    <h2 class="card-title" style="color: var(--color-warning);">Action Requires Operator Approval</h2>
+    <span class="badge badge-warning">Human-in-the-Loop Gate</span>
+  </div>
+  <div class="card-body">
+    {% for appr in pending_approvals %}
+    <div style="background: var(--bg-surface); padding: 1.25rem; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+        <div>
+          <h3 style="font-size: 1rem; margin: 0; font-weight: 600;">Action: {{ appr.action_type }}</h3>
+          <span class="text-muted" style="font-size: 0.8rem;">Scope: {{ appr.scope }} &bull; Requested: {{ appr.requested_at[:19] }}</span>
+        </div>
+        <span class="font-mono text-muted" style="font-size: 0.8rem;">ID: {{ appr.approval_id }}</span>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 0.25rem;">Action Payload:</div>
+        <pre class="font-mono" style="background: var(--bg-card); padding: 0.75rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto; margin: 0;">{{ appr.action_payload | tojson(indent=2) }}</pre>
+      </div>
+
+      <form action="/workflows/approvals/{{ appr.approval_id }}" method="post" style="display: flex; gap: 0.75rem; align-items: center;">
+        <input type="text" name="rationale" placeholder="Approval / Rejection rationale..." required style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-card); color: var(--text-primary); font-size: 0.85rem;">
+        <button type="submit" name="decision" value="approve" class="btn btn-success btn-sm">Approve & Resume</button>
+        <button type="submit" name="decision" value="reject" class="btn btn-danger btn-sm">Reject</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Execution Error Banner -->
+{% if run.error_message %}
+<div class="alert alert-danger" style="margin-bottom: 2rem;">
+  <strong>Execution Notice:</strong> {{ run.error_message }}
+</div>
+{% endif %}
+
+<!-- Task Runs Progression -->
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <h2 class="card-title">Task Execution Graph ({{ tasks|length }} Steps)</h2>
+    <span class="badge badge-source">Topological Order</span>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Task Name</th>
+            <th>Specialized Agent</th>
+            <th>State</th>
+            <th>Attempt</th>
+            <th>Started</th>
+            <th>Completed</th>
+            <th>Details / Errors</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in tasks %}
+          <tr>
+            <td style="font-weight: 600;">{{ t.task_name }}</td>
+            <td><span class="badge badge-source" style="font-size: 0.75rem;">{{ t.agent_name }}</span></td>
+            <td>
+              {% if t.state == 'SUCCEEDED' %}
+                <span class="badge badge-verified">SUCCEEDED</span>
+              {% elif t.state == 'RUNNING' %}
+                <span class="badge badge-derived">RUNNING</span>
+              {% elif t.state == 'FAILED' %}
+                <span class="badge badge-danger">FAILED</span>
+              {% elif t.state == 'SKIPPED' %}
+                <span class="badge" style="background: var(--border-color); color: var(--text-muted);">SKIPPED</span>
+              {% elif t.state == 'CANCELLED' %}
+                <span class="badge" style="background: var(--border-color); color: var(--text-muted);">CANCELLED</span>
+              {% else %}
+                <span class="badge badge-source">{{ t.state }}</span>
+              {% endif %}
+            </td>
+            <td>{{ t.attempt }}</td>
+            <td class="font-mono text-muted" style="font-size: 0.8rem;">
+              {% if t.started_at %}{{ t.started_at[:19] }}{% else %}&mdash;{% endif %}
+            </td>
+            <td class="font-mono text-muted" style="font-size: 0.8rem;">
+              {% if t.completed_at %}{{ t.completed_at[:19] }}{% else %}&mdash;{% endif %}
+            </td>
+            <td>
+              {% if t.error_message %}
+                <span class="text-danger" style="font-size: 0.8rem;">{{ t.error_message }}</span>
+              {% elif t.outputs %}
+                <span class="text-success" style="font-size: 0.8rem;">Produced {{ t.outputs|length }} key(s)</span>
+              {% else %}
+                <span class="text-muted" style="font-size: 0.8rem;">&mdash;</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Output Artifacts Section -->
+{% if run.outputs %}
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <h2 class="card-title">Consolidated Workflow Outputs & Artifacts</h2>
+    <span class="badge badge-verified">Verified Outputs</span>
+  </div>
+  <div class="card-body">
+    <!-- Structured View Tabs if Available -->
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+      {% for k in run.outputs.keys() %}
+        {% if k != 'workflow_inputs' %}
+          <span class="badge badge-source" style="padding: 0.4rem 0.75rem; font-size: 0.8rem;">
+            {{ k }}
+          </span>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Data Quality Report Artifact -->
+    {% if run.outputs.get('data_quality_report') %}
+    {% set dq = run.outputs.get('data_quality_report') %}
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 1.25rem; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.05rem; font-weight: 600; margin-top: 0; margin-bottom: 0.75rem;">
+        Evidence & Data Quality Audit
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <div class="text-muted" style="font-size: 0.75rem;">Overall Quality Score</div>
+          <div style="font-size: 1.4rem; font-weight: 700; color: var(--color-success);">
+            {{ "%.1f"|format(dq.overall_quality_score * 100) }}%
+          </div>
+        </div>
+        <div>
+          <div class="text-muted" style="font-size: 0.75rem;">Facts Inspected</div>
+          <div style="font-size: 1.4rem; font-weight: 700;">{{ dq.total_facts_inspected }}</div>
+        </div>
+        <div>
+          <div class="text-muted" style="font-size: 0.75rem;">Conflicting Facts</div>
+          <div style="font-size: 1.4rem; font-weight: 700; color: {% if dq.conflicting_facts %}var(--color-danger){% else %}var(--text-primary){% endif %};">
+            {{ dq.conflicting_facts|length }}
+          </div>
+        </div>
+        <div>
+          <div class="text-muted" style="font-size: 0.75rem;">Unresolvable Citations</div>
+          <div style="font-size: 1.4rem; font-weight: 700; color: {% if dq.unresolvable_evidence_ids %}var(--color-danger){% else %}var(--text-primary){% endif %};">
+            {{ dq.unresolvable_evidence_ids|length }}
+          </div>
+        </div>
+      </div>
+      {% if dq.suggested_remediations %}
+      <div>
+        <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem;">Remediation Recommendations:</div>
+        <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
+          {% for rem in dq.suggested_remediations %}
+            <li>{{ rem }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Valuation Readiness Artifact -->
+    {% if run.outputs.get('valuation_readiness_report') %}
+    {% set val = run.outputs.get('valuation_readiness_report') %}
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 1.25rem; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.05rem; font-weight: 600; margin-top: 0; margin-bottom: 0.75rem;">
+        Deterministic Valuation Engine Result ({{ val.model_type|upper }})
+      </h3>
+      {% if val.valuation_result %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        {% if val.valuation_result.get('enterprise_value') is not none %}
+        <div>
+          <div class="text-muted" style="font-size: 0.75rem;">Enterprise Value</div>
+          <div class="font-mono" style="font-size: 1.4rem; font-weight: 700; color: var(--color-success);">
+            ${{ "{:,.2f}".format(val.valuation_result.enterprise_value) }}
+          </div>
+        </div>
+        {% endif %}
+        {% if val.valuation_result.get('equity_value') is not none %}
+        <div>
+          <div class="text-muted" style="font-size: 0.75rem;">Equity Value</div>
+          <div class="font-mono" style="font-size: 1.4rem; font-weight: 700; color: var(--color-success);">
+            ${{ "{:,.2f}".format(val.valuation_result.equity_value) }}
+          </div>
+        </div>
+        {% endif %}
+        {% if val.valuation_result.get('wacc') is not none %}
+        <div>
+          <div class="text-muted" style="font-size: 0.75rem;">Computed WACC</div>
+          <div class="font-mono" style="font-size: 1.4rem; font-weight: 700; color: var(--color-success);">
+            {{ "%.2f"|format(val.valuation_result.wacc * 100) }}%
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% elif val.missing_required_inputs %}
+      <div class="alert alert-warning" style="margin: 0;">
+        <strong>Model Incomplete:</strong> Missing required inputs: {{ val.missing_required_inputs|join(', ') }}.
+        Zeroes were strictly not substituted for missing disclosures.
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Raw JSON Artifact Viewer -->
+    <div>
+      <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; text-transform: uppercase; color: var(--text-muted);">
+        Raw Output Payload
+      </div>
+      <pre class="font-mono" style="background: var(--bg-surface); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color); font-size: 0.8rem; max-height: 400px; overflow-y: auto; margin: 0;">{{ run.outputs | tojson(indent=2) }}</pre>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Forensic Audit Trail Timeline -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Forensic Audit Trail ({{ audit_events|length }} Events)</h2>
+    <span class="badge badge-source">Append-Only Event Log</span>
+  </div>
+  <div class="card-body">
+    {% if audit_events %}
+    <div style="position: relative; padding-left: 1.5rem;">
+      <div style="position: absolute; left: 0.45rem; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--border-color);"></div>
+      {% for ev in audit_events %}
+      <div style="position: relative; margin-bottom: 1.25rem;">
+        <div style="position: absolute; left: -1.45rem; top: 0.25rem; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-primary);"></div>
+        <div style="display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.2rem;">
+          <span class="font-mono" style="font-weight: 600; font-size: 0.85rem; color: var(--text-primary);">
+            {{ ev.event_type }}
+          </span>
+          <span class="text-muted" style="font-size: 0.75rem;">by {{ ev.initiator }}</span>
+          {% if ev.agent_or_task %}
+            <span class="badge badge-source" style="font-size: 0.7rem;">{{ ev.agent_or_task }}</span>
+          {% endif %}
+          <span class="font-mono text-muted" style="font-size: 0.75rem; margin-left: auto;">
+            {{ ev.timestamp[:19] }}
+          </span>
+        </div>
+        {% if ev.details %}
+        <div class="text-muted font-mono" style="font-size: 0.75rem; background: var(--bg-surface); padding: 0.35rem 0.6rem; border-radius: 3px; display: inline-block;">
+          {{ ev.details | tojson }}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>No audit events logged for this run.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

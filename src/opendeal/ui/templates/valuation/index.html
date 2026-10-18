@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Valuation Workspace — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <span>Valuation Workspace</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>Deterministic Valuation Workspace</h1>
+    <div class="page-subtitle">Audited Python valuation primitives and institutional multi-tranche financial models.</div>
+  </div>
+</div>
+
+<!-- Entity Selection Context -->
+<div class="card" style="padding: 1rem;">
+  <form action="/valuation" method="get" class="form-row" style="align-items: flex-end;">
+    <div class="form-col" style="flex: 2;">
+      <label class="form-label">Select Company for Fact Auto-Fill (Optional)</label>
+      <select name="entity_id" class="form-control" onchange="this.form.submit()">
+        <option value="">Manual Entry (No Company Pre-fill)</option>
+        {% for ent in entities %}
+          <option value="{{ ent.entity_id }}" {% if selected_entity and selected_entity.entity_id == ent.entity_id %}selected{% endif %}>
+            {{ ent.legal_name }} ({{ ent.entity_id }})
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    {% if selected_entity %}
+      <div style="font-size: 0.8125rem; color: var(--success); padding-bottom: 0.5rem;">
+        ✓ Selected: <strong>{{ selected_entity.legal_name }}</strong> ({{ facts_count }} facts indexed)
+      </div>
+    {% endif %}
+  </form>
+</div>
+
+<!-- Valuation Model Selection Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+
+  <!-- DCF Model -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Discounted Cash Flow (DCF)</h3>
+      <span class="badge badge-derived">Fundamental</span>
+    </div>
+    <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">
+      Unlevered multi-period cash flow projections with mid-year / year-end discounting conventions and perpetual growth terminal values.
+    </p>
+    <a href="/valuation/dcf{% if selected_entity %}?entity_id={{ selected_entity.entity_id }}{% endif %}" class="btn btn-primary btn-sm">Launch DCF Model →</a>
+  </div>
+
+  <!-- WACC Model -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Cost of Capital (WACC)</h3>
+      <span class="badge badge-derived">Rate Engine</span>
+    </div>
+    <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">
+      CAPM-based cost of equity, after-tax cost of debt, and capital structure weighting.
+    </p>
+    <a href="/valuation/wacc{% if selected_entity %}?entity_id={{ selected_entity.entity_id }}{% endif %}" class="btn btn-primary btn-sm">Calculate WACC →</a>
+  </div>
+
+  <!-- LBO Model -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Leveraged Buyout (LBO)</h3>
+      <span class="badge badge-derived">Private Equity</span>
+    </div>
+    <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">
+      Sources and uses, multi-tier debt tranches, mandatory amortization, cash sweeps, and sponsor return metrics (IRR & MoIC).
+    </p>
+    <a href="/valuation/lbo{% if selected_entity %}?entity_id={{ selected_entity.entity_id }}{% endif %}" class="btn btn-primary btn-sm">Run LBO Model →</a>
+  </div>
+
+  <!-- Venture Capital Model -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Venture Capital Method</h3>
+      <span class="badge badge-derived">Early Stage</span>
+    </div>
+    <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">
+      Pre/post-money derivation, expected dilution rounds, participating vs non-participating preferred liquidation waterfalls.
+    </p>
+    <a href="/valuation/vc{% if selected_entity %}?entity_id={{ selected_entity.entity_id }}{% endif %}" class="btn btn-primary btn-sm">Run VC Valuation →</a>
+  </div>
+
+  <!-- M&A Accretion / Dilution -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">M&A Accretion / Dilution</h3>
+      <span class="badge badge-derived">M&A Analysis</span>
+    </div>
+    <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">
+      Pro-forma EPS impact, cash vs stock consideration mix, new shares issued, and post-transaction synergy requirements.
+    </p>
+    <a href="/valuation/mna{% if selected_entity %}?entity_id={{ selected_entity.entity_id }}{% endif %}" class="btn btn-primary btn-sm">Analyze M&A →</a>
+  </div>
+
+  <!-- NAV & Multiples -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Net Asset Value (NAV)</h3>
+      <span class="badge badge-derived">Asset-Based</span>
+    </div>
+    <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1rem;">
+      Balance sheet asset and liability restatements for asset-rich, holding, or distressed enterprises.
+    </p>
+    <a href="/valuation/nav{% if selected_entity %}?entity_id={{ selected_entity.entity_id }}{% endif %}" class="btn btn-primary btn-sm">Calculate NAV →</a>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{
+  "company_name": "ACME BRITISH HOLDINGS LIMITED",
+  "company_number": "01234567",
+  "company_status": "active",
+  "type": "ltd",
+  "date_of_creation": "2015-06-12",
+  "jurisdiction": "england-wales",
+  "sic_codes": [
+    "62012",
+    "62020"
+  ],
+  "registered_office_address": {
+    "premises": "Suite 4B",
+    "address_line_1": "100 Bishopsgate",
+    "locality": "London",
+    "postal_code": "EC2N 4AG",
+    "country": "United Kingdom"
+  },
+  "accounts": {
+    "accounting_reference_date": {
+      "day": "31",
+      "month": "12"
+    },
+    "last_accounts": {
+      "made_up_to": "2023-12-31",
+      "type": "total-exemption-small",
+      "period_start_on": "2023-01-01",
+      "period_end_on": "2023-12-31"
+    },
+    "next_due": "2024-09-30"
+  },
+  "has_insolvency_history": false,
+  "has_charges": false
+}

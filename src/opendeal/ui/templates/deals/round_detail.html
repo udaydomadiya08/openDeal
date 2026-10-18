@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Funding Round: {{ round.company_name }} — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/deals">Deals & Transactions</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Round {{ round.round_id }}</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ round.company_name }} &bull; {{ round.round_type.value if round.round_type.value is defined else round.round_type }}</h1>
+        <p class="page-subtitle">Announced: {{ round.announced_date or 'Undisclosed' }} &bull; Round ID: <code class="font-mono">{{ round.round_id }}</code></p>
+    </div>
+    <div class="page-actions">
+        <a href="/deals/timeline/{{ round.company_id }}" class="btn btn-secondary">Funding Timeline</a>
+        <a href="/companies/{{ round.company_id }}" class="btn btn-primary">Company Dossier</a>
+    </div>
+</div>
+
+{% if round.conflicts %}
+<div class="alert alert-warning" style="margin-bottom: 1.5rem;">
+    <strong>Conflicting Data Reported for this Round:</strong>
+    <ul style="margin: 0.5rem 0 0 1.25rem;">
+        {% for c in round.conflicts %}
+        <li>{{ c.field_name }}: {{ c.value_a }} vs {{ c.value_b }} ({{ c.notes }})</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Disclosed Capital Raised</div>
+        <div class="metric-value font-mono">
+            {% if round.disclosed_amount %}
+            {{ round.currency.value if round.currency.value is defined else round.currency }} {{ "{:,.0f}".format(round.disclosed_amount) }}
+            {% else %}
+            <span class="text-muted">Undisclosed</span>
+            {% endif %}
+        </div>
+        <div class="metric-subtext">Amount Kind: {{ round.amount_kind.value if round.amount_kind.value is defined else round.amount_kind }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Pre-Money Valuation</div>
+        <div class="metric-value font-mono">
+            {% if round.pre_money_valuation %}
+            {{ round.currency.value if round.currency.value is defined else round.currency }} {{ "{:,.0f}".format(round.pre_money_valuation) }}
+            {% else %}
+            <span class="text-muted">Undisclosed</span>
+            {% endif %}
+        </div>
+        <div class="metric-subtext">Valuation prior to capital injection</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Post-Money Valuation</div>
+        <div class="metric-value font-mono">
+            {% if round.post_money_valuation %}
+            {{ round.currency.value if round.currency.value is defined else round.currency }} {{ "{:,.0f}".format(round.post_money_valuation) }}
+            {% else %}
+            <span class="text-muted">Undisclosed</span>
+            {% endif %}
+        </div>
+        <div class="metric-subtext">Implied post-round capitalization</div>
+    </div>
+</div>
+
+<div class="grid grid-2" style="margin-top: 1.5rem;">
+    <!-- Participating Investors -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Participating Investors ({{ participants|length }})</h2>
+        </div>
+        <div class="card-body">
+            {% if participants %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Investor</th>
+                            <th>Role</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in participants %}
+                        <tr>
+                            <td>
+                                <strong>{{ p.investor_name or p.investor_id }}</strong>
+                            </td>
+                            <td>
+                                {% if p.is_lead %}
+                                <span class="badge badge-verified">Lead Investor</span>
+                                {% else %}
+                                <span class="badge badge-derived">Participant</span>
+                                {% endif %}
+                            </td>
+                            <td class="font-mono">
+                                {% if p.invested_amount %}
+                                {{ "{:,.0f}".format(p.invested_amount) }}
+                                {% else %}
+                                <span class="text-muted">Undisclosed</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No individual participants or syndicate members identified for this round.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Provenance & Evidence -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Provenance & Evidence Citations</h2>
+            <span class="badge badge-verified">{{ round.verification_status.value if round.verification_status.value is defined else round.verification_status }}</span>
+        </div>
+        <div class="card-body">
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Official sources and evidence items confirming this transaction:
+            </p>
+            {% if round.evidence_ids %}
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                {% for eid in round.evidence_ids %}
+                <a href="/facts/evidence/{{ eid }}" class="btn btn-secondary btn-sm" style="text-align: left;">
+                    View Evidence Citation: <code>{{ eid }}</code>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No direct evidence records linked to this round.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

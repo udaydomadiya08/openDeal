@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Screening Results: {{ run_id }} — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/discovery">Target Discovery</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Run {{ run_id[:8] }}...</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Screening Run Results</h1>
+        <p class="page-subtitle">
+            Evaluated {{ total_evaluated }} indexed candidates &bull; Found {{ eligible_count }} eligible targets
+            &bull; Run ID: <code class="font-mono">{{ run_id }}</code>
+        </p>
+    </div>
+    <div class="page-actions">
+        <a href="/discovery/export/{{ run_id }}?format=csv" class="btn btn-secondary">Export CSV</a>
+        <a href="/discovery/export/{{ run_id }}?format=json" class="btn btn-secondary">Export JSON</a>
+        <a href="/discovery" class="btn btn-primary">New Screen</a>
+    </div>
+</div>
+
+<div class="tabs" style="margin-bottom: 1.5rem;">
+    <button class="tab-btn active" data-tab="ranked">Ranked Candidates ({{ eligible_count }})</button>
+    <button class="tab-btn" data-tab="excluded">Excluded / Ineligible ({{ excluded_candidates|length }})</button>
+    <button class="tab-btn" data-tab="criteria">Criteria Audit</button>
+</div>
+
+<!-- Ranked Targets Tab -->
+<div id="tab-ranked" class="tab-pane active">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Eligible Candidates Ranked by Deterministic Fit Score</h2>
+            <span class="badge badge-verified">{{ eligible_count }} Qualified</span>
+        </div>
+        <div class="card-body">
+            {% if ranked_candidates %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Rank</th>
+                            <th>Company Name</th>
+                            <th>Jurisdiction</th>
+                            <th>Composite Score</th>
+                            <th>Strategic Fit</th>
+                            <th>Financial Scale</th>
+                            <th>Penalty</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in ranked_candidates %}
+                        <tr>
+                            <td class="font-mono" style="font-weight: 700; font-size: 1.1rem; color: var(--accent-primary);">
+                                #{{ loop.index }}
+                            </td>
+                            <td>
+                                <a href="/companies/{{ c.entity_id }}" style="font-weight: 600; font-size: 1rem;">
+                                    {{ c.company_name or c.entity_id }}
+                                </a>
+                                <div class="text-muted" style="font-size: 0.8rem;">ID: {{ c.entity_id }}</div>
+                            </td>
+                            <td><span class="badge badge-reported">{{ c.jurisdiction or 'N/A' }}</span></td>
+                            <td>
+                                <span class="font-mono" style="font-size: 1.15rem; font-weight: 700; color: var(--color-success);">
+                                    {{ "%.1f"|format(c.composite_score) }}
+                                </span>
+                                <span class="text-muted" style="font-size: 0.8rem;">/ 100</span>
+                            </td>
+                            <td class="font-mono">{{ "%.1f"|format(c.fit_score or 0.0) }}</td>
+                            <td class="font-mono">{{ "%.1f"|format(c.scale_score or 0.0) }}</td>
+                            <td class="font-mono text-muted">
+                                -{{ "%.1f"|format(c.penalty or 0.0) }}
+                            </td>
+                            <td>
+                                <a href="/companies/{{ c.entity_id }}" class="btn btn-secondary btn-sm">Dossier</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No candidates satisfied all mandatory eligibility criteria in this screening run.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Excluded Targets Tab -->
+<div id="tab-excluded" class="tab-pane">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Excluded Entities & Disqualification Rationale</h2>
+            <span class="badge badge-danger">{{ excluded_candidates|length }} Excluded</span>
+        </div>
+        <div class="card-body">
+            {% if excluded_candidates %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Jurisdiction</th>
+                            <th>Exclusion Reason</th>
+                            <th>Detailed Gate Failure</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for exc in excluded_candidates %}
+                        <tr>
+                            <td>
+                                <a href="/companies/{{ exc.entity_id }}"><strong>{{ exc.company_name or exc.entity_id }}</strong></a>
+                            </td>
+                            <td><span class="badge badge-reported">{{ exc.jurisdiction or 'N/A' }}</span></td>
+                            <td><span class="badge badge-danger">{{ exc.reason }}</span></td>
+                            <td class="text-muted">{{ exc.detail or 'Failed eligibility filter thresholds.' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>Zero indexed entities were excluded during this run.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Criteria Audit Tab -->
+<div id="tab-criteria" class="tab-pane">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Screening Execution Parameters Audit</h2>
+            <span class="badge badge-analyst">Criteria Definition</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Criterion</th>
+                            <th>Configured Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for k, v in criteria_params.items() %}
+                        <tr>
+                            <td class="font-mono"><strong>{{ k }}</strong></td>
+                            <td class="font-mono">{{ v }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

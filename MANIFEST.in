@@ -1,0 +1,13 @@
+include README.md
+include LICENSE
+include pyproject.toml
+recursive-include src/opendeal/ui/templates *.html
+recursive-include src/opendeal/ui/static *
+include src/opendeal/valuation/verified_mappings.json
+
+# Exclude tests and local artifacts from release distribution
+recursive-exclude tests *
+global-exclude *.py[cod] __pycache__ *.so *.dylib *.db .DS_Store
+exclude *.xlsx
+exclude *.db*
+exclude .env*

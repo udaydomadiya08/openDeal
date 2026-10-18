@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Deals Timeline: {{ entity.canonical_name }} — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/deals">Deals & Transactions</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/companies/{{ entity.entity_id }}">{{ entity.canonical_name }}</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Timeline</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Funding & Transaction Timeline: {{ entity.canonical_name }}</h1>
+        <p class="page-subtitle">Chronological ledger of financing rounds, acquisitions, and strategic capital events</p>
+    </div>
+    <div class="page-actions">
+        <a href="/companies/{{ entity.entity_id }}" class="btn btn-primary">Company Dossier</a>
+        <a href="/deals" class="btn btn-secondary">All Deals</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Chronological Event Stream</h2>
+        <span class="badge badge-derived">{{ timeline_events|length }} Events</span>
+    </div>
+    <div class="card-body">
+        {% if timeline_events %}
+        <div style="position: relative; padding-left: 2rem; border-left: 2px solid var(--border-color); margin-left: 1rem; display: flex; flex-direction: column; gap: 2rem;">
+            {% for ev in timeline_events %}
+            <div style="position: relative;">
+                <div style="position: absolute; left: -2.6rem; top: 0.25rem; width: 1.1rem; height: 1.1rem; border-radius: 50%; background: var(--accent-primary); border: 2px solid var(--bg-surface);"></div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                    {{ ev.date or 'Date Undisclosed' }} &bull;
+                    <span class="badge badge-reported">{{ ev.event_type }}</span>
+                </div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">
+                    {% if ev.link %}
+                    <a href="{{ ev.link }}">{{ ev.title }}</a>
+                    {% else %}
+                    {{ ev.title }}
+                    {% endif %}
+                </h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    {{ ev.description }}
+                </p>
+                {% if ev.amount %}
+                <div class="font-mono" style="font-weight: 600; color: var(--color-success);">
+                    Value: {{ ev.amount }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No historical funding or transaction events found for {{ entity.canonical_name }}.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

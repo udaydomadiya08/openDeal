@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Companies Explorer — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <span>Companies</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>Corporate Entities Explorer</h1>
+    <div class="page-subtitle">Inspect registered legal entities, canonical identifiers, and corporate structures.</div>
+  </div>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="card" style="padding: 1rem;">
+  <form action="/companies" method="get" class="form-row" style="align-items: flex-end;">
+    <div class="form-col" style="flex: 2;">
+      <label class="form-label">Search Query</label>
+      <input type="text" name="q" class="form-control" placeholder="Company name, identifier, ticker..." value="{{ query or search_query or '' }}">
+    </div>
+    <div class="form-col" style="flex: 1;">
+      <label class="form-label">Jurisdiction</label>
+      <select name="jurisdiction" class="form-control">
+        <option value="">All Jurisdictions</option>
+        <option value="US" {% if selected_jurisdiction == 'US' %}selected{% endif %}>United States (US)</option>
+        <option value="GB" {% if selected_jurisdiction == 'GB' %}selected{% endif %}>United Kingdom (GB)</option>
+      </select>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="/companies" class="btn btn-secondary">Reset</a>
+    </div>
+  </form>
+</div>
+
+<!-- Entities List Table -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Registered Companies ({{ entities|length }} found)</h2>
+    <input type="text" class="form-control" style="width: 200px; padding: 0.25rem 0.5rem; font-size: 0.75rem;" placeholder="Quick filter..." data-table-filter="companies-table">
+  </div>
+  {% if entities %}
+    <div class="table-responsive">
+      <table id="companies-table">
+        <thead>
+          <tr>
+            <th>Entity ID</th>
+            <th>Legal Name</th>
+            <th>Jurisdiction</th>
+            <th>Structure</th>
+            <th>Ticker</th>
+            <th>Identifiers</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ent in entities %}
+            <tr>
+              <td><code>{{ ent.entity_id }}</code></td>
+              <td><strong>{{ ent.legal_name }}</strong></td>
+              <td><span class="badge badge-source">{{ ent.jurisdiction }}</span></td>
+              <td>{{ ent.entity_type.value if ent.entity_type else '—' }}</td>
+              <td>{{ ent.ticker or '—' }}</td>
+              <td>
+                {% if ent.legal_identifiers %}
+                  {% for ident in ent.legal_identifiers %}
+                    <span class="badge badge-derived">{{ ident.scheme }}: {{ ident.identifier }}</span>
+                  {% endfor %}
+                {% else %}
+                  <span style="color: var(--text-muted);">None</span>
+                {% endif %}
+              </td>
+              <td style="text-align: right;">
+                <a href="/companies/{{ ent.entity_id }}" class="btn btn-sm btn-primary">View Details</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-text">No corporate entities match your query.</div>
+      <a href="/system/ingest" class="btn btn-sm btn-primary">Ingest Sample Dataset</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+
+{% block title %}{{ entity.legal_name }} — OpenDeal Company Intelligence{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="/companies">Companies</a>
+  <span class="sep">/</span>
+  <span>{{ entity.legal_name }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+      <h1>{{ entity.legal_name }}</h1>
+      <span class="badge badge-source">{{ entity.jurisdiction }}</span>
+      {% if entity.ticker %}
+        <span class="badge badge-derived">Ticker: {{ entity.ticker }}</span>
+      {% endif %}
+    </div>
+    <div class="page-subtitle">
+      Entity ID: <code>{{ entity.entity_id }}</code> • Nature: {{ entity.entity_nature or 'LEGAL_ENTITY' }} • Structure: {{ entity.entity_type.value if entity.entity_type else 'UNKNOWN' }}
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <a href="/valuation?entity_id={{ entity.entity_id }}" class="btn btn-secondary">📐 Valuation</a>
+    <a href="/research?entity_id={{ entity.entity_id }}" class="btn btn-secondary">📑 Generate Research</a>
+    <a href="/deals/timeline/{{ entity.entity_id }}" class="btn btn-primary">🤝 Deal Timeline</a>
+  </div>
+</div>
+
+<!-- Metadata & Identifiers Row -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+  <div class="card" style="margin-bottom: 0;">
+    <div class="metric-label">Canonical Legal Identifiers</div>
+    <div style="margin-top: 0.5rem;">
+      {% if entity.legal_identifiers %}
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.4rem;">
+          {% for id_rec in entity.legal_identifiers %}
+            <li style="display: flex; justify-content: space-between; font-size: 0.8125rem;">
+              <span style="color: var(--text-muted);">{{ id_rec.scheme }}</span>
+              <code>{{ id_rec.identifier }}</code>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div style="font-size: 0.8125rem; color: var(--text-muted);">No statutory registry identifiers indexed.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div class="metric-label">Corporate Attributes</div>
+    <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8125rem;">
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Incorporation Date:</span>
+        <span>{{ entity.incorporation_date or 'Undisclosed' }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Exchange:</span>
+        <span>{{ entity.primary_exchange or 'Unlisted / Private' }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Active Status:</span>
+        <span>{{ "Active" if entity.is_active else "Inactive / Dissolved" }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div class="metric-label">Deals Overview</div>
+    <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8125rem;">
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Documented Rounds:</span>
+        <strong>{{ deals_overview.funding_rounds_count if deals_overview else 0 }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Disclosed Funding:</span>
+        <span>
+          {% if deals_overview and deals_overview.total_funding_disclosed is not none %}
+            {{ "{:,.2f}".format(deals_overview.total_funding_disclosed) }} {{ deals_overview.funding_currency.value if deals_overview.funding_currency else 'USD' }}
+          {% else %}
+            Undisclosed
+          {% endif %}
+        </span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Acquisitions:</span>
+        <span>{{ deals_overview.acquisitions_as_acquirer_count if deals_overview else 0 }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs Component -->
+<div class="tabs-wrapper card" style="padding: 0;">
+  <div class="tabs-nav" style="padding: 0.5rem 1rem 0 1rem; margin-bottom: 0;">
+    <button class="tab-btn active" data-tab="tab-facts">Financial Facts ({{ facts|length }})</button>
+    <button class="tab-btn" data-tab="tab-evidence">Supporting Evidence ({{ evidence|length }})</button>
+    <button class="tab-btn" data-tab="tab-relationships">Relationships ({{ relationships|length }})</button>
+    <button class="tab-btn" data-tab="tab-deals">Deals & Rounds ({{ funding_rounds|length + transactions|length }})</button>
+  </div>
+
+  <div style="padding: 1.25rem;">
+    <!-- Tab 1: Financial Facts -->
+    <div class="tab-pane active" id="tab-facts">
+      {% if facts %}
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Fact ID</th>
+                <th>Canonical Metric</th>
+                <th>Period</th>
+                <th>Standard</th>
+                <th class="num">Reported Value</th>
+                <th class="num">Normalized</th>
+                <th>Knowledge Tier</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for f in facts %}
+                <tr>
+                  <td><code>{{ f.fact_id }}</code></td>
+                  <td><strong>{{ f.canonical_variable }}</strong></td>
+                  <td>{{ f.fiscal_period.value if f.fiscal_period else 'FY' }} {{ f.fiscal_year or '' }}</td>
+                  <td>{{ f.accounting_standard.value if f.accounting_standard else 'GAAP' }}</td>
+                  <td class="num">
+                    {% if f.reported_value is not none %}
+                      {{ "{:,.2f}".format(f.reported_value) }} {{ f.currency.value }}
+                    {% else %}
+                      <span style="color: var(--text-muted);">None</span>
+                    {% endif %}
+                  </td>
+                  <td class="num">
+                    {% if f.normalized_value is not none %}
+                      {{ "{:,.2f}".format(f.normalized_value) }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if f.fact_state.value == 'REPORTED' %}
+                      <span class="badge badge-source">SOURCE_REPORTED</span>
+                    {% elif f.fact_state.value == 'DERIVED' %}
+                      <span class="badge badge-derived">DERIVED_CALC</span>
+                    {% else %}
+                      <span class="badge badge-assumption">{{ f.fact_state.value }}</span>
+                    {% endif %}
+                  </td>
+                  <td><a href="/facts/{{ f.fact_id }}" class="btn btn-sm btn-secondary">Inspect</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-text">No financial facts recorded for this company.</div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Tab 2: Supporting Evidence -->
+    <div class="tab-pane" id="tab-evidence">
+      {% if evidence %}
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Evidence ID</th>
+                <th>Source Locator</th>
+                <th>Excerpt</th>
+                <th>Content Hash</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ev in evidence %}
+                <tr>
+                  <td><code>{{ ev.evidence_id }}</code></td>
+                  <td><strong>{{ ev.source_locator or 'Document' }}</strong></td>
+                  <td style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {{ ev.excerpt }}
+                  </td>
+                  <td><code>{{ ev.content_hash[:12] }}...</code></td>
+                  <td>{{ ev.created_at.strftime('%Y-%m-%d') if ev.created_at else '—' }}</td>
+                  <td><a href="/facts/evidence/{{ ev.evidence_id }}" class="btn btn-sm btn-secondary">View Excerpt</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-text">No primary evidence records indexed for this entity.</div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Tab 3: Corporate Relationships -->
+    <div class="tab-pane" id="tab-relationships">
+      {% if relationships %}
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Direction</th>
+                <th>Relationship Type</th>
+                <th>Related Entity</th>
+                <th>Ownership %</th>
+                <th>Effective Date</th>
+                <th>Citation</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rel in relationships %}
+                <tr>
+                  <td>
+                    {% if rel.source_entity_id == entity.entity_id %}
+                      <span class="badge badge-derived">Outgoing →</span>
+                    {% else %}
+                      <span class="badge badge-source">← Incoming</span>
+                    {% endif %}
+                  </td>
+                  <td><strong>{{ rel.relationship_type.value }}</strong></td>
+                  <td>
+                    {% if rel.source_entity_id == entity.entity_id %}
+                      <a href="/companies/{{ rel.target_entity_id }}">{{ rel.target_entity_id }}</a>
+                    {% else %}
+                      <a href="/companies/{{ rel.source_entity_id }}">{{ rel.source_entity_id }}</a>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if rel.ownership_percentage is not none %}
+                      {{ "{:.1f}%".format(rel.ownership_percentage) }}
+                    {% else %}
+                      <span style="color: var(--text-muted);">Undisclosed</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ rel.effective_date or '—' }}</td>
+                  <td>{{ rel.source_reference or '—' }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-text">No parent, subsidiary, or investment relationships recorded.</div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Tab 4: Deals & Rounds -->
+    <div class="tab-pane" id="tab-deals">
+      <div style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 0.5rem;">Funding Rounds</h3>
+        {% if funding_rounds %}
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Round ID</th>
+                  <th>Type</th>
+                  <th>Announced</th>
+                  <th class="num">Disclosed Amount</th>
+                  <th class="num">Valuation</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in funding_rounds %}
+                  <tr>
+                    <td><code>{{ r.round_id }}</code></td>
+                    <td><strong>{{ r.round_type.value }}</strong></td>
+                    <td>{{ r.announced_date or '—' }}</td>
+                    <td class="num">
+                      {% if r.disclosed_amount is not none %}
+                        {{ "{:,.2f}".format(r.disclosed_amount) }} {{ r.currency.value }}
+                      {% else %}
+                        <span style="color: var(--text-muted);">Undisclosed</span>
+                      {% endif %}
+                    </td>
+                    <td class="num">
+                      {% if r.post_money_valuation %}
+                        Post: {{ "{:,.2f}".format(r.post_money_valuation) }}
+                      {% elif r.pre_money_valuation %}
+                        Pre: {{ "{:,.2f}".format(r.pre_money_valuation) }}
+                      {% else %}
+                        <span style="color: var(--text-muted);">Undisclosed</span>
+                      {% endif %}
+                    </td>
+                    <td><span class="badge badge-completed">{{ r.verification_status.value }}</span></td>
+                    <td><a href="/deals/rounds/{{ r.round_id }}" class="btn btn-sm btn-secondary">Inspect</a></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div style="font-size: 0.85rem; color: var(--text-muted);">No funding rounds recorded.</div>
+        {% endif %}
+      </div>
+
+      <div>
+        <h3 style="margin-bottom: 0.5rem;">M&A & Restructuring Transactions</h3>
+        {% if transactions %}
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Deal ID</th>
+                  <th>Type</th>
+                  <th>Role</th>
+                  <th>Counterparty</th>
+                  <th class="num">Disclosed Value</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for t in transactions %}
+                  <tr>
+                    <td><code>{{ t.transaction_id }}</code></td>
+                    <td><strong>{{ t.transaction_type.value }}</strong></td>
+                    <td>
+                      {% if t.acquirer_id == entity.entity_id %}
+                        Acquirer
+                      {% elif t.target_id == entity.entity_id %}
+                        Target
+                      {% else %}
+                        Seller
+                      {% endif %}
+                    </td>
+                    <td>{{ t.target_name or t.target_id if t.acquirer_id == entity.entity_id else (t.acquirer_name or t.acquirer_id) }}</td>
+                    <td class="num">
+                      {% if t.disclosed_value is not none %}
+                        {{ "{:,.2f}".format(t.disclosed_value) }} {{ t.currency.value }}
+                      {% else %}
+                        <span style="color: var(--text-muted);">Undisclosed</span>
+                      {% endif %}
+                    </td>
+                    <td><span class="badge badge-announced">{{ t.status.value }}</span></td>
+                    <td><a href="/deals/transactions/{{ t.transaction_id }}" class="btn btn-sm btn-secondary">Inspect</a></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div style="font-size: 0.85rem; color: var(--text-muted);">No M&A transactions recorded.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

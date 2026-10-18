@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Deal Conflicts & Discrepancies — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/deals">Deals & Transactions</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Deal Conflicts</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Deal Conflicts & Multi-Source Discrepancies</h1>
+        <p class="page-subtitle">Inspect contradictory deal reports, conflicting valuations, and timeline anomalies flagged by EventReconciler</p>
+    </div>
+    <div class="page-actions">
+        <a href="/deals" class="btn btn-primary">Deals Workspace</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Recorded Discrepancy Log</h2>
+        <span class="badge badge-conflict">{{ conflicts|length }} Issues Flagged</span>
+    </div>
+    <div class="card-body">
+        {% if conflicts %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Subject Event / Deal</th>
+                        <th>Field Name</th>
+                        <th>Observation A</th>
+                        <th>Observation B</th>
+                        <th>Conflict Type</th>
+                        <th>Reconciliation Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in conflicts %}
+                    <tr>
+                        <td class="font-mono"><strong>{{ c.event_id }}</strong></td>
+                        <td class="font-mono">{{ c.field_name }}</td>
+                        <td>{{ c.value_a }}</td>
+                        <td>{{ c.value_b }}</td>
+                        <td><span class="badge badge-conflict">{{ c.conflict_type or 'DISCREPANCY' }}</span></td>
+                        <td class="text-muted">{{ c.notes or 'Conflicting reports across distinct sources' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Zero unresolved deal conflicts detected across stored funding rounds and transactions.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Deals & Transaction Intelligence — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Deals & Transactions</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Deals & Transaction Intelligence</h1>
+        <p class="page-subtitle">Track private-market funding rounds, M&A transactions, corporate investor syndicates, and conflict anomalies</p>
+    </div>
+    <div class="page-actions">
+        <a href="/deals/conflicts" class="btn btn-secondary">Inspect Deal Conflicts</a>
+    </div>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Funding Rounds</div>
+        <div class="metric-value font-mono">{{ rounds|length }}</div>
+        <div class="metric-subtext">Capital raises recorded</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">M&A Transactions</div>
+        <div class="metric-value font-mono">{{ transactions|length }}</div>
+        <div class="metric-subtext">Acquisitions & divestitures</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Conflict Warnings</div>
+        <div class="metric-value font-mono" style="color: var(--color-warning);">{{ conflict_count or 0 }}</div>
+        <div class="metric-subtext">Multi-source discrepancies</div>
+    </div>
+</div>
+
+<div class="tabs" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+    <button class="tab-btn active" data-tab="rounds">Funding Rounds ({{ rounds|length }})</button>
+    <button class="tab-btn" data-tab="transactions">M&A Transactions ({{ transactions|length }})</button>
+</div>
+
+<!-- Funding Rounds Tab -->
+<div id="tab-rounds" class="tab-pane active">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Indexed Funding Rounds</h2>
+            <div style="width: 250px;">
+                <input type="text" class="form-control" data-table-filter="rounds-table" placeholder="Filter rounds...">
+            </div>
+        </div>
+        <div class="card-body">
+            {% if rounds %}
+            <div class="table-responsive">
+                <table class="table" id="rounds-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Round Type</th>
+                            <th>Announced Date</th>
+                            <th>Disclosed Amount</th>
+                            <th>Post-Money Val</th>
+                            <th>Verification</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in rounds %}
+                        <tr>
+                            <td>
+                                <a href="/companies/{{ r.company_id }}" style="font-weight: 600;">
+                                    {{ r.company_name or r.company_id }}
+                                </a>
+                            </td>
+                            <td><span class="badge badge-derived">{{ r.round_type.value if r.round_type.value is defined else r.round_type }}</span></td>
+                            <td class="text-muted">{{ r.announced_date or 'Undisclosed' }}</td>
+                            <td class="font-mono">
+                                {% if r.disclosed_amount %}
+                                {{ r.currency.value if r.currency.value is defined else r.currency }} {{ "{:,.0f}".format(r.disclosed_amount) }}
+                                {% else %}
+                                <span class="text-muted">Undisclosed</span>
+                                {% endif %}
+                            </td>
+                            <td class="font-mono">
+                                {% if r.post_money_valuation %}
+                                {{ r.currency.value if r.currency.value is defined else r.currency }} {{ "{:,.0f}".format(r.post_money_valuation) }}
+                                {% else %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge-verified">{{ r.verification_status.value if r.verification_status.value is defined else r.verification_status }}</span>
+                            </td>
+                            <td>
+                                <a href="/deals/rounds/{{ r.round_id }}" class="btn btn-secondary btn-sm">Details</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No funding rounds recorded in the local database.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Tab -->
+<div id="tab-transactions" class="tab-pane">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">M&A & Buyout Transactions</h2>
+            <div style="width: 250px;">
+                <input type="text" class="form-control" data-table-filter="transactions-table" placeholder="Filter transactions...">
+            </div>
+        </div>
+        <div class="card-body">
+            {% if transactions %}
+            <div class="table-responsive">
+                <table class="table" id="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>Target</th>
+                            <th>Acquirer</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Disclosed Value</th>
+                            <th>Announced</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in transactions %}
+                        <tr>
+                            <td>
+                                {% if tx.target_id %}
+                                <a href="/companies/{{ tx.target_id }}"><strong>{{ tx.target_name or tx.target_id }}</strong></a>
+                                {% else %}
+                                <strong>{{ tx.target_name or 'Undisclosed Target' }}</strong>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if tx.acquirer_id %}
+                                <a href="/companies/{{ tx.acquirer_id }}">{{ tx.acquirer_name or tx.acquirer_id }}</a>
+                                {% else %}
+                                <span class="text-muted">{{ tx.acquirer_name or 'Undisclosed' }}</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="badge badge-derived">{{ tx.transaction_type.value if tx.transaction_type.value is defined else tx.transaction_type }}</span></td>
+                            <td>
+                                {% set st = (tx.status.value if tx.status.value is defined else tx.status)|lower %}
+                                <span class="badge badge-status-{{ st }}">{{ tx.status.value if tx.status.value is defined else tx.status }}</span>
+                            </td>
+                            <td class="font-mono">
+                                {% if tx.disclosed_value %}
+                                {{ tx.currency.value if tx.currency.value is defined else tx.currency }} {{ "{:,.0f}".format(tx.disclosed_value) }}
+                                {% else %}
+                                <span class="text-muted">Undisclosed</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">{{ tx.announced_date or '—' }}</td>
+                            <td>
+                                <a href="/deals/transactions/{{ tx.transaction_id }}" class="btn btn-secondary btn-sm">Details</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No M&A transactions recorded in the local database.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

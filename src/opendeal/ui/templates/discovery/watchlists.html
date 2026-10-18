@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Target Watchlists — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/discovery">Target Discovery</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Watchlists</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Curated Target Lists & Watchlists</h1>
+        <p class="page-subtitle">Track and organize screened acquisition candidates across custom portfolios</p>
+    </div>
+    <div class="page-actions">
+        <a href="/discovery" class="btn btn-secondary">Screen Targets</a>
+    </div>
+</div>
+
+<div class="grid grid-2" style="margin-bottom: 2rem;">
+    <!-- Create New List Form -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Create New Target List</h2>
+            <span class="badge badge-derived">Phase 6 Watchlists</span>
+        </div>
+        <div class="card-body">
+            {% if error %}
+            <div class="alert alert-danger" style="margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/discovery/watchlists/create">
+                <div class="form-group">
+                    <label for="name" class="form-label">List Name *</label>
+                    <input type="text" name="name" id="name" class="form-control" placeholder="e.g. Q4 Fintech M&A Targets" required>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="description" class="form-label">Investment Thesis / Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Strategic rationale, target EBITDA hurdles, geographic bounds..."></textarea>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" id="create-list-btn">Create Target List</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing Lists -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Active Target Lists</h2>
+                <span class="badge badge-verified">{{ lists|length }} Lists</span>
+            </div>
+            <div class="card-body">
+                {% if lists %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>List Name</th>
+                                <th>Status</th>
+                                <th>Members</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lst in lists %}
+                            <tr>
+                                <td>
+                                    <a href="/discovery/watchlists/{{ lst.list_id }}" style="font-weight: 600;">
+                                        {{ lst.name }}
+                                    </a>
+                                </td>
+                                <td><span class="badge badge-verified">{{ lst.status.value if lst.status.value is defined else lst.status }}</span></td>
+                                <td class="font-mono">{{ lst.member_count or 0 }}</td>
+                                <td class="text-muted">{{ lst.created_at }}</td>
+                                <td>
+                                    <a href="/discovery/watchlists/{{ lst.list_id }}" class="btn btn-secondary btn-sm">Manage</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>No target lists saved yet. Create your first list using the form.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

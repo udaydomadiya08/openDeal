@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}AI Workflow Planner — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span>/</span> <a href="/workflows">Workflows</a>
+  <span>/</span> <span>AI Planner</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 2rem;">
+  <h1 class="page-title">AI Workflow Planner</h1>
+  <p class="text-muted" style="margin: 0.25rem 0 0 0;">
+    Formulate bounded, inspectable multi-agent execution plans from natural language analyst requirements.
+  </p>
+</div>
+
+<!-- Intent Query Form -->
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <h2 class="card-title">Analyst Intent Formulation</h2>
+    <span class="badge badge-derived">Strict Proposal Mode</span>
+  </div>
+  <div class="card-body">
+    <form action="/workflows/planner" method="post" style="display: flex; gap: 0.75rem;">
+      <input
+        type="text"
+        name="intent"
+        placeholder="e.g. Prepare full acquisition dossier for AAPL; Run valuation analysis for ent_apex_001; Audit fact data integrity..."
+        value="{{ query }}"
+        required
+        style="flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-surface); color: var(--text-primary); font-size: 0.95rem;"
+      >
+      <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 0.75rem 1.5rem;">
+        Generate Plan Proposal &rarr;
+      </button>
+    </form>
+    <div style="display: flex; gap: 1rem; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">
+      <span>Examples:</span>
+      <a href="/workflows/planner?q=Prepare+company+dossier+for+AAPL" class="text-muted" style="text-decoration: underline;">Company Dossier (AAPL)</a>
+      <a href="/workflows/planner?q=Run+valuation+readiness+for+ent_apex_001" class="text-muted" style="text-decoration: underline;">Valuation Readiness</a>
+      <a href="/workflows/planner?q=Screen+acquisition+targets+with+positive+EBITDA" class="text-muted" style="text-decoration: underline;">Target Screening</a>
+      <a href="/workflows/planner?q=Scan+data+integrity+and+fact+conflicts" class="text-muted" style="text-decoration: underline;">Data Integrity Scan</a>
+    </div>
+  </div>
+</div>
+
+<!-- Plan Proposal Display (if generated) -->
+{% if proposal %}
+<div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--accent-primary);">
+  <div class="card-header">
+    <div>
+      <h2 class="card-title" style="margin: 0;">Proposed Plan: {{ proposal.workflow_name }}</h2>
+      <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.25rem;">
+        Blueprint ID: <code class="font-mono">{{ proposal.workflow_id }}</code> &bull; Estimated Duration: ~{{ proposal.estimated_duration_seconds }}s
+      </div>
+    </div>
+    <span class="badge badge-verified">Validated by Policy Engine</span>
+  </div>
+  <div class="card-body">
+    <p style="font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+      {{ proposal.description }}
+    </p>
+
+    <!-- Inputs & Missing Fields -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+      <div style="background: var(--bg-surface); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color);">
+        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">
+          Extracted Plan Inputs:
+        </div>
+        <pre class="font-mono" style="margin: 0; font-size: 0.8rem; background: transparent;">{{ proposal.extracted_inputs | tojson(indent=2) }}</pre>
+      </div>
+
+      <div style="background: var(--bg-surface); padding: 1rem; border-radius: 4px; border: 1px solid var(--border-color);">
+        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">
+          Identified Missing Requirements:
+        </div>
+        {% if proposal.missing_inputs %}
+          <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.85rem; color: var(--color-danger);">
+            {% for m in proposal.missing_inputs %}
+              <li>Missing mandatory field: <code>{{ m }}</code></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div style="color: var(--color-success); font-size: 0.85rem; font-weight: 600;">
+            &check; All required blueprint inputs are satisfied
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Required Permissions -->
+    <div style="margin-bottom: 1.5rem;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">
+        Required Policy Privileges:
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+        {% for p in proposal.required_permissions %}
+          <span class="badge badge-source" style="padding: 0.35rem 0.65rem;">{{ p }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Planned Tasks Sequence -->
+    <div style="margin-bottom: 2rem;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">
+        Planned Task Dependency Sequence:
+      </div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Assigned Agent</th>
+              <th>Prerequisites</th>
+              <th>Rationale / Analytical Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in proposal.tasks %}
+            <tr>
+              <td style="font-weight: 600;">{{ t.task_name }}</td>
+              <td><span class="badge badge-source" style="font-size: 0.75rem;">{{ t.agent_name }}</span></td>
+              <td class="font-mono" style="font-size: 0.8rem;">
+                {{ t.dependencies|join(', ') if t.dependencies else 'None' }}
+              </td>
+              <td style="font-size: 0.85rem; color: var(--text-muted);">
+                {{ proposal.task_explanations.get(t.task_name, t.description) }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Execution Confirmation Action -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+      <div class="text-muted" style="font-size: 0.85rem;">
+        Plans are deterministic blueprints. Execution requires your confirmation.
+      </div>
+      <form action="/workflows/run/{{ proposal.workflow_id }}" method="post">
+        {% for k, v in proposal.extracted_inputs.items() %}
+          <input type="hidden" name="{{ k }}" value="{{ v }}">
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" style="font-weight: 600;">
+          Confirm & Execute Plan &rarr;
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Safety & Epistemic Boundaries Card -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title" style="font-size: 0.95rem;">Planner Safety & Grounding Guarantees</h3>
+  </div>
+  <div class="card-body">
+    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.8;">
+      <li><strong>Proposal-Only Operation:</strong> The AI planner never executes arbitrary Python code, SQL injection queries, or shell commands.</li>
+      <li><strong>Registered Blueprints Only:</strong> Plans strictly map to verified, deterministic workflow contracts and specialized agents.</li>
+      <li><strong>No Elevated Privileges:</strong> Plans cannot declare permissions outside the existing Policy Engine whitelist.</li>
+      <li><strong>Prompt-Injection Sanitization:</strong> Untrusted source texts and company descriptions are pre-sanitized and can never trigger unauthorized state changes.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

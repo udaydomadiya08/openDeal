@@ -1,0 +1,102 @@
+name: OpenDeal Continuous Integration
+
+on:
+  push:
+    branches: [ main, release-* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test & Security Audit (Python ${{ matrix.python-version }} on ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python-version: [ "3.9", "3.10", "3.11", "3.12" ]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -e .[dev]
+
+      - name: Run test suite with coverage
+        run: |
+          pytest -v --strict-markers --cov=opendeal --cov-report=term --cov-report=xml
+
+      - name: Run security-critical regression tests
+        run: |
+          pytest tests/unit/test_security_hardening.py \
+                 tests/unit/test_workflow_security.py \
+                 tests/unit/test_phase10_1_corrections.py \
+                 tests/unit/test_phase10_2_final_acceptance.py \
+                 tests/unit/test_phase10_3_terminal_immutability.py \
+                 tests/unit/test_phase11_release_readiness.py \
+                 tests/unit/test_phase11_1_database_defaults_and_states.py -v
+
+  build-and-smoke:
+    name: Package Build & Clean Venv Smoke Test
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip build wheel
+
+      - name: Build sdist and wheel
+        run: |
+          python -m build --sdist --wheel --outdir dist/
+
+      - name: Verify release artifact hygiene
+        run: |
+          # Ensure master excel workbooks, local databases, or secrets are not packaged
+          python -c "
+          import tarfile, zipfile, glob, sys
+
+          sdists = glob.glob('dist/*.tar.gz')
+          wheels = glob.glob('dist/*.whl')
+          assert sdists, 'No sdist found'
+          assert wheels, 'No wheel found'
+
+          with zipfile.ZipFile(wheels[0], 'r') as whl:
+              names = whl.namelist()
+              # Check forbidden files
+              forbidden = [n for n in names if n.endswith('.xlsx') or n.endswith('.db') or '.env' in n]
+              assert not forbidden, f'Forbidden files in wheel: {forbidden}'
+              # Check required runtime assets
+              assert any('templates/base.html' in n for n in names), 'Missing templates in wheel'
+              assert any('static/css/app.css' in n for n in names), 'Missing CSS in wheel'
+              assert any('verified_mappings.json' in n for n in names), 'Missing verified_mappings.json in wheel'
+          print('Artifact hygiene check passed successfully.')
+          "
+
+      - name: Smoke test in clean virtual environment
+        run: |
+          python -m venv /tmp/clean_env
+          /tmp/clean_env/bin/pip install --upgrade pip
+          /tmp/clean_env/bin/pip install dist/*.whl
+
+          # Run CLI outside repository directory to avoid cwd import leaks
+          cd /tmp
+          /tmp/clean_env/bin/opendeal --help
+          /tmp/clean_env/bin/opendeal status --json
+          /tmp/clean_env/bin/opendeal workflow list

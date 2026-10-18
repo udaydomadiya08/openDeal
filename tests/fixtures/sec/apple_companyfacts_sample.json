@@ -1,0 +1,133 @@
+{
+  "cik": 320193,
+  "entityName": "Apple Inc.",
+  "facts": {
+    "us-gaap": {
+      "RevenueFromContractWithCustomerExcludingAssessedTax": {
+        "label": "Revenue from Contract with Customer, Excluding Assessed Tax",
+        "description": "Amount of revenue, excluding tax collected and remitted to a governmental authority.",
+        "units": {
+          "USD": [
+            {
+              "end": "2023-09-30",
+              "val": 383285000000,
+              "fy": 2023,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2023-10-27",
+              "frame": "CY2023",
+              "start": "2022-10-01",
+              "accn": "0000320193-23-000106"
+            },
+            {
+              "end": "2022-12-31",
+              "val": 117154000000,
+              "fy": 2023,
+              "fp": "Q1",
+              "form": "10-Q",
+              "filed": "2023-02-03",
+              "frame": "CY2022Q4",
+              "start": "2022-10-01",
+              "accn": "0000320193-23-000006"
+            },
+            {
+              "end": "2023-04-01",
+              "val": 94836000000,
+              "fy": 2023,
+              "fp": "Q2",
+              "form": "10-Q",
+              "filed": "2023-05-05",
+              "frame": "CY2023Q1",
+              "start": "2023-01-01",
+              "accn": "0000320193-23-000064"
+            },
+            {
+              "end": "2023-04-01",
+              "val": 211990000000,
+              "fy": 2023,
+              "fp": "Q2",
+              "form": "10-Q",
+              "filed": "2023-05-05",
+              "frame": "CY2023Q2YTD",
+              "start": "2022-10-01",
+              "accn": "0000320193-23-000064"
+            }
+          ]
+        }
+      },
+      "NetIncomeLoss": {
+        "label": "Net Income (Loss)",
+        "description": "The portion of profit or loss for the period.",
+        "units": {
+          "USD": [
+            {
+              "end": "2023-09-30",
+              "val": 96995000000,
+              "fy": 2023,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2023-10-27",
+              "frame": "CY2023",
+              "start": "2022-10-01",
+              "accn": "0000320193-23-000106"
+            }
+          ]
+        }
+      },
+      "Assets": {
+        "label": "Assets",
+        "description": "Sum of the carrying amounts of all assets.",
+        "units": {
+          "USD": [
+            {
+              "end": "2023-09-30",
+              "val": 352583000000,
+              "fy": 2023,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2023-10-27",
+              "frame": "CY2023Q4I",
+              "accn": "0000320193-23-000106"
+            }
+          ]
+        }
+      },
+      "OperatingIncomeLoss": {
+        "label": "Operating Income (Loss)",
+        "description": "Operating profit or loss.",
+        "units": {
+          "USD": [
+            {
+              "end": "2023-09-30",
+              "val": 0,
+              "fy": 2023,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2023-10-27",
+              "frame": "CY2023",
+              "start": "2022-10-01",
+              "accn": "0000320193-23-000106"
+            }
+          ]
+        }
+      },
+      "CommonStockSharesOutstanding": {
+        "label": "Common Stock, Shares, Outstanding",
+        "description": "Number of shares of common stock outstanding.",
+        "units": {
+          "shares": [
+            {
+              "end": "2023-10-20",
+              "val": 15550061000,
+              "fy": 2023,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2023-10-27",
+              "accn": "0000320193-23-000106"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

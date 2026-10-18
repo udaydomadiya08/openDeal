@@ -1,0 +1,43 @@
+{
+  "total_count": 3,
+  "items": [
+    {
+      "barcode": "X9ABC123",
+      "category": "accounts",
+      "date": "2024-05-10",
+      "description": "accounts-with-accounts-type-total-exemption-small",
+      "type": "AA",
+      "action_date": "2023-12-31",
+      "pages": 8,
+      "links": {
+        "self": "/company/01234567/filing-history/X9ABC123",
+        "document_metadata": "https://document-api.company-information.service.gov.uk/document/doc_998877"
+      }
+    },
+    {
+      "barcode": "X8DEF456",
+      "category": "confirmation-statement",
+      "date": "2024-06-15",
+      "description": "confirmation-statement-with-updates",
+      "type": "CS01",
+      "action_date": "2024-06-12",
+      "pages": 4,
+      "links": {
+        "self": "/company/01234567/filing-history/X8DEF456",
+        "document_metadata": "https://document-api.company-information.service.gov.uk/document/doc_112233"
+      }
+    },
+    {
+      "barcode": "X7GHI789",
+      "category": "officers",
+      "date": "2023-11-01",
+      "description": "change-person-director-company-with-change-date",
+      "type": "CH01",
+      "action_date": "2023-10-28",
+      "pages": 2,
+      "links": {
+        "self": "/company/01234567/filing-history/X7GHI789"
+      }
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Fact {{ fact.fact_id }} — OpenDeal Audit{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <a href="/facts">Facts</a>
+  <span class="sep">/</span>
+  <span>Fact {{ fact.fact_id }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>Fact Audit: {{ fact.canonical_variable }}</h1>
+    <div class="page-subtitle">Entity: <a href="/companies/{{ fact.entity_id }}"><code>{{ fact.entity_id }}</code></a> • Period: {{ fact.fiscal_period.value if fact.fiscal_period else 'FY' }} {{ fact.fiscal_year or '' }}</div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+  <div class="card" style="margin-bottom: 0;">
+    <div class="metric-label">Fact Core Properties</div>
+    <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Canonical Variable:</span>
+        <strong>{{ fact.canonical_variable }}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Reported Value:</span>
+        <span class="num">{{ "{:,.2f}".format(fact.reported_value) if fact.reported_value is not none else 'None' }} {{ fact.currency.value }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Normalized Value:</span>
+        <span class="num">{{ "{:,.2f}".format(fact.normalized_value) if fact.normalized_value is not none else 'None' }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Epistemic Tier:</span>
+        <span>
+          {% if fact.fact_state.value == 'REPORTED' %}
+            <span class="badge badge-source">SOURCE_REPORTED_FACT</span>
+          {% elif fact.fact_state.value == 'DERIVED' %}
+            <span class="badge badge-derived">DERIVED_CALCULATION</span>
+          {% else %}
+            <span class="badge badge-assumption">{{ fact.fact_state.value }}</span>
+          {% endif %}
+        </span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Accounting Standard:</span>
+        <span>{{ fact.accounting_standard.value if fact.accounting_standard else 'GAAP' }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Validation Status:</span>
+        <span class="badge badge-verified">{{ fact.validation_status.value if fact.validation_status else 'UNVALIDATED' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 0;">
+    <div class="metric-label">Temporal & Reporting Attributes</div>
+    <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.875rem;">
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Period Range:</span>
+        <span>{{ fact.period_start or '—' }} to {{ fact.period_end or '—' }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Instant / Point-in-Time:</span>
+        <span>{{ "Yes" if fact.is_instant else "No (Duration)" }}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Reporting Scale:</span>
+        <span>{{ fact.unit_scale.value if fact.unit_scale else '1' }} (Scale 10^{{ fact.scale or 0 }})</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: var(--text-muted);">Created At:</span>
+        <span>{{ fact.created_at.strftime('%Y-%m-%d %H:%M UTC') if fact.created_at else '—' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Supporting Evidence Records -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Supporting Evidence Records ({{ evidence_records|length }})</h2>
+  </div>
+  {% if evidence_records %}
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Evidence ID</th>
+            <th>Source Locator</th>
+            <th>Excerpt</th>
+            <th>Content Hash</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ev in evidence_records %}
+            <tr>
+              <td><code>{{ ev.evidence_id }}</code></td>
+              <td><strong>{{ ev.source_locator or 'Filing' }}</strong></td>
+              <td style="max-width: 450px;">{{ ev.excerpt }}</td>
+              <td><code>{{ ev.content_hash[:12] }}...</code></td>
+              <td><a href="/facts/evidence/{{ ev.evidence_id }}" class="btn btn-sm btn-secondary">Inspect</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-text">No primary evidence records directly cited by this fact.</div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

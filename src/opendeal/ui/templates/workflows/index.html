@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Workflow Automation & Agent Orchestration — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span>/</span> <span>Workflows</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <div>
+    <h1 class="page-title">Bounded Autonomous Workflows</h1>
+    <p class="text-muted" style="margin: 0.25rem 0 0 0;">
+      Repeatable multi-agent orchestration preserving factual integrity, policy permissions, and deterministic valuation math.
+    </p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    {% if pending_count > 0 %}
+      <a href="/workflows/approvals" class="btn btn-warning" style="font-weight: 600;">
+        Pending Approvals ({{ pending_count }})
+      </a>
+    {% endif %}
+    <a href="/workflows/planner" class="btn btn-secondary">
+      AI Workflow Planner
+    </a>
+  </div>
+</div>
+
+<!-- Pending Approvals Alert -->
+{% if pending_count > 0 %}
+<div class="alert alert-warning" style="margin-bottom: 2rem;">
+  <strong>Human Authorization Required:</strong> There are {{ pending_count }} pending approval request(s) awaiting explicit operator review.
+  <a href="/workflows/approvals" style="margin-left: 0.5rem; text-decoration: underline; font-weight: 600;">Open Approval Queue &rarr;</a>
+</div>
+{% endif %}
+
+<!-- Workflow Blueprints Catalogue -->
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <h2 class="card-title">Registered Workflow Blueprints ({{ workflows|length }})</h2>
+    <span class="badge badge-derived">Deterministic Execution</span>
+  </div>
+  <div class="card-body">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+      {% for wf in workflows %}
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+            <h3 style="font-size: 1.1rem; font-weight: 600; margin: 0; color: var(--text-primary);">
+              {{ wf.name }}
+            </h3>
+            <span class="badge badge-reported" style="font-size: 0.75rem;">v{{ wf.version }}</span>
+          </div>
+          <p class="text-muted" style="font-size: 0.85rem; line-height: 1.4; margin-bottom: 0.75rem;">
+            {{ wf.description }}
+          </p>
+          <div style="margin-bottom: 1rem;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.35rem; font-weight: 600;">
+              Required Permissions:
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+              {% for p in wf.required_permissions %}
+                <span class="badge badge-source" style="font-size: 0.7rem;">{{ p }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <span class="font-mono text-muted" style="font-size: 0.75rem;">{{ wf.workflow_id }}</span>
+          <a href="/workflows/run/{{ wf.workflow_id }}" class="btn btn-primary btn-sm">Launch Run &rarr;</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Recent Workflow Execution Runs -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Recent Workflow Executions</h2>
+    <span class="badge badge-reported">{{ recent_runs|length }} Runs Recorded</span>
+  </div>
+  <div class="card-body">
+    {% if recent_runs %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Run ID</th>
+            <th>Workflow</th>
+            <th>State</th>
+            <th>Initiator</th>
+            <th>Created At</th>
+            <th>Completed At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in recent_runs %}
+          <tr>
+            <td>
+              <a href="/workflows/runs/{{ r.run_id }}" class="font-mono" style="font-weight: 600;">
+                {{ r.run_id }}
+              </a>
+            </td>
+            <td>{{ r.workflow_id }}</td>
+            <td>
+              {% if r.state == 'SUCCEEDED' %}
+                <span class="badge badge-verified">SUCCEEDED</span>
+              {% elif r.state == 'RUNNING' %}
+                <span class="badge badge-derived">RUNNING</span>
+              {% elif r.state == 'WAITING_FOR_APPROVAL' %}
+                <span class="badge badge-warning">WAITING FOR APPROVAL</span>
+              {% elif r.state == 'FAILED' %}
+                <span class="badge badge-danger">FAILED</span>
+              {% elif r.state == 'CANCELLED' %}
+                <span class="badge" style="background: var(--border-color); color: var(--text-muted);">CANCELLED</span>
+              {% else %}
+                <span class="badge badge-source">{{ r.state }}</span>
+              {% endif %}
+            </td>
+            <td><span class="badge badge-source">{{ r.initiator }}</span></td>
+            <td class="font-mono text-muted" style="font-size: 0.85rem;">{{ r.created_at[:19] }}</td>
+            <td class="font-mono text-muted" style="font-size: 0.85rem;">
+              {% if r.completed_at %}{{ r.completed_at[:19] }}{% else %}&mdash;{% endif %}
+            </td>
+            <td>
+              <a href="/workflows/runs/{{ r.run_id }}" class="btn btn-secondary btn-sm">Inspect</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>No workflow runs recorded yet. Launch a workflow blueprint above to begin execution.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

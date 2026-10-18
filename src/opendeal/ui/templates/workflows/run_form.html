@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Launch {{ workflow.name }} — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span>/</span> <a href="/workflows">Workflows</a>
+  <span>/</span> <span>Launch {{ workflow.workflow_id }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 2rem;">
+  <h1 class="page-title">Launch Workflow: {{ workflow.name }}</h1>
+  <p class="text-muted" style="margin: 0.25rem 0 0 0;">{{ workflow.description }}</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <!-- Configuration Form -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Run Configuration & Parameters</h2>
+      <span class="badge badge-source">v{{ workflow.version }}</span>
+    </div>
+    <div class="card-body">
+      <form action="/workflows/run/{{ workflow.workflow_id }}" method="post">
+        <!-- Target Company Selector -->
+        {% if 'company' in workflow.workflow_id or 'dossier' in workflow.workflow_id or 'valuation' in workflow.workflow_id %}
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label" for="entity_id" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">
+            Target Company / Entity ID:
+          </label>
+          <input
+            type="text"
+            id="entity_id"
+            name="entity_id"
+            class="form-control"
+            list="entities-list"
+            placeholder="e.g. AAPL, ent_apex_001..."
+            value="AAPL"
+            required
+            style="width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-surface); color: var(--text-primary);"
+          >
+          <datalist id="entities-list">
+            {% for e in entities %}
+              <option value="{{ e.entity_id }}">{{ e.legal_name }} ({{ e.ticker or e.jurisdiction }})</option>
+            {% endfor %}
+          </datalist>
+          <small class="text-muted" style="display: block; margin-top: 0.35rem;">
+            Select an indexed entity or input a registered canonical entity identifier.
+          </small>
+        </div>
+        {% endif %}
+
+        <!-- Valuation Model Selector -->
+        {% if 'valuation' in workflow.workflow_id %}
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label" for="model_type" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">
+            Valuation Model Engine:
+          </label>
+          <select
+            id="model_type"
+            name="model_type"
+            class="form-control"
+            style="width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-surface); color: var(--text-primary);"
+          >
+            <option value="dcf" selected>Discounted Cash Flow (DCF)</option>
+            <option value="wacc">Weighted Average Cost of Capital (WACC)</option>
+            <option value="multiples">Comparable Multiples (EV/EBITDA, P/E)</option>
+            <option value="lbo">Leveraged Buyout (LBO)</option>
+          </select>
+        </div>
+        {% endif %}
+
+        <!-- Snapshot Dataset Key -->
+        {% if 'monitoring' in workflow.workflow_id %}
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label" for="dataset_key" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">
+            Baseline Dataset Key:
+          </label>
+          <input
+            type="text"
+            id="dataset_key"
+            name="dataset_key"
+            class="form-control"
+            value="local_deals_baseline"
+            style="width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-surface); color: var(--text-primary);"
+          >
+        </div>
+        {% endif %}
+
+        <!-- Optional JSON Overrides -->
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label" for="custom_inputs_json" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">
+            Custom Input Parameters (Optional JSON):
+          </label>
+          <textarea
+            id="custom_inputs_json"
+            name="custom_inputs_json"
+            rows="4"
+            class="form-control font-mono"
+            style="width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-surface); color: var(--text-primary); font-size: 0.85rem;"
+            placeholder='{"assumptions": {"discount_rate": 0.09, "perpetual_growth_rate": 0.025, "cash_flows": [100.0, 115.0, 130.0]}}'
+          ></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+          <a href="/workflows" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary" style="font-weight: 600;">
+            Execute Workflow &rarr;
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Workflow Blueprint Summary Card -->
+  <div>
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem;">Declared Permissions</h3>
+      </div>
+      <div class="card-body">
+        <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 0.75rem;">
+          The coordinator strictly bounds agents to these declared categories:
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          {% for p in workflow.required_permissions %}
+            <span class="badge badge-source" style="padding: 0.35rem 0.6rem;">{{ p }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem;">Task Sequence Plan</h3>
+      </div>
+      <div class="card-body">
+        <ol style="margin: 0; padding-left: 1.25rem; font-size: 0.85rem; line-height: 1.8;">
+          {% for t in workflow.tasks %}
+            <li>
+              <strong>{{ t.task_name }}</strong>
+              <div class="text-muted" style="font-size: 0.75rem;">Agent: {{ t.agent_name }}</div>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

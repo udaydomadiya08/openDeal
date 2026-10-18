@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}M&A Transaction: {{ tx.target_name }} — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/deals">Deals & Transactions</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Transaction {{ tx.transaction_id }}</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ tx.transaction_type.value if tx.transaction_type.value is defined else tx.transaction_type }}: {{ tx.target_name }}</h1>
+        <p class="page-subtitle">Announced: {{ tx.announced_date or 'Undisclosed' }} &bull; Transaction ID: <code class="font-mono">{{ tx.transaction_id }}</code></p>
+    </div>
+    <div class="page-actions">
+        {% if tx.target_id %}
+        <a href="/companies/{{ tx.target_id }}" class="btn btn-primary">Target Dossier</a>
+        {% endif %}
+        <a href="/deals" class="btn btn-secondary">All Deals</a>
+    </div>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-label">Disclosed Enterprise / Deal Value</div>
+        <div class="metric-value font-mono">
+            {% if tx.disclosed_value %}
+            {{ tx.currency.value if tx.currency.value is defined else tx.currency }} {{ "{:,.0f}".format(tx.disclosed_value) }}
+            {% else %}
+            <span class="text-muted">Undisclosed</span>
+            {% endif %}
+        </div>
+        <div class="metric-subtext">Consideration: {{ tx.consideration_type.value if tx.consideration_type.value is defined else tx.consideration_type }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Transaction Status</div>
+        <div class="metric-value">
+            {% set st = (tx.status.value if tx.status.value is defined else tx.status)|lower %}
+            <span class="badge badge-status-{{ st }}" style="font-size: 1.1rem; padding: 0.35rem 0.75rem;">
+                {{ tx.status.value if tx.status.value is defined else tx.status }}
+            </span>
+        </div>
+        <div class="metric-subtext">Completion: {{ tx.actual_completion_date or tx.expected_completion_date or 'Pending / Undisclosed' }}</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-label">Target Entity</div>
+        <div class="metric-value" style="font-size: 1.25rem;">
+            {{ tx.target_name or 'Undisclosed' }}
+        </div>
+        <div class="metric-subtext">Target ID: {{ tx.target_id or 'Unlinked' }}</div>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2 class="card-title">Transaction Deal Structure & Counterparties</h2>
+    </div>
+    <div class="card-body">
+        <div class="grid grid-2">
+            <div>
+                <p><strong>Acquirer / Buyer:</strong>
+                    {% if tx.acquirer_id %}
+                    <a href="/companies/{{ tx.acquirer_id }}">{{ tx.acquirer_name or tx.acquirer_id }}</a>
+                    {% else %}
+                    <span class="text-muted">{{ tx.acquirer_name or 'Undisclosed' }}</span>
+                    {% endif %}
+                </p>
+                <p><strong>Seller / Divesting Entity:</strong>
+                    {% if tx.seller_id %}
+                    <a href="/companies/{{ tx.seller_id }}">{{ tx.seller_name or tx.seller_id }}</a>
+                    {% else %}
+                    <span class="text-muted">{{ tx.seller_name or 'None / Not Applicable' }}</span>
+                    {% endif %}
+                </p>
+                <p><strong>Assets / Business Unit:</strong> {{ tx.assets_or_business_unit or 'Full Company Acquisition' }}</p>
+            </div>
+            <div>
+                <p><strong>Regulatory Approvals:</strong> {{ tx.regulatory_approvals or 'Standard regulatory closing conditions' }}</p>
+                {% if tx.termination_reason %}
+                <p style="color: var(--color-danger);"><strong>Termination Reason:</strong> {{ tx.termination_reason }}</p>
+                {% endif %}
+                <p><strong>Verification:</strong> <span class="badge badge-verified">{{ tx.verification_status.value if tx.verification_status.value is defined else tx.verification_status }}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if tx.evidence_ids %}
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2 class="card-title">Supporting Evidence</h2>
+    </div>
+    <div class="card-body">
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            {% for eid in tx.evidence_ids %}
+            <a href="/facts/evidence/{{ eid }}" class="btn btn-secondary btn-sm" style="text-align: left;">
+                View Evidence Citation: <code>{{ eid }}</code>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

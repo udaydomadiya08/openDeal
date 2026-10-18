@@ -1,0 +1,1258 @@
+[
+  {
+    "var": "Extraordinary Expenses \u2013 Current",
+    "sheet": "Assumptions",
+    "cell": "O24",
+    "unit": "USD",
+    "desc": "One-off expenses current year",
+    "type": "INPUT"
+  },
+  {
+    "var": "Change in CapEx \u2013 Year 1",
+    "sheet": "Assumptions",
+    "cell": "P58",
+    "unit": "USD",
+    "desc": "Change in capital expenditures in forecast year 1",
+    "type": "INPUT"
+  },
+  {
+    "var": "Change in CapEx \u2013 Year 2",
+    "sheet": "Assumptions",
+    "cell": "Q58",
+    "unit": "USD",
+    "desc": "Change in CapEx year 2",
+    "type": "INPUT"
+  },
+  {
+    "var": "Change in CapEx \u2013 Year 3",
+    "sheet": "Assumptions",
+    "cell": "R58",
+    "unit": "USD",
+    "desc": "Change in CapEx year 3",
+    "type": "INPUT"
+  },
+  {
+    "var": "Change in CapEx \u2013 Year 4",
+    "sheet": "Assumptions",
+    "cell": "S58",
+    "unit": "USD",
+    "desc": "Change in CapEx year 4",
+    "type": "INPUT"
+  },
+  {
+    "var": "Change in CapEx \u2013 Year 5",
+    "sheet": "Assumptions",
+    "cell": "T58",
+    "unit": "USD",
+    "desc": "Change in CapEx year 5",
+    "type": "INPUT"
+  },
+  {
+    "var": "Current Market Price",
+    "sheet": "Global_Executive_Dashboard",
+    "cell": "B8",
+    "unit": "USD",
+    "desc": "MANUAL: Enter current stock/share price from market (e.g. 450.00)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Investments \u2013 Book Value",
+    "sheet": "nav_model",
+    "cell": "B8",
+    "unit": "USD",
+    "desc": "MANUAL: Enter fair value of investments/financial assets (not in Financials model)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Cash \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C4",
+    "unit": "%",
+    "desc": "Typically 0 (cash is already at fair value)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Accounts Receivable \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C5",
+    "unit": "%",
+    "desc": "Discount for bad debt risk (e.g. -0.05 for 5% haircut)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Inventory \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C6",
+    "unit": "%",
+    "desc": "Discount if inventory is slow-moving or obsolescent (e.g. -0.10)",
+    "type": "INPUT"
+  },
+  {
+    "var": "PP&E \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C7",
+    "unit": "%",
+    "desc": "Uplift if real estate appreciates above book (e.g. 0.30 = 30% premium)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Investments \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C8",
+    "unit": "%",
+    "desc": "Adjustment to arrive at fair value of investments",
+    "type": "INPUT"
+  },
+  {
+    "var": "Intangibles \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C9",
+    "unit": "%",
+    "desc": "Typically -1.0 (write off intangibles entirely in liquidation NAV) or 0 for going concern",
+    "type": "INPUT"
+  },
+  {
+    "var": "Other Assets \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C10",
+    "unit": "%",
+    "desc": "Adjustment for other assets",
+    "type": "INPUT"
+  },
+  {
+    "var": "Accounts Payable \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C13",
+    "unit": "%",
+    "desc": "Usually 0 (payables at face value)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Short-Term Debt \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C14",
+    "unit": "%",
+    "desc": "Usually 0 (debt at face value)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Long-Term Debt \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C15",
+    "unit": "%",
+    "desc": "Adjust if debt trades at premium/discount to par (e.g. -0.05)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Other Liabilities \u2013 Adjustment %",
+    "sheet": "nav_model",
+    "cell": "C16",
+    "unit": "%",
+    "desc": "Adjustment if needed",
+    "type": "INPUT"
+  },
+  {
+    "var": "Brand Moat \u2013 Comments",
+    "sheet": "Economic_Moat",
+    "cell": "D4",
+    "unit": "Text",
+    "desc": "Brief qualitative note about the brand moat",
+    "type": "INPUT"
+  },
+  {
+    "var": "Cost Advantage \u2013 Comments",
+    "sheet": "Economic_Moat",
+    "cell": "D6",
+    "unit": "Text",
+    "desc": "Notes",
+    "type": "INPUT"
+  },
+  {
+    "var": "Intellectual Property \u2013 Comments",
+    "sheet": "Economic_Moat",
+    "cell": "D8",
+    "unit": "Text",
+    "desc": "Notes",
+    "type": "INPUT"
+  },
+  {
+    "var": "Regulatory Advantage \u2013 Comments",
+    "sheet": "Economic_Moat",
+    "cell": "D9",
+    "unit": "Text",
+    "desc": "Notes",
+    "type": "INPUT"
+  },
+  {
+    "var": "Macroeconomic Risk \u2013 Mitigation",
+    "sheet": "Risk_Dashboard",
+    "cell": "E4",
+    "unit": "Text",
+    "desc": "Mitigation strategy (e.g. 'Geographic diversification')",
+    "type": "INPUT"
+  },
+  {
+    "var": "Regulatory Risk \u2013 Mitigation",
+    "sheet": "Risk_Dashboard",
+    "cell": "E5",
+    "unit": "Text",
+    "desc": "Mitigation strategy",
+    "type": "INPUT"
+  },
+  {
+    "var": "AI Disruption Risk \u2013 Mitigation",
+    "sheet": "Risk_Dashboard",
+    "cell": "E6",
+    "unit": "Text",
+    "desc": "Mitigation strategy",
+    "type": "INPUT"
+  },
+  {
+    "var": "Supply Chain Risk \u2013 Mitigation",
+    "sheet": "Risk_Dashboard",
+    "cell": "E8",
+    "unit": "Text",
+    "desc": "Mitigation strategy",
+    "type": "INPUT"
+  },
+  {
+    "var": "Cybersecurity Risk \u2013 Mitigation",
+    "sheet": "Risk_Dashboard",
+    "cell": "E9",
+    "unit": "Text",
+    "desc": "Mitigation strategy",
+    "type": "INPUT"
+  },
+  {
+    "var": "Currency Risk \u2013 Mitigation",
+    "sheet": "Risk_Dashboard",
+    "cell": "E10",
+    "unit": "Text",
+    "desc": "Mitigation strategy",
+    "type": "INPUT"
+  },
+  {
+    "var": "Management Risk \u2013 Mitigation",
+    "sheet": "Risk_Dashboard",
+    "cell": "E11",
+    "unit": "Text",
+    "desc": "Mitigation strategy",
+    "type": "INPUT"
+  },
+  {
+    "var": "Dividend Payout Ratio",
+    "sheet": "Assumptions",
+    "cell": "G21",
+    "unit": "% of Net Income",
+    "desc": "Percentage of net income paid as dividends (e.g. 0.30 for 30%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Beta (Unlevered)",
+    "sheet": "Assumptions",
+    "cell": "G40",
+    "unit": "x",
+    "desc": "Asset beta of the company (unlevered). E.g. 1.0 for average market risk.",
+    "type": "INPUT"
+  },
+  {
+    "var": "Low Growth Rate",
+    "sheet": "Assumptions",
+    "cell": "G90",
+    "unit": "%",
+    "desc": "Long-run stable growth rate. E.g. 0.03 for 3%",
+    "type": "INPUT"
+  },
+  {
+    "var": "Growth Rate (Forecast)",
+    "sheet": "Assumptions",
+    "cell": "G86",
+    "unit": "%",
+    "desc": "Same as Gordon Growth rate above (shared cell)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Gross Profit Margin \u2013 Year 1",
+    "sheet": "Assumptions",
+    "cell": "Q17",
+    "unit": "%",
+    "desc": "Gross margin for Year 1 as decimal (e.g. 0.45)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Gross Profit Margin \u2013 Year 2",
+    "sheet": "Assumptions",
+    "cell": "R17",
+    "unit": "%",
+    "desc": "Year 2 gross margin",
+    "type": "INPUT"
+  },
+  {
+    "var": "Gross Profit Margin \u2013 Year 3",
+    "sheet": "Assumptions",
+    "cell": "S17",
+    "unit": "%",
+    "desc": "Year 3 gross margin",
+    "type": "INPUT"
+  },
+  {
+    "var": "Gross Profit Margin \u2013 Year 4",
+    "sheet": "Assumptions",
+    "cell": "T17",
+    "unit": "%",
+    "desc": "Year 4 gross margin",
+    "type": "INPUT"
+  },
+  {
+    "var": "EBIT Margin \u2013 Bear",
+    "sheet": "Scenario_Analysis",
+    "cell": "B5",
+    "unit": "%",
+    "desc": "Bear case EBIT margin as decimal (e.g. 0.08 for 8%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "EBIT Margin \u2013 Bull",
+    "sheet": "Scenario_Analysis",
+    "cell": "D5",
+    "unit": "%",
+    "desc": "Bull case EBIT margin as decimal (e.g. 0.20 for 20%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer EBITDA Margin (rows 4\u20138) 1",
+    "sheet": "Industry_Benchmarking",
+    "cell": "D4",
+    "unit": "%",
+    "desc": "EBITDA margin % for each peer (e.g. 25 for 25%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer EBITDA Margin (rows 4\u20138) 2",
+    "sheet": "Industry_Benchmarking",
+    "cell": "D5",
+    "unit": "%",
+    "desc": "EBITDA margin % for each peer (e.g. 25 for 25%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer EBITDA Margin (rows 4\u20138) 3",
+    "sheet": "Industry_Benchmarking",
+    "cell": "D6",
+    "unit": "%",
+    "desc": "EBITDA margin % for each peer (e.g. 25 for 25%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer EBITDA Margin (rows 4\u20138) 4",
+    "sheet": "Industry_Benchmarking",
+    "cell": "D7",
+    "unit": "%",
+    "desc": "EBITDA margin % for each peer (e.g. 25 for 25%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer EBITDA Margin (rows 4\u20138) 5",
+    "sheet": "Industry_Benchmarking",
+    "cell": "D8",
+    "unit": "%",
+    "desc": "EBITDA margin % for each peer (e.g. 25 for 25%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer ROIC (rows 4\u20138) 1",
+    "sheet": "Industry_Benchmarking",
+    "cell": "E4",
+    "unit": "%",
+    "desc": "Return on invested capital % for each peer",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer ROIC (rows 4\u20138) 2",
+    "sheet": "Industry_Benchmarking",
+    "cell": "E5",
+    "unit": "%",
+    "desc": "Return on invested capital % for each peer",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer ROIC (rows 4\u20138) 3",
+    "sheet": "Industry_Benchmarking",
+    "cell": "E6",
+    "unit": "%",
+    "desc": "Return on invested capital % for each peer",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer ROIC (rows 4\u20138) 4",
+    "sheet": "Industry_Benchmarking",
+    "cell": "E7",
+    "unit": "%",
+    "desc": "Return on invested capital % for each peer",
+    "type": "INPUT"
+  },
+  {
+    "var": "Peer ROIC (rows 4\u20138) 5",
+    "sheet": "Industry_Benchmarking",
+    "cell": "E8",
+    "unit": "%",
+    "desc": "Return on invested capital % for each peer",
+    "type": "INPUT"
+  },
+  {
+    "var": "Sharpe Ratio (rows 4\u20138) 1",
+    "sheet": "Portfolio_Optimization",
+    "cell": "F4",
+    "unit": "x",
+    "desc": "Sharpe ratio for each holding (e.g. 1.2)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Sharpe Ratio (rows 4\u20138) 2",
+    "sheet": "Portfolio_Optimization",
+    "cell": "F5",
+    "unit": "x",
+    "desc": "Sharpe ratio for each holding (e.g. 1.2)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Sharpe Ratio (rows 4\u20138) 3",
+    "sheet": "Portfolio_Optimization",
+    "cell": "F6",
+    "unit": "x",
+    "desc": "Sharpe ratio for each holding (e.g. 1.2)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Sharpe Ratio (rows 4\u20138) 4",
+    "sheet": "Portfolio_Optimization",
+    "cell": "F7",
+    "unit": "x",
+    "desc": "Sharpe ratio for each holding (e.g. 1.2)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Sharpe Ratio (rows 4\u20138) 5",
+    "sheet": "Portfolio_Optimization",
+    "cell": "F8",
+    "unit": "x",
+    "desc": "Sharpe ratio for each holding (e.g. 1.2)",
+    "type": "INPUT"
+  },
+  {
+    "var": "GDP Growth \u2013 Current",
+    "sheet": "Macro_Economic_Engine",
+    "cell": "B6",
+    "unit": "%",
+    "desc": "Current GDP growth rate % (e.g. 2.2)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Interest Rate",
+    "sheet": "Assumptions",
+    "cell": "G28",
+    "unit": "%",
+    "desc": "Average interest rate on debt as a decimal (e.g. 0.07 for 7%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Equity Weight",
+    "sheet": "Assumptions",
+    "cell": "G34",
+    "unit": "%",
+    "desc": "Proportion of equity in capital structure as decimal (e.g. 0.65)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Risk-Free Interest Rate",
+    "sheet": "Assumptions",
+    "cell": "G39",
+    "unit": "%",
+    "desc": "Current risk-free rate (e.g. 10Y government bond yield). E.g. 0.04",
+    "type": "INPUT"
+  },
+  {
+    "var": "Market Risk Premium (USA)",
+    "sheet": "Assumptions",
+    "cell": "G42",
+    "unit": "%",
+    "desc": "Expected equity risk premium. Typically 5-7%. E.g. 0.06",
+    "type": "INPUT"
+  },
+  {
+    "var": "Other Risk Premium",
+    "sheet": "Assumptions",
+    "cell": "G44",
+    "unit": "%",
+    "desc": "Country or company-specific additional risk premium. E.g. 0.02",
+    "type": "INPUT"
+  },
+  {
+    "var": "Debt Risk Premium",
+    "sheet": "Assumptions",
+    "cell": "G49",
+    "unit": "%",
+    "desc": "Spread over risk-free rate for company debt. E.g. 0.03",
+    "type": "INPUT"
+  },
+  {
+    "var": "Period of High Growth",
+    "sheet": "Assumptions",
+    "cell": "G91",
+    "unit": "Years",
+    "desc": "Number of years of high growth before declining to low growth. E.g. 10",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Growth \u2013 Year 1",
+    "sheet": "Assumptions",
+    "cell": "Q13",
+    "unit": "%",
+    "desc": "Expected revenue growth Year 1 as decimal (e.g. 0.10 for 10%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Growth \u2013 Year 2",
+    "sheet": "Assumptions",
+    "cell": "R13",
+    "unit": "%",
+    "desc": "Year 2 revenue growth",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Growth \u2013 Year 3",
+    "sheet": "Assumptions",
+    "cell": "S13",
+    "unit": "%",
+    "desc": "Year 3 revenue growth",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Growth \u2013 Year 4",
+    "sheet": "Assumptions",
+    "cell": "T13",
+    "unit": "%",
+    "desc": "Year 4 revenue growth",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Growth \u2013 Year 5",
+    "sheet": "Assumptions",
+    "cell": "U13",
+    "unit": "%",
+    "desc": "Year 5 revenue growth",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Predictability \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B4",
+    "unit": "Number",
+    "desc": "Relative importance weight (e.g. 10). System normalizes automatically.",
+    "type": "INPUT"
+  },
+  {
+    "var": "Pricing Power \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B5",
+    "unit": "Number",
+    "desc": "Importance weight",
+    "type": "INPUT"
+  },
+  {
+    "var": "Recurring Revenue \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B6",
+    "unit": "Number",
+    "desc": "Importance weight",
+    "type": "INPUT"
+  },
+  {
+    "var": "Scalability \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B7",
+    "unit": "Number",
+    "desc": "Importance weight",
+    "type": "INPUT"
+  },
+  {
+    "var": "Customer Stickiness \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B9",
+    "unit": "Number",
+    "desc": "Importance weight",
+    "type": "INPUT"
+  },
+  {
+    "var": "Global Expansion Potential \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B12",
+    "unit": "Number",
+    "desc": "Importance weight",
+    "type": "INPUT"
+  },
+  {
+    "var": "Brand Moat \u2013 Durability",
+    "sheet": "Economic_Moat",
+    "cell": "C4",
+    "unit": "Years",
+    "desc": "How many years is this moat expected to hold?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Network Effects \u2013 Durability",
+    "sheet": "Economic_Moat",
+    "cell": "C5",
+    "unit": "Years",
+    "desc": "Expected durability of network effect moat",
+    "type": "INPUT"
+  },
+  {
+    "var": "Cost Advantage \u2013 Durability",
+    "sheet": "Economic_Moat",
+    "cell": "C6",
+    "unit": "Years",
+    "desc": "Expected durability",
+    "type": "INPUT"
+  },
+  {
+    "var": "Switching Costs \u2013 Durability",
+    "sheet": "Economic_Moat",
+    "cell": "C7",
+    "unit": "Years",
+    "desc": "Expected durability",
+    "type": "INPUT"
+  },
+  {
+    "var": "Intellectual Property \u2013 Durability",
+    "sheet": "Economic_Moat",
+    "cell": "C8",
+    "unit": "Years",
+    "desc": "Expected durability",
+    "type": "INPUT"
+  },
+  {
+    "var": "Regulatory Advantage \u2013 Durability",
+    "sheet": "Economic_Moat",
+    "cell": "C9",
+    "unit": "Years",
+    "desc": "Expected durability",
+    "type": "INPUT"
+  },
+  {
+    "var": "Data Advantage \u2013 Durability",
+    "sheet": "Economic_Moat",
+    "cell": "C10",
+    "unit": "Years",
+    "desc": "Expected durability",
+    "type": "INPUT"
+  },
+  {
+    "var": "Distribution Dominance \u2013 Durability",
+    "sheet": "Economic_Moat",
+    "cell": "C11",
+    "unit": "Years",
+    "desc": "Expected durability",
+    "type": "INPUT"
+  },
+  {
+    "var": "Macroeconomic Risk \u2013 Probability",
+    "sheet": "Risk_Dashboard",
+    "cell": "B4",
+    "unit": "0\u20131",
+    "desc": "Likelihood of macro risk materializing (e.g. 0.4 = 40%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Macroeconomic Risk \u2013 Impact",
+    "sheet": "Risk_Dashboard",
+    "cell": "C4",
+    "unit": "0\u20131",
+    "desc": "Severity if it occurs (e.g. 0.7 = high impact)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Regulatory Risk \u2013 Probability",
+    "sheet": "Risk_Dashboard",
+    "cell": "B5",
+    "unit": "0\u20131",
+    "desc": "Probability of adverse regulatory change",
+    "type": "INPUT"
+  },
+  {
+    "var": "Regulatory Risk \u2013 Impact",
+    "sheet": "Risk_Dashboard",
+    "cell": "C5",
+    "unit": "0\u20131",
+    "desc": "Impact severity",
+    "type": "INPUT"
+  },
+  {
+    "var": "AI Disruption Risk \u2013 Probability",
+    "sheet": "Risk_Dashboard",
+    "cell": "B6",
+    "unit": "0\u20131",
+    "desc": "Risk of AI disrupting the business model",
+    "type": "INPUT"
+  },
+  {
+    "var": "AI Disruption Risk \u2013 Impact",
+    "sheet": "Risk_Dashboard",
+    "cell": "C6",
+    "unit": "0\u20131",
+    "desc": "Impact severity",
+    "type": "INPUT"
+  },
+  {
+    "var": "Competition Risk \u2013 Probability",
+    "sheet": "Risk_Dashboard",
+    "cell": "B7",
+    "unit": "0\u20131",
+    "desc": "Risk of losing market share to competitors",
+    "type": "INPUT"
+  },
+  {
+    "var": "Competition Risk \u2013 Impact",
+    "sheet": "Risk_Dashboard",
+    "cell": "C7",
+    "unit": "0\u20131",
+    "desc": "Impact severity",
+    "type": "INPUT"
+  },
+  {
+    "var": "Supply Chain Risk \u2013 Probability",
+    "sheet": "Risk_Dashboard",
+    "cell": "B8",
+    "unit": "0\u20131",
+    "desc": "Risk of supply chain disruption",
+    "type": "INPUT"
+  },
+  {
+    "var": "Supply Chain Risk \u2013 Impact",
+    "sheet": "Risk_Dashboard",
+    "cell": "C8",
+    "unit": "0\u20131",
+    "desc": "Impact severity",
+    "type": "INPUT"
+  },
+  {
+    "var": "Cybersecurity Risk \u2013 Probability",
+    "sheet": "Risk_Dashboard",
+    "cell": "B9",
+    "unit": "0\u20131",
+    "desc": "Risk of cyberattack or data breach",
+    "type": "INPUT"
+  },
+  {
+    "var": "Cybersecurity Risk \u2013 Impact",
+    "sheet": "Risk_Dashboard",
+    "cell": "C9",
+    "unit": "0\u20131",
+    "desc": "Impact severity",
+    "type": "INPUT"
+  },
+  {
+    "var": "Currency Risk \u2013 Probability",
+    "sheet": "Risk_Dashboard",
+    "cell": "B10",
+    "unit": "0\u20131",
+    "desc": "Risk of adverse FX movement",
+    "type": "INPUT"
+  },
+  {
+    "var": "Currency Risk \u2013 Impact",
+    "sheet": "Risk_Dashboard",
+    "cell": "C10",
+    "unit": "0\u20131",
+    "desc": "Impact severity",
+    "type": "INPUT"
+  },
+  {
+    "var": "Management Risk \u2013 Probability",
+    "sheet": "Risk_Dashboard",
+    "cell": "B11",
+    "unit": "0\u20131",
+    "desc": "Risk of management failure or key-person dependency",
+    "type": "INPUT"
+  },
+  {
+    "var": "Management Risk \u2013 Impact",
+    "sheet": "Risk_Dashboard",
+    "cell": "C11",
+    "unit": "0\u20131",
+    "desc": "Impact severity",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Growth \u2013 Bear",
+    "sheet": "Scenario_Analysis",
+    "cell": "B4",
+    "unit": "%",
+    "desc": "Bear case revenue growth as decimal (e.g. 0.02 for 2%). Base is auto-pulled from Assumptions.",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Growth \u2013 Bull",
+    "sheet": "Scenario_Analysis",
+    "cell": "D4",
+    "unit": "%",
+    "desc": "Bull case revenue growth as decimal (e.g. 0.15 for 15%)",
+    "type": "INPUT"
+  },
+  {
+    "var": "WACC Spread \u2013 Bear (add to base)",
+    "sheet": "Scenario_Analysis",
+    "cell": "A12",
+    "unit": "%",
+    "desc": "How much higher than base WACC for bear case (e.g. 0.01 = +1%). Bear WACC = Assumptions WACC + this spread.",
+    "type": "INPUT"
+  },
+  {
+    "var": "WACC Spread \u2013 Bull (subtract from base)",
+    "sheet": "Scenario_Analysis",
+    "cell": "B12",
+    "unit": "%",
+    "desc": "How much lower than base WACC for bull case (e.g. 0.01 = -1%). Bull WACC = Assumptions WACC - this spread.",
+    "type": "INPUT"
+  },
+  {
+    "var": "Terminal Growth Spread \u2013 Bear (subtract from base)",
+    "sheet": "Scenario_Analysis",
+    "cell": "A13",
+    "unit": "%",
+    "desc": "How much lower than base growth for bear case (e.g. 0.01 = -1%). Bear Growth = Assumptions Growth - this spread.",
+    "type": "INPUT"
+  },
+  {
+    "var": "Terminal Growth Spread \u2013 Bull (add to base)",
+    "sheet": "Scenario_Analysis",
+    "cell": "B13",
+    "unit": "%",
+    "desc": "How much higher than base growth for bull case (e.g. 0.01 = +1%). Bull Growth = Assumptions Growth + this spread.",
+    "type": "INPUT"
+  },
+  {
+    "var": "Portfolio Weight (rows 4\u20138) 1",
+    "sheet": "Portfolio_Optimization",
+    "cell": "B4",
+    "unit": "%",
+    "desc": "Allocation % (e.g. 20 for 20%). Rows 4\u20138 sum should = 100 minus subject company weight.",
+    "type": "INPUT"
+  },
+  {
+    "var": "EV/Revenue Exit Multiple",
+    "sheet": "Assumptions",
+    "cell": "G95",
+    "unit": "x",
+    "desc": "EV-to-Revenue multiple to apply at terminal year. E.g. 2.5",
+    "type": "INPUT"
+  },
+  {
+    "var": "EV/EBITDA Exit Multiple",
+    "sheet": "Assumptions",
+    "cell": "G96",
+    "unit": "x",
+    "desc": "EV-to-EBITDA multiple. E.g. 8.0",
+    "type": "INPUT"
+  },
+  {
+    "var": "EV/EBIT Exit Multiple",
+    "sheet": "Assumptions",
+    "cell": "G97",
+    "unit": "x",
+    "desc": "EV-to-EBIT multiple. E.g. 10.0",
+    "type": "INPUT"
+  },
+  {
+    "var": "P/E Exit Multiple",
+    "sheet": "Assumptions",
+    "cell": "G98",
+    "unit": "x",
+    "desc": "Price-to-Earnings multiple at terminal year. E.g. 20.0",
+    "type": "INPUT"
+  },
+  {
+    "var": "P/B Exit Multiple",
+    "sheet": "Assumptions",
+    "cell": "G99",
+    "unit": "x",
+    "desc": "Price-to-Book multiple at terminal year. E.g. 3.0",
+    "type": "INPUT"
+  },
+  {
+    "var": "Duration of Competitive Advantage (Stage 1)",
+    "sheet": "Assumptions",
+    "cell": "M91",
+    "unit": "Years",
+    "desc": "Number of years of competitive advantage in Stage 1. E.g. 15",
+    "type": "INPUT"
+  },
+  {
+    "var": "Spread to Discount Rate Stage 2",
+    "sheet": "Assumptions",
+    "cell": "O98",
+    "unit": "%",
+    "desc": "ROIC minus WACC for Stage 2. Usually 0 (no excess returns)",
+    "type": "INPUT"
+  },
+  {
+    "var": "Revenue Predictability \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C4",
+    "unit": "1\u201310",
+    "desc": "Score 1 (very low) to 10 (excellent). How predictable is revenue?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Pricing Power \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C5",
+    "unit": "1\u201310",
+    "desc": "Can the company raise prices without losing customers?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Recurring Revenue \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C6",
+    "unit": "1\u201310",
+    "desc": "What proportion of revenue is recurring/subscription-based?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Scalability \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C7",
+    "unit": "1\u201310",
+    "desc": "Can the business grow revenue faster than costs?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Brand Strength \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B8",
+    "unit": "Number",
+    "desc": "Importance weight",
+    "type": "INPUT"
+  },
+  {
+    "var": "Brand Strength \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C8",
+    "unit": "1\u201310",
+    "desc": "Strength and recognition of the company brand",
+    "type": "INPUT"
+  },
+  {
+    "var": "Customer Stickiness \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C9",
+    "unit": "1\u201310",
+    "desc": "How difficult is it for customers to switch away?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Innovation Capability \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B10",
+    "unit": "Number",
+    "desc": "Importance weight",
+    "type": "INPUT"
+  },
+  {
+    "var": "Innovation Capability \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C10",
+    "unit": "1\u201310",
+    "desc": "How strong is the R&D and innovation pipeline?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Operating Leverage \u2013 Weight",
+    "sheet": "Business_Quality",
+    "cell": "B11",
+    "unit": "Number",
+    "desc": "Importance weight",
+    "type": "INPUT"
+  },
+  {
+    "var": "Operating Leverage \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C11",
+    "unit": "1\u201310",
+    "desc": "How much do margins expand as revenue grows?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Global Expansion Potential \u2013 Score",
+    "sheet": "Business_Quality",
+    "cell": "C12",
+    "unit": "1\u201310",
+    "desc": "How much international growth opportunity exists?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Brand Moat \u2013 Strength",
+    "sheet": "Economic_Moat",
+    "cell": "B4",
+    "unit": "1\u201310",
+    "desc": "How strong is the brand as a competitive moat?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Network Effects \u2013 Strength",
+    "sheet": "Economic_Moat",
+    "cell": "B5",
+    "unit": "1\u201310",
+    "desc": "Does the product get more valuable as more users join?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Cost Advantage \u2013 Strength",
+    "sheet": "Economic_Moat",
+    "cell": "B6",
+    "unit": "1\u201310",
+    "desc": "Does the company produce cheaper than competitors?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Switching Costs \u2013 Strength",
+    "sheet": "Economic_Moat",
+    "cell": "B7",
+    "unit": "1\u201310",
+    "desc": "How hard is it for customers to switch to a competitor?",
+    "type": "INPUT"
+  },
+  {
+    "var": "Intellectual Property \u2013 Strength",
+    "sheet": "Economic_Moat",
+    "cell": "B8",
+    "unit": "1\u201310",
+    "desc": "Patents, trade secrets, proprietary tech strength",
+    "type": "INPUT"
+  },
+  {
+    "var": "Regulatory Advantage \u2013 Strength",
+    "sheet": "Economic_Moat",
+    "cell": "B9",
+    "unit": "1\u201310",
+    "desc": "Licenses, regulatory barriers that protect the business",
+    "type": "INPUT"
+  },
+  {
+    "var": "Data Advantage \u2013 Strength",
+    "sheet": "Economic_Moat",
+    "cell": "B10",
+    "unit": "1\u201310",
+    "desc": "Proprietary data assets that competitors cannot replicate",
+    "type": "INPUT"
+  },
+  {
+    "var": "Distribution Dominance \u2013 Strength",
+    "sheet": "Economic_Moat",
+    "cell": "B11",
+    "unit": "1\u201310",
+    "desc": "Control over distribution channels or last-mile delivery",
+    "type": "INPUT"
+  },
+  {
+    "var": "revenue_prev_prev",
+    "sheet": "Assumptions",
+    "cell": "M12",
+    "unit": "USD",
+    "desc": "Total revenue 2 years ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "revenue_prev",
+    "sheet": "Assumptions",
+    "cell": "N12",
+    "unit": "USD",
+    "desc": "Total revenue 1 year ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "revenue_current",
+    "sheet": "Assumptions",
+    "cell": "O12",
+    "unit": "USD",
+    "desc": "Total revenue most recent year",
+    "type": "INPUT"
+  },
+  {
+    "var": "cogs_prev_prev",
+    "sheet": "Assumptions",
+    "cell": "M15",
+    "unit": "USD",
+    "desc": "Direct costs / COGS 2 years ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "cogs_prev",
+    "sheet": "Assumptions",
+    "cell": "N15",
+    "unit": "USD",
+    "desc": "Direct costs / COGS 1 year ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "cogs_current",
+    "sheet": "Assumptions",
+    "cell": "O15",
+    "unit": "USD",
+    "desc": "Direct costs / COGS current year",
+    "type": "INPUT"
+  },
+  {
+    "var": "opex_prev_prev",
+    "sheet": "Assumptions",
+    "cell": "M19",
+    "unit": "USD",
+    "desc": "Operating expenses 2 years ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "opex_prev",
+    "sheet": "Assumptions",
+    "cell": "N19",
+    "unit": "USD",
+    "desc": "Operating expenses 1 year ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "opex_current",
+    "sheet": "Assumptions",
+    "cell": "O19",
+    "unit": "USD",
+    "desc": "Operating expenses current year",
+    "type": "INPUT"
+  },
+  {
+    "var": "depreciation_prev_prev",
+    "sheet": "Assumptions",
+    "cell": "M23",
+    "unit": "USD",
+    "desc": "Depreciation & amortization 2 years ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "depreciation_prev",
+    "sheet": "Assumptions",
+    "cell": "N23",
+    "unit": "USD",
+    "desc": "Depreciation & amortization 1 year ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "depreciation_current",
+    "sheet": "Assumptions",
+    "cell": "O23",
+    "unit": "USD",
+    "desc": "Depreciation & amortization current year",
+    "type": "INPUT"
+  },
+  {
+    "var": "cash_prev_prev",
+    "sheet": "Assumptions",
+    "cell": "M32",
+    "unit": "USD",
+    "desc": "Cash & equivalents 2 years ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "cash_prev",
+    "sheet": "Assumptions",
+    "cell": "N32",
+    "unit": "USD",
+    "desc": "Cash & equivalents 1 year ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "cash_current",
+    "sheet": "Assumptions",
+    "cell": "O32",
+    "unit": "USD",
+    "desc": "Cash & equivalents current year",
+    "type": "INPUT"
+  },
+  {
+    "var": "capex_prev_prev",
+    "sheet": "Assumptions",
+    "cell": "M38",
+    "unit": "USD",
+    "desc": "Capital expenditures 2 years ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "capex_prev",
+    "sheet": "Assumptions",
+    "cell": "N38",
+    "unit": "USD",
+    "desc": "Capital expenditures 1 year ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "capex_current",
+    "sheet": "Assumptions",
+    "cell": "O38",
+    "unit": "USD",
+    "desc": "Capital expenditures current year",
+    "type": "INPUT"
+  },
+  {
+    "var": "financial_debt_prev_prev",
+    "sheet": "Assumptions",
+    "cell": "M49",
+    "unit": "USD",
+    "desc": "Financial debt 2 years ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "financial_debt_prev",
+    "sheet": "Assumptions",
+    "cell": "N49",
+    "unit": "USD",
+    "desc": "Financial debt 1 year ago",
+    "type": "INPUT"
+  },
+  {
+    "var": "financial_debt_current",
+    "sheet": "Assumptions",
+    "cell": "O49",
+    "unit": "USD",
+    "desc": "Financial debt current year",
+    "type": "INPUT"
+  },
+  {
+    "var": "tax_rate",
+    "sheet": "Assumptions",
+    "cell": "G20",
+    "unit": "%",
+    "desc": "Effective income tax rate",
+    "type": "INPUT"
+  },
+  {
+    "var": "working_capital_receivables_days",
+    "sheet": "Assumptions",
+    "cell": "G24",
+    "unit": "Days",
+    "desc": "Receivables collection days (DSO)",
+    "type": "INPUT"
+  },
+  {
+    "var": "working_capital_inventory_days",
+    "sheet": "Assumptions",
+    "cell": "G25",
+    "unit": "Days",
+    "desc": "Inventory days (DIO)",
+    "type": "INPUT"
+  },
+  {
+    "var": "working_capital_payables_days",
+    "sheet": "Assumptions",
+    "cell": "G26",
+    "unit": "Days",
+    "desc": "Payables days (DPO)",
+    "type": "INPUT"
+  }
+]

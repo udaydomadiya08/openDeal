@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Facts & Evidence Explorer — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <span>Facts & Evidence</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <h1>Financial Facts & Provenance Explorer</h1>
+    <div class="page-subtitle">Inspect primary source facts, derived metrics, and transformation histories.</div>
+  </div>
+</div>
+
+<!-- Filters Card -->
+<div class="card" style="padding: 1rem;">
+  <form action="/facts" method="get" class="form-row" style="align-items: flex-end;">
+    <div class="form-col" style="flex: 2;">
+      <label class="form-label">Metric / Variable Name</label>
+      <input type="text" name="metric" class="form-control" placeholder="e.g. revenue, ebitda, net_income" value="{{ selected_metric or '' }}">
+    </div>
+    <div class="form-col" style="flex: 1;">
+      <label class="form-label">Company Entity ID</label>
+      <input type="text" name="entity_id" class="form-control" placeholder="e.g. ent_apex_001" value="{{ selected_entity_id or '' }}">
+    </div>
+    <div class="form-col" style="flex: 1;">
+      <label class="form-label">Fact State</label>
+      <select name="state" class="form-control">
+        <option value="">All States</option>
+        <option value="REPORTED" {% if selected_state == 'REPORTED' %}selected{% endif %}>Source-Reported</option>
+        <option value="DERIVED" {% if selected_state == 'DERIVED' %}selected{% endif %}>Derived Calculation</option>
+        <option value="ASSUMPTION" {% if selected_state == 'ASSUMPTION' %}selected{% endif %}>Analyst Assumption</option>
+      </select>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <button type="submit" class="btn btn-primary">Filter</button>
+      <a href="/facts" class="btn btn-secondary">Reset</a>
+    </div>
+  </form>
+</div>
+
+<!-- Facts Table Card -->
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Indexed Facts ({{ facts|length }} results)</h2>
+    <input type="text" class="form-control" style="width: 200px; padding: 0.25rem 0.5rem; font-size: 0.75rem;" placeholder="Quick filter..." data-table-filter="facts-table">
+  </div>
+  {% if facts %}
+    <div class="table-responsive">
+      <table id="facts-table">
+        <thead>
+          <tr>
+            <th>Fact ID</th>
+            <th>Company</th>
+            <th>Metric</th>
+            <th>Period</th>
+            <th>Accounting Standard</th>
+            <th class="num">Reported Value</th>
+            <th class="num">Normalized</th>
+            <th>Epistemic Tier</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in facts %}
+            <tr>
+              <td><code>{{ f.fact_id }}</code></td>
+              <td><a href="/companies/{{ f.entity_id }}"><code>{{ f.entity_id }}</code></a></td>
+              <td><strong>{{ f.canonical_variable }}</strong></td>
+              <td>{{ f.fiscal_period.value if f.fiscal_period else 'FY' }} {{ f.fiscal_year or '' }}</td>
+              <td>{{ f.accounting_standard.value if f.accounting_standard else 'GAAP' }}</td>
+              <td class="num">
+                {% if f.reported_value is not none %}
+                  {{ "{:,.2f}".format(f.reported_value) }} {{ f.currency.value }}
+                {% else %}
+                  <span style="color: var(--text-muted);">None</span>
+                {% endif %}
+              </td>
+              <td class="num">
+                {% if f.normalized_value is not none %}
+                  {{ "{:,.2f}".format(f.normalized_value) }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>
+                {% if f.fact_state.value == 'REPORTED' %}
+                  <span class="badge badge-source">SOURCE_REPORTED</span>
+                {% elif f.fact_state.value == 'DERIVED' %}
+                  <span class="badge badge-derived">DERIVED_CALC</span>
+                {% else %}
+                  <span class="badge badge-assumption">{{ f.fact_state.value }}</span>
+                {% endif %}
+              </td>
+              <td><a href="/facts/{{ f.fact_id }}" class="btn btn-sm btn-secondary">Audit</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-text">No financial facts match your search filters.</div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Valuation Result: {{ model_name }} — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/valuation">Valuation Workspace</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/valuation/{{ model_key }}">{{ model_name }}</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Output Analysis</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ model_name }} Valuation Result</h1>
+        <p class="page-subtitle">Deterministic analytical calculation executed via OpenDeal Python Valuation Engine</p>
+    </div>
+    <div class="page-actions">
+        <a href="/valuation/{{ model_key }}" class="btn btn-secondary">Re-run With New Assumptions</a>
+        <a href="/valuation" class="btn btn-primary">Valuation Workspace</a>
+    </div>
+</div>
+
+{% if warnings %}
+<div class="alert alert-warning" style="margin-bottom: 1.5rem;">
+    <strong>Model Warnings / Disclosures:</strong>
+    <ul style="margin: 0.5rem 0 0 1.25rem;">
+        {% for w in warnings %}
+        <li>{{ w }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+{% if missing_inputs %}
+<div class="alert alert-danger" style="margin-bottom: 1.5rem;">
+    <strong>Missing Inputs (Zero substitution strictly prohibited):</strong>
+    <ul style="margin: 0.5rem 0 0 1.25rem;">
+        {% for mi in missing_inputs %}
+        <li>{{ mi }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- Primary Key Value Metrics Grid -->
+<div class="metrics-grid">
+    {% for metric in key_metrics %}
+    <div class="metric-card">
+        <div class="metric-label">{{ metric.label }}</div>
+        <div class="metric-value font-mono" {% if metric.color %}style="color: {{ metric.color }};"{% endif %}>
+            {{ metric.value }}
+        </div>
+        {% if metric.subtext %}
+        <div class="metric-subtext">{{ metric.subtext }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Detailed Table of Output Breakdown -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2 class="card-title">Comprehensive Calculation Breakdown</h2>
+        <span class="badge badge-verified">Status: {{ status }}</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Output Attribute</th>
+                        <th>Type / Unit</th>
+                        <th>Computed Value</th>
+                        <th>Interpretation / Context</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in output_rows %}
+                    <tr>
+                        <td style="font-weight: 500;">{{ row.name }}</td>
+                        <td class="text-muted">{{ row.unit }}</td>
+                        <td class="font-mono" style="font-weight: 600;">{{ row.value }}</td>
+                        <td class="text-muted">{{ row.notes or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if formula_expression %}
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2 class="card-title">Mathematical Formula & Execution Audit</h2>
+    </div>
+    <div class="card-body">
+        <div class="evidence-quote font-mono" style="font-size: 0.95rem;">
+            {{ formula_expression }}
+        </div>
+        <div class="hash-notice" style="margin-top: 0.75rem;">
+            <span>Integrity:</span> Deterministic execution via <code>opendeal.valuation.engine</code>. No stochastic variance or external network calls.
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Detailed Inputs Audit -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h2 class="card-title">Assumptions & Inputs Audit Log</h2>
+        <span class="badge badge-analyst">Analyst Input</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Input Value</th>
+                        <th>Classification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inp_key, inp_val in inputs_applied.items() %}
+                    <tr>
+                        <td class="font-mono">{{ inp_key }}</td>
+                        <td class="font-mono">{{ inp_val }}</td>
+                        <td><span class="badge badge-analyst">Explicit Parameter</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}{{ brief.brief_title }} — Research Brief — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/research">Research Workspace</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">{{ brief.entity_name or brief.entity_id }}</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ brief.brief_title }}</h1>
+        <p class="page-subtitle">
+            Target Entity: <a href="/companies/{{ brief.entity_id }}"><strong>{{ brief.entity_name }}</strong> ({{ brief.entity_id }})</a>
+            &bull; Generated: {{ brief.generated_at }}
+            &bull; Provider: {{ brief.model_provider }}
+        </p>
+    </div>
+    <div class="page-actions">
+        <a href="/research" class="btn btn-secondary">New Brief</a>
+        <a href="/companies/{{ brief.entity_id }}" class="btn btn-primary">Company Dossier</a>
+    </div>
+</div>
+
+<!-- Executive Summary -->
+<div class="card" style="margin-bottom: 1.5rem;">
+    <div class="card-header">
+        <h2 class="card-title">Executive Summary</h2>
+        <span class="badge badge-ai">Grounded Synthesis</span>
+    </div>
+    <div class="card-body">
+        <p style="font-size: 1.05rem; line-height: 1.6; color: var(--text-main);">
+            {{ brief.executive_summary }}
+        </p>
+        {% if brief.limitations %}
+        <div class="alert alert-warning" style="margin-top: 1rem; font-size: 0.85rem;">
+            <strong>Synthesis Limitations:</strong>
+            <ul style="margin: 0.25rem 0 0 1.25rem;">
+                {% for lim in brief.limitations %}
+                <li>{{ lim }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Tabs for Deep Dive -->
+<div class="tabs" style="margin-bottom: 1.5rem;">
+    <button class="tab-btn active" data-tab="claims">Verified Claims ({{ brief.claims|length }})</button>
+    <button class="tab-btn" data-tab="trends">Financial Trends ({{ brief.financial_trends|length }})</button>
+    <button class="tab-btn" data-tab="gaps">Information Gaps ({{ brief.data_gaps|length }})</button>
+    <button class="tab-btn" data-tab="conflicts">Conflicting Observations ({{ brief.conflicting_evidence|length }})</button>
+    <button class="tab-btn" data-tab="risks">Risk Indicators ({{ brief.risk_indicators|length }})</button>
+</div>
+
+<!-- Claims Tab -->
+<div id="tab-claims" class="tab-pane active">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Evidence-Grounded Claims</h2>
+            <span class="badge badge-verified">{{ brief.claims|length }} Verified Items</span>
+        </div>
+        <div class="card-body">
+            {% if brief.claims %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Knowledge Tier</th>
+                            <th>Claim Statement</th>
+                            <th>Confidence</th>
+                            <th>Status</th>
+                            <th>Evidence References</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for claim in brief.claims %}
+                        <tr>
+                            <td>
+                                {% if claim.knowledge_tier.value == "REPORTED" or claim.knowledge_tier == "REPORTED" %}
+                                <span class="badge badge-reported">REPORTED</span>
+                                {% elif claim.knowledge_tier.value == "DERIVED" or claim.knowledge_tier == "DERIVED" %}
+                                <span class="badge badge-derived">DERIVED</span>
+                                {% elif claim.knowledge_tier.value == "ANALYST_ASSUMPTION" or claim.knowledge_tier == "ANALYST_ASSUMPTION" %}
+                                <span class="badge badge-analyst">ASSUMPTION</span>
+                                {% elif claim.knowledge_tier.value == "AI_INTERPRETATION" or claim.knowledge_tier == "AI_INTERPRETATION" %}
+                                <span class="badge badge-ai">INTERPRETATION</span>
+                                {% else %}
+                                <span class="badge badge-conflict">CONFLICT</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-weight: 500;">{{ claim.statement }}</td>
+                            <td class="font-mono">{{ "%.0f"|format(claim.confidence_score * 100) }}%</td>
+                            <td>
+                                <span class="badge badge-verified">{{ claim.verification_status.value if claim.verification_status.value is defined else claim.verification_status }}</span>
+                            </td>
+                            <td>
+                                {% for eid in claim.grounding_evidence_ids %}
+                                <a href="/facts/evidence/{{ eid }}" class="badge badge-derived" style="margin-right: 0.25rem;">{{ eid }}</a>
+                                {% else %}
+                                <span class="text-muted">None cited</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No explicit claims were generated for this brief.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Trends Tab -->
+<div id="tab-trends" class="tab-pane">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Extracted Financial Trends</h2>
+        </div>
+        <div class="card-body">
+            {% if brief.financial_trends %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Direction</th>
+                            <th>Period</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in brief.financial_trends %}
+                        <tr>
+                            <td class="font-mono"><strong>{{ t.metric_name }}</strong></td>
+                            <td><span class="badge badge-derived">{{ t.direction }}</span></td>
+                            <td class="text-muted">{{ t.period_start }} &rarr; {{ t.period_end }}</td>
+                            <td>{{ t.summary }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No multi-period financial trends available from stored evidence.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Gaps Tab -->
+<div id="tab-gaps" class="tab-pane">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Identified Information Gaps</h2>
+            <span class="badge badge-analyst">Missing Information</span>
+        </div>
+        <div class="card-body">
+            {% if brief.data_gaps %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Topic / Area</th>
+                            <th>Missing Information</th>
+                            <th>Impact on Valuation / Due Diligence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gap in brief.data_gaps %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ gap.field_or_topic }}</td>
+                            <td>{{ gap.description }}</td>
+                            <td><span class="badge badge-danger">{{ gap.severity }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No critical information gaps identified in the investigated scope.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Conflicts Tab -->
+<div id="tab-conflicts" class="tab-pane">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Conflicting Observations</h2>
+            <span class="badge badge-conflict">Discrepancy Audit</span>
+        </div>
+        <div class="card-body">
+            {% if brief.conflicting_evidence %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Observation A</th>
+                            <th>Observation B</th>
+                            <th>Analysis / Discrepancy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in brief.conflicting_evidence %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ c.subject }}</td>
+                            <td>{{ c.source_a_claim }}</td>
+                            <td>{{ c.source_b_claim }}</td>
+                            <td class="text-muted">{{ c.explanation }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No conflicting evidence items detected across stored sources.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Risks Tab -->
+<div id="tab-risks" class="tab-pane">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Risk Indicators</h2>
+            <span class="badge badge-danger">Due Diligence Flags</span>
+        </div>
+        <div class="card-body">
+            {% if brief.risk_indicators %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Severity</th>
+                            <th>Indicator</th>
+                            <th>Mitigants / Context</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in brief.risk_indicators %}
+                        <tr>
+                            <td><span class="badge badge-reported">{{ r.category }}</span></td>
+                            <td><span class="badge badge-danger">{{ r.severity }}</span></td>
+                            <td style="font-weight: 500;">{{ r.description }}</td>
+                            <td class="text-muted">{{ r.mitigating_factors or 'None identified' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No critical risk indicators flagged.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

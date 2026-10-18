@@ -1,0 +1,42 @@
+{
+  "cik": "0000320193",
+  "entityType": "operating",
+  "sic": "3571",
+  "sicDescription": "ELECTRONIC COMPUTERS",
+  "insiderTransactionForOwnerExists": 1,
+  "insiderTransactionForIssuerExists": 1,
+  "name": "Apple Inc.",
+  "tickers": ["AAPL"],
+  "exchanges": ["Nasdaq"],
+  "ein": "942404110",
+  "description": "",
+  "website": "https://www.apple.com",
+  "investorWebsite": "",
+  "category": "Large accelerated filer",
+  "fiscalYearEnd": "0930",
+  "stateOfIncorporation": "CA",
+  "stateOfIncorporationDescription": "CA",
+  "addresses": {
+    "mailing": {
+      "street1": "ONE APPLE PARK WAY",
+      "city": "CUPERTINO",
+      "stateOrCountry": "CA",
+      "zipCode": "95014"
+    },
+    "business": {
+      "street1": "ONE APPLE PARK WAY",
+      "city": "CUPERTINO",
+      "stateOrCountry": "CA",
+      "zipCode": "95014"
+    }
+  },
+  "phone": "(408) 996-1010",
+  "flags": "",
+  "formerNames": [
+    {
+      "name": "APPLE COMPUTER INC",
+      "from": "1994-04-18",
+      "to": "2007-01-09"
+    }
+  ]
+}

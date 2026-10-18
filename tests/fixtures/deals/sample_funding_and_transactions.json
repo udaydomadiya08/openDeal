@@ -1,0 +1,165 @@
+{
+  "entities": [
+    {
+      "entity_id": "ent_apex_001",
+      "legal_name": "Apex Neural Technologies Inc",
+      "jurisdiction": "US",
+      "entity_type": "OPERATING_COMPANY"
+    },
+    {
+      "entity_id": "ent_horizon_001",
+      "legal_name": "Horizon Venture Partners LLC",
+      "jurisdiction": "US",
+      "entity_type": "INVESTOR_ORGANIZATION"
+    },
+    {
+      "entity_id": "ent_horizon_fund4",
+      "legal_name": "Horizon Innovation Fund IV LP",
+      "jurisdiction": "US",
+      "entity_type": "INVESTMENT_FUND"
+    },
+    {
+      "entity_id": "ent_titan_corp",
+      "legal_name": "Titan Global Holdings Plc",
+      "jurisdiction": "GB",
+      "entity_type": "CORPORATE_PARENT"
+    },
+    {
+      "entity_id": "ent_apex_robotics",
+      "legal_name": "Apex Robotics Ltd",
+      "jurisdiction": "GB",
+      "entity_type": "SUBSIDIARY"
+    }
+  ],
+  "relationships": [
+    {
+      "subject_entity_id": "ent_horizon_001",
+      "relationship_type": "FUND_MANAGER",
+      "object_entity_id": "ent_horizon_fund4"
+    },
+    {
+      "subject_entity_id": "ent_apex_001",
+      "relationship_type": "PARENT",
+      "object_entity_id": "ent_apex_robotics"
+    }
+  ],
+  "funding_rounds": [
+    {
+      "round_id": "rnd_apex_seed",
+      "company_id": "ent_apex_001",
+      "company_name": "Apex Neural Technologies Inc",
+      "round_type": "SEED",
+      "announced_date": "2024-01-15",
+      "closing_date": "2024-02-01",
+      "disclosed_amount": 2500000.0,
+      "currency": "USD",
+      "amount_kind": "ROUND_TOTAL",
+      "pre_money_valuation": 10000000.0,
+      "post_money_valuation": 12500000.0,
+      "lead_investor_ids": ["ent_horizon_001"],
+      "participant_ids": ["ent_horizon_001"],
+      "verification_status": "VERIFIED_PRIMARY_SOURCE",
+      "source_reference_ids": ["ref_sec_form_d_2024_01"],
+      "participants": [
+        {
+          "participant_id": "part_seed_01",
+          "round_id": "rnd_apex_seed",
+          "investor_id": "ent_horizon_001",
+          "fund_id": "ent_horizon_fund4",
+          "investor_name": "Horizon Venture Partners LLC",
+          "is_lead": true,
+          "investor_type": "INSTITUTION",
+          "disclosed_commitment": 2000000.0,
+          "currency": "USD",
+          "implied_ownership_pct": 16.0,
+          "ownership_assumptions": "Stated directly in SEC Form D and seed closing summary"
+        },
+        {
+          "participant_id": "part_seed_02",
+          "round_id": "rnd_apex_seed",
+          "investor_name": "Angel Syndicate Network",
+          "is_lead": false,
+          "investor_type": "INDIVIDUAL",
+          "disclosed_commitment": 500000.0,
+          "currency": "USD",
+          "implied_ownership_pct": 4.0
+        }
+      ]
+    },
+    {
+      "round_id": "rnd_apex_series_a",
+      "company_id": "ent_apex_001",
+      "company_name": "Apex Neural Technologies Inc",
+      "round_type": "SERIES_A",
+      "announced_date": "2025-03-10",
+      "closing_date": "2025-04-01",
+      "disclosed_amount": 15000000.0,
+      "currency": "USD",
+      "amount_kind": "ROUND_TOTAL",
+      "pre_money_valuation": null,
+      "post_money_valuation": null,
+      "lead_investor_ids": [],
+      "participant_ids": ["ent_horizon_001"],
+      "verification_status": "VERIFIED_PRIMARY_SOURCE",
+      "source_reference_ids": ["ref_sec_form_d_2025_03"],
+      "participants": [
+        {
+          "participant_id": "part_sa_01",
+          "round_id": "rnd_apex_series_a",
+          "investor_id": "ent_horizon_001",
+          "fund_id": "ent_horizon_fund4",
+          "investor_name": "Horizon Venture Partners LLC",
+          "is_lead": false,
+          "investor_type": "INSTITUTION",
+          "disclosed_commitment": 5000000.0,
+          "currency": "USD",
+          "implied_ownership_pct": null
+        }
+      ]
+    }
+  ],
+  "transactions": [
+    {
+      "transaction_id": "tx_titan_apex_acq",
+      "transaction_type": "ACQUISITION",
+      "status": "COMPLETED",
+      "acquirer_id": "ent_titan_corp",
+      "acquirer_name": "Titan Global Holdings Plc",
+      "target_id": "ent_apex_001",
+      "target_name": "Apex Neural Technologies Inc",
+      "announced_date": "2025-09-01",
+      "actual_completion_date": "2025-10-15",
+      "disclosed_value": 75000000.0,
+      "currency": "USD",
+      "consideration_type": "MIXED",
+      "consideration_details": {
+        "cash": 50000000.0,
+        "stock": 25000000.0
+      },
+      "verification_status": "VERIFIED_PRIMARY_SOURCE",
+      "source_reference_ids": ["ref_uk_merger_891"],
+      "metadata": {
+        "notes": "Titan Global Holdings acquired 100% of Apex Neural Technologies"
+      }
+    },
+    {
+      "transaction_id": "tx_apex_robotics_divest",
+      "transaction_type": "DIVESTITURE",
+      "status": "ANNOUNCED",
+      "acquirer_name": "Third Party Robotics Consortium",
+      "target_id": "ent_apex_robotics",
+      "target_name": "Apex Robotics Ltd",
+      "seller_id": "ent_apex_001",
+      "seller_name": "Apex Neural Technologies Inc",
+      "announced_date": "2025-11-20",
+      "disclosed_value": null,
+      "currency": "USD",
+      "consideration_type": "UNDISCLOSED",
+      "verification_status": "UNVERIFIED",
+      "source_reference_ids": ["ref_restruct_notice_2025"],
+      "metadata": {
+        "notes": "Undisclosed deal value for divestiture of robotics subsidiary"
+      }
+    }
+  ]
+}

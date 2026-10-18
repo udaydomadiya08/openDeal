@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}{{ target_list.name }} — Target List — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/discovery">Target Discovery</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/discovery/watchlists">Watchlists</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">{{ target_list.name }}</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ target_list.name }}</h1>
+        <p class="page-subtitle">{{ target_list.description or 'Custom target portfolio.' }} &bull; Created: {{ target_list.created_at }}</p>
+    </div>
+    <div class="page-actions">
+        <a href="/discovery/watchlists/{{ target_list.list_id }}/export?format=csv" class="btn btn-secondary">Export CSV</a>
+        <a href="/discovery/watchlists/{{ target_list.list_id }}/export?format=json" class="btn btn-secondary">Export JSON</a>
+        <a href="/discovery/watchlists" class="btn btn-primary">All Lists</a>
+    </div>
+</div>
+
+<div class="grid grid-3" style="margin-bottom: 2rem;">
+    <!-- Add Member Form -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Add Entity to List</h2>
+        </div>
+        <div class="card-body">
+            {% if error %}
+            <div class="alert alert-danger" style="margin-bottom: 1rem;">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/discovery/watchlists/{{ target_list.list_id }}/add">
+                <div class="form-group">
+                    <label for="entity_id" class="form-label">Select Indexed Entity *</label>
+                    <select name="entity_id" id="entity_id" class="form-select" required>
+                        <option value="">-- Choose Entity --</option>
+                        {% for ent in available_entities %}
+                        <option value="{{ ent.entity_id }}">
+                            {{ ent.canonical_name }} ({{ ent.legal_jurisdiction }} / {{ ent.entity_id }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="notes" class="form-label">Investment / Deal Notes</label>
+                    <input type="text" name="notes" id="notes" class="form-control" placeholder="Target fit, contact status...">
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" id="add-member-btn">Add to Watchlist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Members Table (Spans 2 columns) -->
+    <div style="grid-column: span 2;">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">List Members ({{ members|length }})</h2>
+                <span class="badge badge-verified">{{ target_list.status.value if target_list.status.value is defined else target_list.status }}</span>
+            </div>
+            <div class="card-body">
+                {% if members %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Entity</th>
+                                <th>Status</th>
+                                <th>Added At</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for m in members %}
+                            <tr>
+                                <td>
+                                    <a href="/companies/{{ m.entity_id }}"><strong>{{ m.entity_id }}</strong></a>
+                                </td>
+                                <td><span class="badge badge-derived">{{ m.status }}</span></td>
+                                <td class="text-muted">{{ m.added_at }}</td>
+                                <td class="text-muted">{{ m.notes or '—' }}</td>
+                                <td>
+                                    <form method="POST" action="/discovery/watchlists/{{ target_list.list_id }}/remove/{{ m.entity_id }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" data-confirm="Remove this candidate from the target list?">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>This list currently has zero members. Use the form on the left or browse target discovery to add candidates.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

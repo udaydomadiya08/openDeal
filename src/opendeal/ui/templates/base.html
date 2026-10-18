@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}OpenDeal — Private-Market Intelligence & Valuation{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <span>OpenDeal</span>
+      <span class="brand-badge">Local-First</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/" class="{% if active_tab == 'dashboard' %}active{% endif %}">Dashboard</a></li>
+      <li><a href="/companies" class="{% if active_tab == 'companies' %}active{% endif %}">Companies</a></li>
+      <li><a href="/facts" class="{% if active_tab == 'facts' %}active{% endif %}">Facts & Evidence</a></li>
+      <li><a href="/valuation" class="{% if active_tab == 'valuation' %}active{% endif %}">Valuation</a></li>
+      <li><a href="/research" class="{% if active_tab == 'research' %}active{% endif %}">Research</a></li>
+      <li><a href="/discovery" class="{% if active_tab == 'discovery' %}active{% endif %}">Discovery</a></li>
+      <li><a href="/deals" class="{% if active_tab == 'deals' %}active{% endif %}">Deals & M&A</a></li>
+      <li><a href="/workflows" class="{% if active_tab == 'workflows' %}active{% endif %}">Workflows</a></li>
+      <li><a href="/system" class="{% if active_tab == 'system' %}active{% endif %}">System</a></li>
+    </ul>
+    <div class="nav-search">
+      <form action="/companies" method="get">
+        <input type="text" name="q" placeholder="Search company, ticker, ID..." value="{{ search_query or '' }}">
+      </form>
+    </div>
+  </nav>
+
+  <!-- Subnav Breadcrumbs -->
+  <div class="subnav">
+    <div class="breadcrumbs">
+      <a href="/">Home</a>
+      {% block breadcrumbs %}{% endblock %}
+    </div>
+    <div class="subnav-badges">
+      <span class="badge badge-source">Offline Mode</span>
+      <span class="badge badge-derived">Deterministic Math</span>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="container">
+    {% if error_message %}
+      <div class="alert alert-danger">{{ error_message }}</div>
+    {% endif %}
+    {% if success_message %}
+      <div class="alert alert-success">{{ success_message }}</div>
+    {% endif %}
+    {% if warning_message %}
+      <div class="alert alert-warning">{{ warning_message }}</div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div>
+      <strong>OpenDeal</strong> Institutional Platform v{{ app_version }} • Local-first, private-market intelligence.
+    </div>
+    <div class="footer-hash">
+      PEAK Master Integrity: <span style="color: #059669;">Verified (ae2343527fb3...)</span>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
