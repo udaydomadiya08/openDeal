@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import sys
 from typing import Any, Dict, Optional
-import click
+import click  # type: ignore
 
 from opendeal import __version__
 from opendeal.config.paths import resolve_database_path
@@ -2001,7 +2001,7 @@ def deals_ingest(source: str, file_path: Optional[str], live: bool, entity_id: O
 def ui_command(host: str, port: int, reload_server: bool, db_path: Optional[str], allow_remote: bool) -> None:
     """Launch the OpenDeal local-first financial intelligence web application."""
     import socket
-    import uvicorn
+    import uvicorn  # type: ignore
     from opendeal.ui.app import create_app
 
     # Enforce loopback binding security unless explicitly authorized
