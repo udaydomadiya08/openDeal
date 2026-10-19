@@ -13,6 +13,7 @@ from opendeal.core.types import (
     ValidationStatus,
 )
 from opendeal.entities.models import CompanyEntity
+from opendeal.evidence.models import EvidenceRecord, SourceReference
 from opendeal.facts.models import FactRecord, TransformationStep, ValidationResult
 from opendeal.storage.base import StorageInterface
 from opendeal.connectors.sec.parser import SECParser
@@ -224,6 +225,50 @@ class FactPipeline:
         return {
             "entity_id": entity.entity_id,
             "source_id": source.source_id,
+            "evidence_count": len(evidence_records),
+            "total_facts": len(validated_facts),
+            "validated_count": sum(1 for f in validated_facts if f.validation_status == ValidationStatus.VALID),
+            "warning_count": sum(1 for f in validated_facts if f.validation_status == ValidationStatus.WARNING),
+            "invalid_count": sum(1 for f in validated_facts if f.validation_status == ValidationStatus.INVALID),
+            "validation_results_count": len(all_validation_results),
+        }
+
+    def ingest_statutory_facts(
+        self,
+        entity: CompanyEntity,
+        source: SourceReference,
+        evidence_records: List[EvidenceRecord],
+        raw_facts: List[FactRecord],
+        regulatory_authority: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Execute vertical ingestion for facts from any global statutory authority (e.g. MCA, ESMA, BaFin, Companies House, SEC)."""
+        # 1. Persist Entity & Source
+        self.storage.save_entity(entity)
+        self.storage.save_source(source)
+
+        # 2. Persist Evidence
+        for ev in evidence_records:
+            self.storage.save_evidence(ev)
+
+        # 3. Standardize and Validate facts
+        validated_facts: List[FactRecord] = []
+        all_validation_results: List[ValidationResult] = []
+
+        for raw in raw_facts:
+            std_fact = FactStandardizer.standardize(raw)
+            val_fact, results = FactValidator.validate(std_fact)
+
+            self.storage.save_fact(val_fact)
+            for res in results:
+                self.storage.save_validation_result(res)
+
+            validated_facts.append(val_fact)
+            all_validation_results.extend(results)
+
+        return {
+            "entity_id": entity.entity_id,
+            "source_id": source.source_id,
+            "regulatory_authority": regulatory_authority or "STATUTORY",
             "evidence_count": len(evidence_records),
             "total_facts": len(validated_facts),
             "validated_count": sum(1 for f in validated_facts if f.validation_status == ValidationStatus.VALID),

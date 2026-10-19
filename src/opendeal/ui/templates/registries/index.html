@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Global Securities Regulators & Corporate Registries — OpenDeal{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="/">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current">Global Registries & Regulators</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Global Securities Regulators & Corporate Registries</h1>
+        <p class="page-subtitle">Multi-jurisdiction directory of official securities commissions, national corporate registrars, stock exchanges, and disclosure portals</p>
+    </div>
+    <div class="page-actions">
+        <a href="/system" class="btn btn-secondary">System Health</a>
+        <a href="/discovery" class="btn btn-primary">Screen Targets</a>
+    </div>
+</div>
+
+<!-- Statutory Authority & Identifier Resolver -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Statutory Identifier & Filing Framework Resolver</h2>
+        <span class="badge badge-source">Multi-Jurisdiction Provenance</span>
+    </div>
+    <div class="card-body">
+        <p style="color: var(--color-text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+            Test automatic jurisdiction and authority resolution from corporate identifiers (e.g. Indian CIN, US CIK, UK CRN, French SIREN, or Global LEI).
+            When a regulatory filing source cannot be verified, OpenDeal strictly records <strong>DATA NOT FOUND</strong> rather than silently fabricating unverified figures.
+        </p>
+
+        <form method="GET" action="/registries" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            {% if selected_region %}
+            <input type="hidden" name="region" value="{{ selected_region }}">
+            {% endif %}
+            <input type="text" name="resolve_id" class="form-control" style="flex: 1; min-width: 280px;" placeholder="Enter CIN (India), CIK (US), CRN (UK), SIREN (France), or LEI..." value="{{ resolve_id }}">
+            <button type="submit" class="btn btn-primary">Resolve Authority</button>
+            {% if resolve_id %}
+            <a href="/registries{% if selected_region %}?region={{ selected_region }}{% endif %}" class="btn btn-secondary">Clear</a>
+            {% endif %}
+        </form>
+
+        {% if resolution %}
+        <div style="margin-top: 1.25rem; padding: 1.25rem; border-radius: var(--radius-md); background: {% if resolution.is_supported %}rgba(16, 185, 129, 0.08){% else %}rgba(245, 158, 11, 0.08){% endif %}; border: 1px solid {% if resolution.is_supported %}#10b981{% else %}#f59e0b{% endif %};">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div style="font-weight: 700; font-size: 1rem; color: {% if resolution.is_supported %}#065f46{% else %}#92400e{% endif %};">
+                    Resolution Status: {{ resolution.resolution_status }}
+                </div>
+                {% if resolution.detected_scheme %}
+                <span class="badge badge-derived">Detected Scheme: {{ resolution.detected_scheme }}</span>
+                {% endif %}
+            </div>
+
+            <p style="margin-bottom: 0.5rem; font-size: 0.875rem;">{{ resolution.guidance }}</p>
+
+            {% if resolution.authority %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 1rem; font-size: 0.8125rem;">
+                <div><strong>Jurisdiction:</strong> {{ resolution.authority.jurisdiction }} ({{ resolution.authority.country_code }})</div>
+                <div><strong>Securities Regulator:</strong> {{ resolution.authority.securities_regulator }}</div>
+                <div><strong>Corporate Registry:</strong> {{ resolution.authority.corporate_registry }}</div>
+                <div><strong>Stock Exchange:</strong> {{ resolution.authority.stock_exchange }}</div>
+                <div><strong>Official Portal:</strong> <a href="{{ resolution.recommended_filing_portal }}" target="_blank" rel="noopener noreferrer" style="color: #4f46e5; text-decoration: underline;">{{ resolution.recommended_filing_portal }}</a></div>
+                <div><strong>Reporting Currency:</strong> {{ resolution.authority.currency }}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Directory Filters & Search -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <!-- Region Pills -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="/registries" class="btn btn-sm {% if not selected_region %}btn-primary{% else %}btn-secondary{% endif %}">All Regions</a>
+            {% for r in regions %}
+            <a href="/registries?region={{ r }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-sm {% if selected_region == r %}btn-primary{% else %}btn-secondary{% endif %}">{{ r }}</a>
+            {% endfor %}
+        </div>
+
+        <!-- Search Bar -->
+        <form method="GET" action="/registries" style="display: flex; gap: 0.5rem;">
+            {% if selected_region %}
+            <input type="hidden" name="region" value="{{ selected_region }}">
+            {% endif %}
+            <input type="text" name="q" class="form-control" style="width: 240px; height: 34px; font-size: 0.8125rem;" placeholder="Search regulator or market..." value="{{ search_query }}">
+            <button type="submit" class="btn btn-sm btn-secondary">Search</button>
+        </form>
+    </div>
+</div>
+
+<!-- Authority Directory Table -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Registered Jurisdiction Authorities ({{ total_count }})</h2>
+        <span class="badge badge-source">Official Statutory Sources</span>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">Code</th>
+                        <th>Market / Country</th>
+                        <th>Region</th>
+                        <th>Securities Regulator</th>
+                        <th>Corporate Registry</th>
+                        <th>Stock Exchange</th>
+                        <th>Accounting</th>
+                        <th>Identifiers</th>
+                        <th>Portal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in authorities %}
+                    <tr>
+                        <td><span class="badge badge-source">{{ a.country_code }}</span></td>
+                        <td>
+                            <strong>{{ a.jurisdiction }}</strong>
+                            {% if a.notes %}
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted); max-width: 220px;">{{ a.notes }}</div>
+                            {% endif %}
+                        </td>
+                        <td>{{ a.region }}</td>
+                        <td><strong>{{ a.securities_regulator }}</strong></td>
+                        <td>{{ a.corporate_registry }}</td>
+                        <td style="font-size: 0.8125rem;">{{ a.stock_exchange }}</td>
+                        <td>
+                            {% for std in a.accounting_standards %}
+                            <span class="badge badge-derived" style="font-size: 0.6875rem;">{{ std }}</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for ident in a.primary_identifiers %}
+                            <span class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.6875rem;">{{ ident }}</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a href="{{ a.official_api_or_download_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">Official Site &rarr;</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
+                            No jurisdiction authorities match your search criteria.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

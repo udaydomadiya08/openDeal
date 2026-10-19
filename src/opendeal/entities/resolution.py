@@ -115,10 +115,38 @@ class EntityResolver:
                 continue
 
             # Check UK CRN
-            crn = cand.get_identifier("COMPANIES_HOUSE")
+            crn = cand.get_identifier("COMPANIES_HOUSE") or cand.get_identifier("CRN")
             if crn and (crn.upper() == term_upper or crn.lstrip("0") == term_upper.lstrip("0")):
                 ident_matches.append(cand)
                 matching_strategy = "EXACT_CRN"
+                continue
+
+            # Check Indian CIN (Ministry of Corporate Affairs)
+            cin = cand.get_identifier("CIN")
+            if cin and cin.upper() == term_upper:
+                ident_matches.append(cand)
+                matching_strategy = "EXACT_CIN"
+                continue
+
+            # Check Global LEI (GLEIF)
+            lei = cand.get_identifier("LEI")
+            if lei and lei.upper() == term_upper:
+                ident_matches.append(cand)
+                matching_strategy = "EXACT_LEI"
+                continue
+
+            # Check French SIREN
+            siren = cand.get_identifier("SIREN")
+            if siren and siren == search_term:
+                ident_matches.append(cand)
+                matching_strategy = "EXACT_SIREN"
+                continue
+
+            # Check German Commercial Register (HRB)
+            hrb = cand.get_identifier("HRB")
+            if hrb and hrb.upper() == term_upper:
+                ident_matches.append(cand)
+                matching_strategy = "EXACT_HRB"
                 continue
 
             # Check Ticker

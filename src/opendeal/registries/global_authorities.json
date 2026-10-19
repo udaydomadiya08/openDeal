@@ -1,0 +1,840 @@
+[
+  {
+    "country_code": "US",
+    "jurisdiction": "United States",
+    "region": "North America",
+    "securities_regulator": "Securities and Exchange Commission (SEC)",
+    "corporate_registry": "State Registries (e.g. Delaware Division of Corporations, California Secretary of State)",
+    "stock_exchange": "NYSE / NASDAQ / Cboe",
+    "official_disclosure_portal": "SEC EDGAR (Electronic Data Gathering, Analysis, and Retrieval)",
+    "financial_statement_source": "SEC Form 10-K (Annual), Form 10-Q (Quarterly), Form 8-K (Current)",
+    "ownership_disclosure_source": "SEC Schedule 13D / 13G (Beneficial Ownership), Form 4 (Insider Transactions)",
+    "official_api_or_download_url": "https://data.sec.gov",
+    "source_priority": 1,
+    "accounting_standards": [
+      "US-GAAP",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "CIK",
+      "IRS_EIN",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "USD",
+    "notes": "US companies incorporate at the state level (Delaware being dominant for enterprise). Public securities disclosures are federal under the SEC.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "CA",
+    "jurisdiction": "Canada",
+    "region": "North America",
+    "securities_regulator": "Canadian Securities Administrators (CSA) / OSC / AMF Quebec",
+    "corporate_registry": "Corporations Canada / Provincial Registrars (e.g. Ontario Business Registry, Registraire des entreprises Québec)",
+    "stock_exchange": "Toronto Stock Exchange (TSX) / TSX Venture / CSE",
+    "official_disclosure_portal": "SEDAR+ (System for Electronic Data Analysis and Retrieval +)",
+    "financial_statement_source": "SEDAR+ Audited Annual Financial Statements / MD&A",
+    "ownership_disclosure_source": "SEDI (System for Electronic Disclosure by Insiders) / Early Warning Reports",
+    "official_api_or_download_url": "https://www.sedarplus.ca",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS",
+      "US-GAAP"
+    ],
+    "primary_identifiers": [
+      "CORP_NUM",
+      "NEQ",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "CAD",
+    "notes": "Canada regulates securities at the provincial and territorial level; CSA serves as the coordinating umbrella body.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "MX",
+    "jurisdiction": "Mexico",
+    "region": "North America",
+    "securities_regulator": "Comisión Nacional Bancaria y de Valores (CNBV)",
+    "corporate_registry": "Registro Público de Comercio (RPC) / Secretaría de Economía",
+    "stock_exchange": "Bolsa Mexicana de Valores (BMV) / BIVA",
+    "official_disclosure_portal": "CNBV Sistema de Información Financiera / BMV Emisoras Portal",
+    "financial_statement_source": "Reporte Anual (Formulario BMV/CNBV) / Dictamen de Auditoría",
+    "ownership_disclosure_source": "Avisos de Tenencia Accionaria / Reportes Trimestrales de Capital Social",
+    "official_api_or_download_url": "https://www.gob.mx/cnbv",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS",
+      "NIF"
+    ],
+    "primary_identifiers": [
+      "RFC",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "MXN",
+    "notes": "Companies must register corporately with RPC and publicly listed issuers file with CNBV and exchanges.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "EU",
+    "jurisdiction": "European Union (Pan-European)",
+    "region": "Europe",
+    "securities_regulator": "European Securities and Markets Authority (ESMA)",
+    "corporate_registry": "European Business Registry (EBR) / BRIS (Business Registers Interconnection System)",
+    "stock_exchange": "Euronext / Deutsche Börse / BME / Borsa Italiana / Nasdaq Nordic",
+    "official_disclosure_portal": "ESMA Registers / ESEF (European Single Electronic Format)",
+    "financial_statement_source": "Annual Financial Report in ESEF XHTML/iXBRL format",
+    "ownership_disclosure_source": "National Officially Appointed Mechanisms (OAMs) under Transparency Directive",
+    "official_api_or_download_url": "https://www.esma.europa.eu",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "LEI",
+      "EUID"
+    ],
+    "currency": "EUR",
+    "notes": "ESMA coordinates EU-wide market rules and maintains registers of regulated entities; statutory filings are received by national NCAs and interconnected via BRIS.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "GB",
+    "jurisdiction": "United Kingdom",
+    "region": "Europe",
+    "securities_regulator": "Financial Conduct Authority (FCA)",
+    "corporate_registry": "Companies House (Executive Agency of Department for Business and Trade)",
+    "stock_exchange": "London Stock Exchange (LSE) / AIM / Aquis",
+    "official_disclosure_portal": "Companies House Service / FCA National Storage Mechanism (NSM)",
+    "financial_statement_source": "Companies House Annual Accounts (Full/Abridged/Micro-Entity) / FCA Annual Financial Report",
+    "ownership_disclosure_source": "Companies House PSC Register (Persons with Significant Control) / FCA Form TR-1",
+    "official_api_or_download_url": "https://api.company-information.service.gov.uk",
+    "source_priority": 1,
+    "accounting_standards": [
+      "UK-GAAP",
+      "IFRS",
+      "FRS-102"
+    ],
+    "primary_identifiers": [
+      "COMPANIES_HOUSE",
+      "CRN",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "GBP",
+    "notes": "Every UK registered enterprise (public or private) files statutory accounts and PSC ownership at Companies House. Listed issuers also submit to the FCA NSM.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "DE",
+    "jurisdiction": "Germany",
+    "region": "Europe",
+    "securities_regulator": "Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin)",
+    "corporate_registry": "Gemeinsames Registerportal der Länder (Handelsregister) / Unternehmensregister",
+    "stock_exchange": "Deutsche Börse (Frankfurt Stock Exchange / XETRA)",
+    "official_disclosure_portal": "Bundesanzeiger (Federal Gazette) / Unternehmensregister.de",
+    "financial_statement_source": "Jahresabschluss / Konzernabschluss (Commercial Code HGB or IFRS)",
+    "ownership_disclosure_source": "Transparenzregister (Transparency Register) / BaFin WpHG Stimmrechtsmitteilungen",
+    "official_api_or_download_url": "https://www.unternehmensregister.de",
+    "source_priority": 1,
+    "accounting_standards": [
+      "HGB",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "HRB",
+      "HRA",
+      "LEI",
+      "WKN"
+    ],
+    "currency": "EUR",
+    "notes": "Statutory corporate balance sheets published in Bundesanzeiger. Corporate identity registered at local district courts (Amtsgericht) via Handelsregister HRB/HRA.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "FR",
+    "jurisdiction": "France",
+    "region": "Europe",
+    "securities_regulator": "Autorité des marchés financiers (AMF)",
+    "corporate_registry": "Institut National de la Propriété Industrielle (INPI) / Infogreffe (Greffes des Tribunaux de Commerce)",
+    "stock_exchange": "Euronext Paris / Euronext Growth",
+    "official_disclosure_portal": "AMF BDIF (Base des décisions et informations financières) / Infogreffe",
+    "financial_statement_source": "Comptes Annuels déposés au Greffe / Document d'Enregistrement Universel (URD)",
+    "ownership_disclosure_source": "Déclarations de Franchissement de Seuil (AMF) / Registre des Bénéficiaires Effectifs (RBE)",
+    "official_api_or_download_url": "https://www.amf-france.org",
+    "source_priority": 1,
+    "accounting_standards": [
+      "French-GAAP",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "SIREN",
+      "SIRET",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "EUR",
+    "notes": "Every French company has a 9-digit SIREN identifier issued by INSEE and registers financial statements with the commercial court registry.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "IT",
+    "jurisdiction": "Italy",
+    "region": "Europe",
+    "securities_regulator": "Commissione Nazionale per le Società e la Borsa (CONSOB)",
+    "corporate_registry": "Registro delle Imprese (Unioncamere / Infocamere)",
+    "stock_exchange": "Borsa Italiana (Euronext Group)",
+    "official_disclosure_portal": "SDIR (Sistema di Diffusione delle Informazioni Regolamentate) / Registro Imprese",
+    "financial_statement_source": "Bilancio d'Esercizio in XBRL / Relazione Finanziaria Annuale",
+    "ownership_disclosure_source": "CONSOB Modello 120 (Partecipazioni Rilevanti) / Registro Titolari Effettivi",
+    "official_api_or_download_url": "https://www.registroimprese.it",
+    "source_priority": 1,
+    "accounting_standards": [
+      "Italian-GAAP",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "CODICE_FISCALE",
+      "PARTITA_IVA",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "EUR",
+    "notes": "Corporate registry managed by Italian Chambers of Commerce; financial statements deposited annually in standard XBRL format.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "ES",
+    "jurisdiction": "Spain",
+    "region": "Europe",
+    "securities_regulator": "Comisión Nacional del Mercado de Valores (CNMV)",
+    "corporate_registry": "Registro Mercantil Central / Registros Mercantiles Provinciales",
+    "stock_exchange": "Bolsas y Mercados Españoles (BME / SIX Group)",
+    "official_disclosure_portal": "CNMV Registros Oficiales / Registradores de España Portal",
+    "financial_statement_source": "Cuentas Anuales Oficiales depositadas en el Registro Mercantil / Informe Financiero Anual",
+    "ownership_disclosure_source": "Notificaciones de Participaciones Significativas (CNMV) / Registro de Titularidades Reales",
+    "official_api_or_download_url": "https://www.cnmv.es",
+    "source_priority": 1,
+    "accounting_standards": [
+      "PGC",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "NIF",
+      "CIF",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "EUR",
+    "notes": "Statutory corporate accounting submitted to provincial mercantile registries; listed equity disclosures held by CNMV.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "NL",
+    "jurisdiction": "Netherlands",
+    "region": "Europe",
+    "securities_regulator": "Autoriteit Financiële Markten (AFM)",
+    "corporate_registry": "Kamer van Koophandel (KVK - Dutch Chamber of Commerce)",
+    "stock_exchange": "Euronext Amsterdam",
+    "official_disclosure_portal": "KVK Handelsregister / AFM Register Geëmitteerde Financiële Instrumenten",
+    "financial_statement_source": "Jaarrekening (Annual Accounts filed via SBR / Standard Business Reporting)",
+    "ownership_disclosure_source": "AFM Substantive Holdings Register / KVK UBO-register",
+    "official_api_or_download_url": "https://www.kvk.nl",
+    "source_priority": 1,
+    "accounting_standards": [
+      "Dutch-GAAP",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "KVK_NUM",
+      "RSIN",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "EUR",
+    "notes": "Dutch entities file annual accounts through Standard Business Reporting (SBR) into the KVK repository.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "CH",
+    "jurisdiction": "Switzerland",
+    "region": "Europe",
+    "securities_regulator": "Swiss Financial Market Supervisory Authority (FINMA)",
+    "corporate_registry": "Zentraler Firmenindex (ZEFIX) / Cantonal Commercial Registries (Handelsregister)",
+    "stock_exchange": "SIX Swiss Exchange / BX Swiss",
+    "official_disclosure_portal": "Schweizerisches Handelsamtsblatt (SHAB) / SIX Exchange Regulation Disclosure",
+    "financial_statement_source": "Geschäftsbericht (Swiss Code of Obligations Art 957+ or Swiss GAAP FER / IFRS)",
+    "ownership_disclosure_source": "SIX Significant Shareholders Database",
+    "official_api_or_download_url": "https://www.zefix.ch",
+    "source_priority": 1,
+    "accounting_standards": [
+      "Swiss-CO",
+      "Swiss-GAAP-FER",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "UID",
+      "CH_ID",
+      "LEI",
+      "VALOR"
+    ],
+    "currency": "CHF",
+    "notes": "Companies receive a federal Unique Enterprise Identification (UID). Unlisted private company financial statements are generally not public unless required by bankruptcy or court order.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "BE",
+    "jurisdiction": "Belgium",
+    "region": "Europe",
+    "securities_regulator": "Financial Services and Markets Authority (FSMA)",
+    "corporate_registry": "Crossroads Bank for Enterprises (Banque-Carrefour des Entreprises / Kruispuntbank van Ondernemingen)",
+    "stock_exchange": "Euronext Brussels",
+    "official_disclosure_portal": "National Bank of Belgium (NBB) Central Balance Sheet Office / FSMA Portal",
+    "financial_statement_source": "Comptes Annuels déposés à la Centrale des Bilans (NBB)",
+    "ownership_disclosure_source": "FSMA Shareholding Notifications / Belgian UBO Register",
+    "official_api_or_download_url": "https://www.nbb.be/en/central-balance-sheet-office",
+    "source_priority": 1,
+    "accounting_standards": [
+      "Belgian-GAAP",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "BCE_NUM",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "EUR",
+    "notes": "The National Bank of Belgium (NBB) operates one of the most accessible central balance sheet repositories in Europe.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "IE",
+    "jurisdiction": "Ireland",
+    "region": "Europe",
+    "securities_regulator": "Central Bank of Ireland",
+    "corporate_registry": "Companies Registration Office (CRO)",
+    "stock_exchange": "Euronext Dublin",
+    "official_disclosure_portal": "CRO Online Search Portal / Central Bank Regulatory Disclosures",
+    "financial_statement_source": "CRO Form B1 Annual Return & Financial Statements",
+    "ownership_disclosure_source": "Central Register of Beneficial Ownership of Companies and Industrial and Provident Societies (RBO)",
+    "official_api_or_download_url": "https://www.cro.ie",
+    "source_priority": 1,
+    "accounting_standards": [
+      "Irish-GAAP",
+      "FRS-102",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "CRO_NUM",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "EUR",
+    "notes": "Major jurisdiction for multinational European holding companies and tech corporate headquarters.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "LU",
+    "jurisdiction": "Luxembourg",
+    "region": "Europe",
+    "securities_regulator": "Commission de Surveillance du Secteur Financier (CSSF)",
+    "corporate_registry": "Registre de Commerce et des Sociétés (RCS) / Luxembourg Business Registers (LBR)",
+    "stock_exchange": "Luxembourg Stock Exchange (LuxSE)",
+    "official_disclosure_portal": "Recueil Électronique des Sociétés et Associations (RESA) / LBR Central Balance Sheet",
+    "financial_statement_source": "Comptes Annuels eCDF (Plateforme électronique de collecte des données financières)",
+    "ownership_disclosure_source": "Registre des Bénéficiaires Effectifs (RBE)",
+    "official_api_or_download_url": "https://www.lbr.lu",
+    "source_priority": 1,
+    "accounting_standards": [
+      "Lux-GAAP",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "RCS_NUM",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "EUR",
+    "notes": "Primary European domicile for private equity, investment funds, and corporate holding SPVs.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "SE",
+    "jurisdiction": "Sweden",
+    "region": "Europe",
+    "securities_regulator": "Finansinspektionen (FI)",
+    "corporate_registry": "Bolagsverket (Swedish Companies Registration Office)",
+    "stock_exchange": "Nasdaq Stockholm / Nordic Growth Market",
+    "official_disclosure_portal": "Bolagsverket Annual Reports Register / Finansinspektionen Börsinformation",
+    "financial_statement_source": "Årsredovisning (Annual Report filed with Bolagsverket)",
+    "ownership_disclosure_source": "Finansinspektionen Insynsregistret / Flaggningsmeddelanden",
+    "official_api_or_download_url": "https://bolagsverket.se",
+    "source_priority": 1,
+    "accounting_standards": [
+      "Swedish-K3",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "ORG_NUM",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "SEK",
+    "notes": "All Swedish limited liability companies (Aktiebolag / AB) must submit annual reports to Bolagsverket.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "NO",
+    "jurisdiction": "Norway",
+    "region": "Europe",
+    "securities_regulator": "Finanstilsynet",
+    "corporate_registry": "Brønnøysundregistrene (The Brønnøysund Register Centre)",
+    "stock_exchange": "Oslo Børs (Euronext Group)",
+    "official_disclosure_portal": "Regnskapsregisteret (Register of Company Accounts) / NewsWeb Oslo Børs",
+    "financial_statement_source": "Årsregnskap (Annual Accounts submitted electronically)",
+    "ownership_disclosure_source": "Register of Beneficial Owners (Register over reelle rettighetshavere) / NewsWeb Flaggemeldinger",
+    "official_api_or_download_url": "https://www.brreg.no",
+    "source_priority": 1,
+    "accounting_standards": [
+      "NGAAP",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "ORG_NUM",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "NOK",
+    "notes": "Norway provides open public access to annual accounting statements via Regnskapsregisteret.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "IN",
+    "jurisdiction": "India",
+    "region": "Asia-Pacific",
+    "securities_regulator": "Securities and Exchange Board of India (SEBI)",
+    "corporate_registry": "Ministry of Corporate Affairs (MCA) / Registrar of Companies (ROC)",
+    "stock_exchange": "National Stock Exchange of India (NSE) / BSE Limited",
+    "official_disclosure_portal": "MCA21 Portal / NSE Corporate Disclosures / BSE Corporate Announcements",
+    "financial_statement_source": "MCA Form AOC-4 (Financial Statements in XBRL/Ind AS) / Annual Audited Report",
+    "ownership_disclosure_source": "MCA Form MGT-7 (Annual Return) / SEBI SAST Reg 29 Disclosures / Shareholding Pattern (Reg 31)",
+    "official_api_or_download_url": "https://www.mca.gov.in",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IND-AS",
+      "AS"
+    ],
+    "primary_identifiers": [
+      "CIN",
+      "PAN",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "INR",
+    "notes": "CRITICAL: India's corporate registry (MCA) is separate from SEBI. MCA maintains statutory records for all private and public entities under unique 21-digit CINs. Listed entities file with NSE/BSE and SEBI.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "JP",
+    "jurisdiction": "Japan",
+    "region": "Asia-Pacific",
+    "securities_regulator": "Financial Services Agency (JFSA)",
+    "corporate_registry": "Legal Affairs Bureau (Ministry of Justice - Hōmukyoku)",
+    "stock_exchange": "Tokyo Stock Exchange (Japan Exchange Group / JPX)",
+    "official_disclosure_portal": "EDINET (Electronic Disclosure for Investors' NETwork) / TDnet",
+    "financial_statement_source": "Yukashoken Hokokusho (Annual Securities Report filed in EDINET iXBRL)",
+    "ownership_disclosure_source": "Tairyo Hoyu Hokokusho (Large Shareholding Report under 5% Rule)",
+    "official_api_or_download_url": "https://disclosure2.edinet-fsa.go.jp",
+    "source_priority": 1,
+    "accounting_standards": [
+      "J-GAAP",
+      "IFRS",
+      "US-GAAP"
+    ],
+    "primary_identifiers": [
+      "CORPORATE_NUMBER",
+      "EDINET_CODE",
+      "LEI",
+      "SECURITY_CODE"
+    ],
+    "currency": "JPY",
+    "notes": "Every registered legal person in Japan has a 13-digit Corporate Number. Public disclosures are strictly submitted to EDINET in XBRL format.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "CN",
+    "jurisdiction": "China",
+    "region": "Asia-Pacific",
+    "securities_regulator": "China Securities Regulatory Commission (CSRC)",
+    "corporate_registry": "State Administration for Market Regulation (SAMR) / National Enterprise Credit Information Publicity System",
+    "stock_exchange": "Shanghai Stock Exchange (SSE) / Shenzhen Stock Exchange (SZSE) / Beijing Stock Exchange (BSE)",
+    "official_disclosure_portal": "CNINFO (Juchao Information) / SAMR National Publicity System (gsxt.gov.cn)",
+    "financial_statement_source": "Annual Audited Financial Statements (CAS - Chinese Accounting Standards)",
+    "ownership_disclosure_source": "SAMR Shareholder Registration / Listed Company Substantial Shareholder Notices",
+    "official_api_or_download_url": "https://www.gsxt.gov.cn",
+    "source_priority": 1,
+    "accounting_standards": [
+      "CAS",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "USCC",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "CNY",
+    "notes": "Every Chinese enterprise possesses an 18-digit Unified Social Credit Code (USCC) managed by SAMR.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "HK",
+    "jurisdiction": "Hong Kong",
+    "region": "Asia-Pacific",
+    "securities_regulator": "Securities and Futures Commission (SFC)",
+    "corporate_registry": "Companies Registry (CR) - e-Services Portal (Integrated Companies Registry Information System ICRIS)",
+    "stock_exchange": "Hong Kong Exchanges and Clearing (HKEX)",
+    "official_disclosure_portal": "HKEXnews (Official Issuer Disclosure Website) / CR Cyber Search Centre",
+    "financial_statement_source": "HKEX Annual Report / Audited Financial Statements (HKFRS)",
+    "ownership_disclosure_source": "Disclosure of Interests (DI) under Part XV of Securities and Futures Ordinance",
+    "official_api_or_download_url": "https://www.hkexnews.hk",
+    "source_priority": 1,
+    "accounting_standards": [
+      "HKFRS",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "CR_NUM",
+      "BR_NUM",
+      "LEI",
+      "STOCK_CODE"
+    ],
+    "currency": "HKD",
+    "notes": "Gateway for international investment into Chinese enterprise; public announcements hosted centrally on HKEXnews.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "SG",
+    "jurisdiction": "Singapore",
+    "region": "Asia-Pacific",
+    "securities_regulator": "Monetary Authority of Singapore (MAS)",
+    "corporate_registry": "Accounting and Corporate Regulatory Authority (ACRA)",
+    "stock_exchange": "Singapore Exchange (SGX)",
+    "official_disclosure_portal": "BizFile+ (ACRA) / SGX Corporate Disclosures",
+    "financial_statement_source": "ACRA Financial Statements filed in XBRL / SGX Full Year Results",
+    "ownership_disclosure_source": "ACRA Register of Registrable Controllers (RORC) / SGX Substantial Shareholder Notifications",
+    "official_api_or_download_url": "https://www.acra.gov.sg",
+    "source_priority": 1,
+    "accounting_standards": [
+      "SFRS-I",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "UEN",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "SGD",
+    "notes": "All registered business entities possess a unique 9 or 10-character Unique Entity Number (UEN) issued by ACRA.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "AU",
+    "jurisdiction": "Australia",
+    "region": "Asia-Pacific",
+    "securities_regulator": "Australian Securities and Investments Commission (ASIC)",
+    "corporate_registry": "ASIC Companies Register / Australian Business Register (ABR)",
+    "stock_exchange": "Australian Securities Exchange (ASX) / Cboe Australia",
+    "official_disclosure_portal": "ASIC Connect / ASX Company Announcements Platform",
+    "financial_statement_source": "ASIC Form 388 (Copy of Financial Statements and Reports) / ASX Appendix 4E & Annual Report",
+    "ownership_disclosure_source": "Notice of Initial Substantial Holder (Form 603) / Ceasing (Form 605)",
+    "official_api_or_download_url": "https://asic.gov.au",
+    "source_priority": 1,
+    "accounting_standards": [
+      "AASB",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "ACN",
+      "ABN",
+      "LEI",
+      "ASX_CODE"
+    ],
+    "currency": "AUD",
+    "notes": "ASIC uniquely combines both corporate registry functions and market regulatory responsibilities under 9-digit Australian Company Numbers (ACN).",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "KR",
+    "jurisdiction": "South Korea",
+    "region": "Asia-Pacific",
+    "securities_regulator": "Financial Services Commission (FSC) / Financial Supervisory Service (FSS)",
+    "corporate_registry": "Supreme Court Corporate Registration Bureau (Internet Registry Office)",
+    "stock_exchange": "Korea Exchange (KRX - KOSPI / KOSDAQ / KONEX)",
+    "official_disclosure_portal": "DART (Data Analysis, Retrieval, and Transfer System - dart.fss.or.kr) / KIND (KRX)",
+    "financial_statement_source": "DART Business Report (Sa-eop-bo-go-seo) in K-IFRS",
+    "ownership_disclosure_source": "DART 5% Bulk Holding Reports (Ju-sik-deung-ui-dae-ryang-bo-yu-bo-go-seo)",
+    "official_api_or_download_url": "https://dart.fss.or.kr",
+    "source_priority": 1,
+    "accounting_standards": [
+      "K-IFRS",
+      "K-GAAP"
+    ],
+    "primary_identifiers": [
+      "CORP_CODE",
+      "BRN",
+      "LEI",
+      "KRX_CODE"
+    ],
+    "currency": "KRW",
+    "notes": "South Korea's DART system provides REST APIs for electronic corporate and financial disclosure retrieval.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "SA",
+    "jurisdiction": "Saudi Arabia",
+    "region": "Middle East",
+    "securities_regulator": "Capital Market Authority (CMA)",
+    "corporate_registry": "Ministry of Commerce (Commercial Registration - CR)",
+    "stock_exchange": "Saudi Exchange (Tadawul)",
+    "official_disclosure_portal": "Tadawul Corporate Disclosures / CMA Portal",
+    "financial_statement_source": "Tadawul Audited Annual Financial Statements (SOCPA / IFRS)",
+    "ownership_disclosure_source": "CMA Notification of Substantial Ownership (>5%)",
+    "official_api_or_download_url": "https://www.saudiexchange.sa",
+    "source_priority": 1,
+    "accounting_standards": [
+      "SOCPA-IFRS",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "CR_NUM",
+      "LEI",
+      "TADAWUL_SYMBOL"
+    ],
+    "currency": "SAR",
+    "notes": "Commercial Registration (CR) number issued by Ministry of Commerce is mandatory for all corporate activity in Saudi Arabia.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "AE",
+    "jurisdiction": "United Arab Emirates",
+    "region": "Middle East",
+    "securities_regulator": "Securities and Commodities Authority (SCA) / DFSA (DIFC) / FSRA (ADGM)",
+    "corporate_registry": "National Economic Register (NER) / Free Zone Registrars (DIFC, ADGM, DMCC)",
+    "stock_exchange": "Dubai Financial Market (DFM) / Abu Dhabi Securities Exchange (ADX) / Nasdaq Dubai",
+    "official_disclosure_portal": "DFM Market Disclosures / ADX Disclosures / DIFC Public Register",
+    "financial_statement_source": "Audited Annual Financial Statements (IFRS)",
+    "ownership_disclosure_source": "SCA/Exchange Substantial Shareholding Notices",
+    "official_api_or_download_url": "https://www.sca.gov.ae",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "TRADE_LICENSE",
+      "DIFC_NUM",
+      "ADGM_NUM",
+      "LEI"
+    ],
+    "currency": "AED",
+    "notes": "CRITICAL: The UAE operates a multi-jurisdictional system with onshore mainland entities (SCA/NER) and independent financial free-zones (DIFC regulated by DFSA, ADGM regulated by FSRA).",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "IL",
+    "jurisdiction": "Israel",
+    "region": "Middle East",
+    "securities_regulator": "Israel Securities Authority (ISA)",
+    "corporate_registry": "Israeli Corporations Authority (Companies Registrar - Rasham HaHevrot)",
+    "stock_exchange": "Tel Aviv Stock Exchange (TASE)",
+    "official_disclosure_portal": "MAGNA (Distribution Network of Israel Securities Authority - magna.isa.gov.il) / MAYA (TASE)",
+    "financial_statement_source": "Periodic Financial Statements (Bar-Din format in IFRS)",
+    "ownership_disclosure_source": "MAGNA Immediate Reports on Interested Parties (Baalei Inyan)",
+    "official_api_or_download_url": "https://www.magna.isa.gov.il",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS",
+      "Israeli-GAAP"
+    ],
+    "primary_identifiers": [
+      "COMPANY_NUM",
+      "LEI",
+      "TASE_SYMBOL"
+    ],
+    "currency": "ILS",
+    "notes": "All Israeli public companies file disclosure reports electronically into MAGNA.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "ZA",
+    "jurisdiction": "South Africa",
+    "region": "Africa",
+    "securities_regulator": "Financial Sector Conduct Authority (FSCA) / Prudential Authority",
+    "corporate_registry": "Companies and Intellectual Property Commission (CIPC)",
+    "stock_exchange": "Johannesburg Stock Exchange (JSE) / A2X",
+    "official_disclosure_portal": "CIPC e-Services / SENS (Stock Exchange News Service - JSE)",
+    "financial_statement_source": "CIPC Annual Financial Statements (XBRL mandate) / JSE Audited Results",
+    "ownership_disclosure_source": "CIPC Beneficial Ownership Register / SENS Substantial Holdings",
+    "official_api_or_download_url": "https://www.cipc.co.za",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS",
+      "SA-GAAP"
+    ],
+    "primary_identifiers": [
+      "CIPC_REG_NUM",
+      "LEI",
+      "JSE_CODE"
+    ],
+    "currency": "ZAR",
+    "notes": "CIPC mandates inline XBRL filing for qualifying private and public South African enterprises.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "NG",
+    "jurisdiction": "Nigeria",
+    "region": "Africa",
+    "securities_regulator": "Securities and Exchange Commission (SEC Nigeria)",
+    "corporate_registry": "Corporate Affairs Commission (CAC)",
+    "stock_exchange": "Nigerian Exchange Group (NGX)",
+    "official_disclosure_portal": "CAC Company Registration Portal / NGX Issuers Portal",
+    "financial_statement_source": "Audited Annual Financial Statements (IFRS)",
+    "ownership_disclosure_source": "CAC Persons with Significant Control (PSC) Register / NGX Free Float Reports",
+    "official_api_or_download_url": "https://www.cac.gov.ng",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "RC_NUM",
+      "LEI",
+      "NGX_TICKER"
+    ],
+    "currency": "NGN",
+    "notes": "Companies receive RC (Registered Company) numbers from CAC; filings governed by CAMA 2020.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "KE",
+    "jurisdiction": "Kenya",
+    "region": "Africa",
+    "securities_regulator": "Capital Markets Authority (CMA Kenya)",
+    "corporate_registry": "Business Registration Service (BRS - Office of the Attorney General)",
+    "stock_exchange": "Nairobi Securities Exchange (NSE)",
+    "official_disclosure_portal": "BRS eCitizen Portal / NSE Market Announcements",
+    "financial_statement_source": "Audited Annual Financial Statements (IFRS)",
+    "ownership_disclosure_source": "BRS Beneficial Ownership Register / CMA Substantial Shareholding Notices",
+    "official_api_or_download_url": "https://www.cma.or.ke",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "CPR_NUM",
+      "LEI",
+      "NSE_TICKER"
+    ],
+    "currency": "KES",
+    "notes": "Key economic hub for East Africa; corporate registrations managed centrally under BRS.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "BR",
+    "jurisdiction": "Brazil",
+    "region": "Latin America",
+    "securities_regulator": "Comissão de Valores Mobiliários (CVM)",
+    "corporate_registry": "Juntas Comerciais Estaduais (e.g. JUCESP in São Paulo) / Receita Federal do Brasil",
+    "stock_exchange": "B3 (Brasil, Bolsa, Balcão)",
+    "official_disclosure_portal": "CVM Dados Abertos (RadInfol / ENET) / B3 Empresas Listadas",
+    "financial_statement_source": "DFP (Demonstrações Financeiras Padronizadas) / ITR (Informações Trimestrais)",
+    "ownership_disclosure_source": "Formulário de Referência (Item 8 - Capital Social e Ações) / CVM Art 12 Negociação de Administradores",
+    "official_api_or_download_url": "https://dados.cvm.gov.br",
+    "source_priority": 1,
+    "accounting_standards": [
+      "BR-GAAP",
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "CNPJ",
+      "NIRE",
+      "LEI",
+      "B3_TICKER"
+    ],
+    "currency": "BRL",
+    "notes": "Every enterprise in Brazil requires a 14-digit CNPJ number from Receita Federal. CVM provides open datasets of all standardized financial statements (DFP).",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "CL",
+    "jurisdiction": "Chile",
+    "region": "Latin America",
+    "securities_regulator": "Comisión para el Mercado Financiero (CMF)",
+    "corporate_registry": "Conservador de Bienes Raíces (Registro de Comercio) / Registro de Empresas y Sociedades (RES)",
+    "stock_exchange": "Bolsa de Santiago / Bolsa Electrónica de Chile",
+    "official_disclosure_portal": "CMF Portal de Información Financiera / Bolsa de Santiago Portal",
+    "financial_statement_source": "Estados Financieros Consolidados Ficha CMF (IFRS)",
+    "ownership_disclosure_source": "Nómina de los 12 Mayores Accionistas / Hechos Esenciales",
+    "official_api_or_download_url": "https://www.cmfchile.cl",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "RUT",
+      "LEI",
+      "TICKER"
+    ],
+    "currency": "CLP",
+    "notes": "CMF serves as the integrated supervisory agency for banks, insurance, and securities in Chile.",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "KZ",
+    "jurisdiction": "Kazakhstan",
+    "region": "Central Asia",
+    "securities_regulator": "Agency for Regulation and Development of the Financial Market (ARDFM) / AFSA (AIFC)",
+    "corporate_registry": "Ministry of Justice of the Republic of Kazakhstan (State Database of Legal Entities)",
+    "stock_exchange": "Kazakhstan Stock Exchange (KASE) / Astana International Exchange (AIX)",
+    "official_disclosure_portal": "Financial Statements Depository (dfo.kz) / KASE Disclosures",
+    "financial_statement_source": "Annual Financial Statements registered in DFO.KZ",
+    "ownership_disclosure_source": "DFO.KZ Information on Major Participants / KASE Disclosures",
+    "official_api_or_download_url": "https://dfo.kz",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS"
+    ],
+    "primary_identifiers": [
+      "BIN",
+      "LEI",
+      "KASE_TICKER"
+    ],
+    "currency": "KZT",
+    "notes": "Key Central Asian financial hub. Features dual regulatory architecture: national onshore (ARDFM/KASE) and English common law offshore hub (AIFC/AIX).",
+    "last_verified_at": "2026-10-19"
+  },
+  {
+    "country_code": "GLOBAL",
+    "jurisdiction": "Global / Supranational Entities",
+    "region": "Global",
+    "securities_regulator": "International Organization of Securities Commissions (IOSCO)",
+    "corporate_registry": "Global Legal Entity Identifier Foundation (GLEIF)",
+    "stock_exchange": "Cross-Border / Multi-Listing Infrastructure",
+    "official_disclosure_portal": "GLEIF Golden Copy Search / IOSCO Member Information Repository",
+    "financial_statement_source": "Parent Consolidation Audited Report",
+    "ownership_disclosure_source": "GLEIF Level 2 Data (Who Owns Whom - Direct and Ultimate Parents)",
+    "official_api_or_download_url": "https://api.gleif.org",
+    "source_priority": 1,
+    "accounting_standards": [
+      "IFRS",
+      "US-GAAP"
+    ],
+    "primary_identifiers": [
+      "LEI",
+      "ISIN",
+      "FIGI"
+    ],
+    "currency": "USD",
+    "notes": "GLEIF provides unambiguous 20-character Legal Entity Identifiers linking corporate parentage globally across jurisdictions.",
+    "last_verified_at": "2026-10-19"
+  }
+]

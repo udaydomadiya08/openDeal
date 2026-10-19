@@ -19,6 +19,7 @@ from opendeal.ui.routes import (
     deals,
     discovery,
     facts,
+    registries,
     research,
     system,
     valuation,
@@ -349,6 +350,7 @@ def create_app(
     app.include_router(discovery.router)
     app.include_router(deals.router)
     app.include_router(workflows.router)
+    app.include_router(registries.router)
     app.include_router(system.router)
 
     # Health check route

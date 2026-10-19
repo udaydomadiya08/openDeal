@@ -184,33 +184,37 @@ OpenDeal can analyze **any company** across three primary operational modes:
 
 ### Global & Multi-Jurisdictional Coverage
 
-OpenDeal is engineered from first principles for **cross-border institutional analysis across worldwide markets**:
+OpenDeal is engineered from first principles for **cross-border institutional analysis across worldwide markets**, recognizing that there is no single global SEC:
 
-1. **Foreign Private Issuers (FPIs):** Non-US global corporations that file annual Form 20-F and current Form 6-K statements with the SEC can be ingested directly:
-   - **TSMC (Taiwan):** `opendeal ingest sec TSM --live`
-   - **ASML (Netherlands):** `opendeal ingest sec ASML --live`
-   - **Alibaba Group (China):** `opendeal ingest sec BABA --live`
-   - **AstraZeneca (UK / Sweden):** `opendeal ingest sec AZN --live`
-   - **SAP SE (Germany):** `opendeal ingest sec SAP --live`
-   - **Sony Group (Japan):** `opendeal ingest sec SONY --live`
-   - **Toyota Motor Corp (Japan):** `opendeal ingest sec TM --live`
-   - **Infosys (India):** `opendeal ingest sec INFY --live`
+1. **Global Securities Regulators & Corporate Registries Directory:** Built-in directory of **33+ authoritative national frameworks** across all major global regions (North America, Europe, Asia-Pacific, Middle East, Africa, Latin America, Central Asia, and Global GLEIF/IOSCO):
+   - **India:** Strictly distinguishes the corporate registry (**Ministry of Corporate Affairs - MCA** / ROC for master data, Form AOC-4 financial statements in Ind AS, and Form MGT-7 shareholding) from the securities regulator (**SEBI**) and stock exchanges (**NSE / BSE**).
+   - **Europe:** Distinguishes EU-wide coordination (**ESMA**) from national securities regulators (**BaFin** Germany, **AMF** France, **CONSOB** Italy, **CNMV** Spain, **AFM** Netherlands, **FCA** UK, **FINMA** Switzerland) and statutory corporate registries (**Handelsregister/Bundesanzeiger**, **Infogreffe/INPI**, **Companies House**).
+   - **North America:** US (**SEC EDGAR** / State Registries), Canada (**CSA** provincial coordination / **SEDAR+**), Mexico (**CNBV**).
+   - **Asia-Pacific & Middle East:** Japan (**JFSA / EDINET**), China (**CSRC / SAMR**), Singapore (**MAS / ACRA**), Australia (**ASIC**), Saudi Arabia (**CMA / Tadawul**), UAE (**SCA** mainland alongside **DFSA** DIFC and **FSRA** ADGM free zones).
 
-2. **International Legal Entity Identifiers:** The entity resolution engine natively indexes global identity standards:
-   - **`LEI` (Legal Entity Identifier):** 20-character ISO 17442 standard managed by GLEIF across 200+ countries.
-   - **`TICKER`:** International exchange tickers (NYSE, NASDAQ, LSE, Euronext, TSX, Tokyo, HKEX, NSE, SGX).
-   - **`CIN`:** Corporate Identity Number (India).
-   - **`SIREN` / `SIRET`:** Official registry numbers (France).
-   - **`COMPANIES_HOUSE`:** 8-digit Company Registration Number (UK).
-   - **`CIK` / `IRS_EIN`:** Central Index Key & Federal Tax ID (US).
+2. **Automated Identifier Detection & Regulatory Framework Resolution:**
+   ```bash
+   # List international jurisdiction authorities by region
+   opendeal registries list --region Asia-Pacific
 
-3. **Multi-Currency Engine (ISO 4217):** Native support for all major global currencies with strict currency tagging to prevent erroneous cross-currency arithmetic:
+   # Inspect specific national statutory filing requirements and accounting standards
+   opendeal registries get IN
+   opendeal registries get EU
+
+   # Resolve exact filing sources from an identifier (CIN, CIK, CRN, LEI)
+   opendeal registries resolve U72200KA2015PTC084999   # Indian CIN -> MCA / Ind AS
+   opendeal registries resolve 01234567                 # UK CRN -> Companies House
+   ```
+
+3. **Strict Epistemic Integrity ("DATA NOT FOUND" Guarantee):** When official regulatory filings or jurisdictions cannot be authenticated, OpenDeal strictly records **`DATA NOT FOUND`** rather than hallucinating an unverified figure or substituting silent zeroes.
+
+4. **Multi-Currency Engine (ISO 4217):** Native support for all major global currencies with strict currency tagging to prevent erroneous cross-currency arithmetic:
    - `USD`, `EUR`, `GBP`, `JPY`, `INR`, `CAD`, `AUD`, `CHF`, `CNY`, `HKD`, `SGD`.
 
-4. **Global Accounting Standards:** Financial facts are contextualized by their governing standard:
-   - `IFRS` (International Financial Reporting Standards), `US-GAAP`, `UK-GAAP`, `IND-AS`, and `LOCAL-GAAP`.
+5. **Global Accounting Standards:** Financial facts are contextualized by their governing standard:
+   - `IFRS` (International Financial Reporting Standards), `IND-AS` (Indian Accounting Standards), `US-GAAP`, `UK-GAAP`, `HGB`, and `LOCAL-GAAP`.
 
-5. **Currency-Agnostic Quantitative Math:** All valuation models (DCF, WACC, LBO, VC, M&A Accretion/Dilution, NAV, Monte Carlo) execute deterministically on any currency denomination with zero mathematical loss of precision.
+6. **Currency-Agnostic Quantitative Math:** All valuation models (DCF, WACC, LBO, VC, M&A Accretion/Dilution, NAV, Monte Carlo) execute deterministically on any currency denomination with zero mathematical loss of precision.
 
 ---
 

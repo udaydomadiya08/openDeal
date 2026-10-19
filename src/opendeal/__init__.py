@@ -34,6 +34,7 @@ from opendeal.connectors.sec.client import SECClient
 from opendeal.connectors.sec.parser import SECParser
 from opendeal.storage.sqlite import SQLiteStorage
 from opendeal.pipeline.stages import FactPipeline, FactStandardizer, FactValidator
+from opendeal.registries import GlobalRegistryDirectory, JurisdictionAuthority, get_global_registry
 
 __all__ = [
     "__version__",
@@ -63,4 +64,7 @@ __all__ = [
     "FactPipeline",
     "FactStandardizer",
     "FactValidator",
+    "GlobalRegistryDirectory",
+    "JurisdictionAuthority",
+    "get_global_registry",
 ]

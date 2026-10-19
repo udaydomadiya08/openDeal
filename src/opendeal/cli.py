@@ -2323,6 +2323,124 @@ def workflow_plan_cmd(intent: str) -> None:
         click.echo(f"  - {t.task_name} ({t.agent_name}) -> Prereqs: {t.dependencies or 'None'}")
 
 
+# ── Global Registries & Regulators ──────────────────────────────────────────
+
+@cli.group("registries")
+def registries_group() -> None:
+    """Inspect global securities regulators, corporate registries, and filing frameworks."""
+    pass
+
+
+@registries_group.command("list")
+@click.option("--region", "-r", default=None, help="Filter by global region (e.g. Asia-Pacific, Europe, North America)")
+@click.option("--search", "-s", default=None, help="Search text across countries, regulators, and exchanges")
+@click.option("--json", "json_output", is_flag=True, help="Output in machine-readable JSON format")
+def registries_list(region: Optional[str], search: Optional[str], json_output: bool) -> None:
+    """List international jurisdiction authorities and statutory filing frameworks."""
+    from opendeal.registries import get_global_registry
+
+    reg = get_global_registry()
+    if search:
+        items = reg.search(search)
+    elif region:
+        items = reg.list_by_region(region)
+    else:
+        items = reg.list_all()
+
+    if json_output:
+        click.echo(json.dumps([i.model_dump() for i in items], indent=2))
+        return
+
+    click.echo(f"=== OpenDeal Global Securities Regulators & Corporate Registries ({len(items)} entries) ===")
+    click.echo(f"{'Code':<6} {'Jurisdiction':<22} {'Region':<16} {'Securities Regulator':<52} {'Corporate Registry'}")
+    click.echo("-" * 140)
+    for a in items:
+        click.echo(f"{a.country_code:<6} {a.jurisdiction[:20]:<22} {a.region[:14]:<16} {a.securities_regulator[:50]:<52} {a.corporate_registry}")
+
+
+@registries_group.command("get")
+@click.argument("country_code")
+@click.option("--json", "json_output", is_flag=True, help="Output in machine-readable JSON format")
+def registries_get(country_code: str, json_output: bool) -> None:
+    """Get authoritative regulatory, filing, and accounting details for a country."""
+    from opendeal.registries import get_global_registry
+
+    reg = get_global_registry()
+    auth = reg.get_authority(country_code)
+
+    if not auth:
+        if json_output:
+            click.echo(json.dumps({"error": "DATA_NOT_FOUND", "query": country_code}, indent=2))
+        else:
+            click.echo(f"DATA NOT FOUND: Jurisdiction '{country_code}' could not be verified.", err=True)
+        return
+
+    if json_output:
+        click.echo(json.dumps(auth.model_dump(), indent=2))
+        return
+
+    click.echo(f"=== Statutory Regulatory Framework: {auth.jurisdiction} ({auth.country_code}) ===")
+    click.echo(f"Region:                 {auth.region}")
+    click.echo(f"Securities Regulator:   {auth.securities_regulator}")
+    click.echo(f"Corporate Registry:     {auth.corporate_registry}")
+    click.echo(f"Stock Exchange(s):      {auth.stock_exchange}")
+    click.echo(f"Disclosure Portal:      {auth.official_disclosure_portal}")
+    click.echo(f"Financial Statements:   {auth.financial_statement_source}")
+    click.echo(f"Ownership Disclosures:  {auth.ownership_disclosure_source}")
+    click.echo(f"Official Portal / API:  {auth.official_api_or_download_url}")
+    click.echo(f"Accounting Standards:   {', '.join(auth.accounting_standards)}")
+    click.echo(f"Primary Identifiers:    {', '.join(auth.primary_identifiers)}")
+    click.echo(f"Reporting Currency:     {auth.currency}")
+    if auth.notes:
+        click.echo(f"Regulatory Context:     {auth.notes}")
+    click.echo(f"Last Verified:          {auth.last_verified_at}")
+
+
+@registries_group.command("resolve")
+@click.argument("identifier_or_query")
+@click.option("--country", "-c", default=None, help="Optional country hint (e.g. IN, US, GB)")
+@click.option("--json", "json_output", is_flag=True, help="Output in machine-readable JSON format")
+def registries_resolve(identifier_or_query: str, country: Optional[str], json_output: bool) -> None:
+    """Resolve authoritative regulatory framework and filing sources from an identifier."""
+    from opendeal.registries import get_global_registry
+
+    reg = get_global_registry()
+    res = reg.resolve_filing_source(identifier_or_query, country_hint=country)
+
+    if json_output:
+        click.echo(json.dumps(res.model_dump(), indent=2))
+        return
+
+    click.echo(f"=== Statutory Source Resolution for '{identifier_or_query}' ===")
+    click.echo(f"Status:            {res.resolution_status}")
+    click.echo(f"Supported:         {res.is_supported}")
+    if res.detected_scheme:
+        click.echo(f"Detected Scheme:   {res.detected_scheme}")
+    if res.authority:
+        click.echo(f"Jurisdiction:      {res.authority.jurisdiction} ({res.authority.country_code})")
+        click.echo(f"Securities Reg:    {res.authority.securities_regulator}")
+        click.echo(f"Corporate Reg:     {res.authority.corporate_registry}")
+        click.echo(f"Official Portal:   {res.recommended_filing_portal}")
+    click.echo(f"Guidance:          {res.guidance}")
+
+
+@registries_group.command("regions")
+@click.option("--json", "json_output", is_flag=True, help="Output in machine-readable JSON format")
+def registries_regions(json_output: bool) -> None:
+    """List all supported global economic regions."""
+    from opendeal.registries import get_global_registry
+
+    reg = get_global_registry()
+    regions = reg.list_regions()
+    if json_output:
+        click.echo(json.dumps(regions, indent=2))
+    else:
+        click.echo("=== Supported Global Regions ===")
+        for r in regions:
+            count = len(reg.list_by_region(r))
+            click.echo(f"  • {r} ({count} jurisdictions)")
+
+
 def main() -> None:
     cli()
 
