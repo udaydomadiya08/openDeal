@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CI](https://github.com/udaydomadiya08/openDeal/actions/workflows/ci.yml/badge.svg)](https://github.com/udaydomadiya08/openDeal/actions/workflows/ci.yml)
 [![Python Version](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/Tests-413%20Passed%20(100%25)-brightgreen.svg)](https://github.com/udaydomadiya08/openDeal/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/Tests-430%20Passed%20(100%25)-brightgreen.svg)](https://github.com/udaydomadiya08/openDeal/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)](audit/PHASE_11_RELEASE_READINESS_REPORT.md)
 [![Valuation](https://img.shields.io/badge/Valuation-100%25%20Deterministic-purple.svg)](#deterministic-valuation-engine)
 [![Security](https://img.shields.io/badge/Security-Local--First%20%26%20Zero--Network-orange.svg)](#security-hardening--data-privacy)
@@ -52,9 +52,9 @@ Investment analysts, corporate development teams, and private equity sponsors fa
 | Pillar | How OpenDeal Solves It |
 | :--- | :--- |
 | **Deterministic Math** | All financial calculations (DCF, WACC, LBO, M&A Accretion/Dilution, VC Method, NAV, Monte Carlo) execute strictly in audited Python arithmetic. Generative AI is mathematically forbidden from computing or overriding numeric financials. |
-| **Regulatory Evidence Provenance** | Every financial metric links directly to official regulatory filings (SEC EDGAR 10-K/10-Q and UK Companies House) with document ID, filing period, verbatim excerpt, and SHA-256 cryptographic content hash. |
+| **Regulatory Evidence Provenance** | Every financial metric links directly to official regulatory filings (SEC EDGAR, UK Companies House, India MCA/SEBI, EU ESMA, and global registries) with document ID, filing period, verbatim excerpt, and SHA-256 cryptographic content hash. |
 | **5-Tier Epistemic Taxonomy** | Facts are strictly segregated into explicit epistemic categories: `SOURCE_REPORTED_FACT`, `DERIVED_CALCULATION`, `ANALYST_ASSUMPTION`, `AI_INTERPRETATION`, and `MISSING_OR_CONFLICTING`. Missing disclosures remain missing—never fabricated. |
-| **Global & Multi-Jurisdiction** | Native indexing of international conglomerates via SEC Form 20-F, UK Companies House, global LEI (ISO 17442), multi-currency tagging (USD, EUR, GBP, JPY, INR, CAD, AUD, CHF, CNY, HKD, SGD), and IFRS / local GAAP accounting standards. |
+| **Global & Multi-Jurisdiction** | Built-in directory of 33+ international frameworks (India MCA/SEBI, EU ESMA, UK Companies House, US SEC, Canada CSA, Japan JFSA, UAE free zones, Brazil CVM), global LEI (ISO 17442), multi-currency tagging (USD, EUR, GBP, INR, JPY, CAD, AUD, CHF, CNY, HKD, SGD), and IFRS / Ind AS / local GAAP standards. |
 | **Local-First & Modest Hardware** | Runs self-contained on consumer hardware (e.g., Apple Silicon M-series or Intel Core i5 with 8 GB RAM) using SQLite with WAL mode. External network requests are disabled by default. |
 | **Governed Autonomous Agents** | Specialized agents run in a topological DAG workflow engine with human-in-the-loop approvals, cryptographically signed single-use action tokens, and tamper-evident audit trails. |
 
@@ -99,8 +99,8 @@ flowchart TD
     end
 
     subgraph Interfaces [6. Analyst & Operator Interfaces]
-        CLI[Institutional CLI\nopendeal entity / value / targets / deals / workflow]
-        UI[FastAPI Local Web Dashboard\nhttp://127.0.0.1:8000\n9 Institutional Workspaces]
+        CLI[Institutional CLI\nopendeal entity / value / targets / deals / registries / workflow]
+        UI[FastAPI Local Web Dashboard\nhttp://127.0.0.1:8000\n10 Institutional Workspaces]
     end
 
     Sources --> RESOLVE & SANITIZE
@@ -417,6 +417,7 @@ OpenDeal features an integrated institutional web application powered by FastAPI
 | `/discovery` | **Target Discovery** | Screen candidate companies against financial criteria and manage target watchlists. |
 | `/deals` | **Deals Intelligence** | Explore financing rounds, M&A transactions, investor syndicate networks, and conflicts. |
 | `/workflows` | **Workflows & Approvals** | Monitor DAG execution progress, inspect execution logs, and resolve human-in-the-loop approvals. |
+| `/registries` | **Global Registries** | Explore 33+ international securities regulators, corporate registries, and resolve statutory filing sources. |
 | `/system` | **System Health & Audit** | Database configuration, storage migrations, and security defense verification. |
 
 ---
@@ -427,16 +428,20 @@ The `opendeal` command-line utility provides complete operator control:
 
 | Command Group | Command | Description |
 | :--- | :--- | :--- |
-| **System** | `opendeal system status` | Check database connection, version, counts, and golden master integrity. |
-| **Entity** | `opendeal entity search <QUERY>` | Search corporate entities across US and UK jurisdictions. |
-| | `opendeal entity show <ID>` | View comprehensive entity profile and legal identifiers. |
+| **System** | `opendeal status` | Check database connection, version, counts, and golden master integrity. |
+| **Entity** | `opendeal company search <QUERY>` | Search corporate entities across international jurisdictions. |
+| | `opendeal company show <ID>` | View comprehensive entity profile and legal identifiers (CIN, CIK, CRN, LEI). |
 | **Ingestion** | `opendeal ingest fixture --file <PATH>` | Ingest structured regulatory facts from local verified fixture files. |
-| | `opendeal ingest sec-edgar <CIK>` | Ingest filings from official SEC EDGAR disclosures (requires live flag). |
-| **Valuation** | `opendeal valuation dcf <ID>` | Compute Discounted Cash Flow valuation. |
-| | `opendeal valuation lbo` | Compute Leveraged Buyout returns (IRR, MOIC). |
-| | `opendeal valuation vc` | Compute Venture Capital returns across exit scenarios. |
-| | `opendeal valuation ma` | Compute M&A accretion/dilution and pro forma EPS. |
-| | `opendeal valuation monte-carlo` | Run probabilistic valuation distributions. |
+| | `opendeal ingest sec <CIK>` | Ingest filings from official SEC EDGAR disclosures (requires live flag). |
+| **Registries** | `opendeal registries list` | List 33+ international jurisdiction authorities and statutory filing frameworks. |
+| | `opendeal registries get <CODE>` | View regulator, corporate registry, exchange, and accounting details for a country (e.g. `IN`, `DE`, `EU`, `US`). |
+| | `opendeal registries resolve <ID>` | Resolve regulatory authority and filing requirements from an identifier (CIN, CIK, CRN, LEI). |
+| | `opendeal registries regions` | List all supported global economic regions. |
+| **Valuation** | `opendeal value dcf <ID>` | Compute Discounted Cash Flow valuation. |
+| | `opendeal value lbo` | Compute Leveraged Buyout returns (IRR, MOIC). |
+| | `opendeal value vc` | Compute Venture Capital returns across exit scenarios. |
+| | `opendeal value ma` | Compute M&A accretion/dilution and pro forma EPS. |
+| | `opendeal value monte-carlo` | Run probabilistic valuation distributions. |
 | **Targets** | `opendeal targets screen` | Screen targets by revenue, margin, sector, and jurisdiction. |
 | | `opendeal targets explain <ID>` | Inspect step-by-step scoring breakdown for a target. |
 | | `opendeal targets lists` | View and manage saved target lists and watchlists. |
@@ -505,7 +510,7 @@ PYTHONPATH=src pytest tests/test_security.py -v
 python3 audit/verify_reproducibility.py
 ```
 
-- **Test Suite:** **397 / 397 tests passing (100%)**
+- **Test Suite:** **430 / 430 tests passing (100%)**
 - **Code Coverage:** **90% total coverage**
 - **Reproducibility:** Wheel and Source Distribution (`.tar.gz`) match 100% byte-for-byte across independent clean-room builds under `SOURCE_DATE_EPOCH`.
 
@@ -518,6 +523,7 @@ opendeal/
 ├── src/opendeal/              # Core application package
 │   ├── agents/               # Autonomous workflow orchestrator, policies, and runner
 │   ├── config/               # Settings, environment paths, and safe database defaults
+│   ├── connectors/           # US SEC EDGAR and UK Companies House API connectors
 │   ├── core/                 # Shared domain types, enums, and epistemic tier contracts
 │   ├── deals/                # Funding rounds, transactions, and investor syndicate graph
 │   ├── discovery/            # Deal sourcing, eligibility rules, and multi-factor scoring
@@ -525,12 +531,12 @@ opendeal/
 │   ├── evidence/             # Cryptographic evidence provenance models (SHA-256)
 │   ├── facts/                # Fact extraction, epistemic tagging, and conflict preservation
 │   ├── pipeline/             # Multi-stage extraction and normalization orchestrator
+│   ├── registries/           # Global securities regulators & corporate registries directory (33+ countries)
 │   ├── research/             # Grounded intelligence generator and brief synthesis
-│   ├── sources/              # SEC EDGAR and UK Companies House connectors
 │   ├── storage/              # SQLite relational store, WAL configuration, and migrations
 │   ├── ui/                   # FastAPI server, route controllers, templates, and static assets
 │   └── valuation/            # Deterministic math engines (DCF, WACC, LBO, M&A, VC, NAV)
-├── tests/                    # Complete test suite (397 tests)
+├── tests/                    # Complete test suite (430 tests)
 │   ├── conftest.py           # Pytest session isolation and temp database fixtures
 │   ├── fixtures/             # Offline SEC, Companies House, and deal sample files
 │   └── test_*.py             # Unit, integration, security, and reproducibility tests

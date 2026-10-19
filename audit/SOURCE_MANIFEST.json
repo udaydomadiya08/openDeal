@@ -18,7 +18,7 @@
     ".gitignore": "d1d2dbcfbbaf37c9d7954ed8ef8555e456cea9597139c0ce3503fcfe929833a6",
     "LICENSE": "1f5e53970161dc04e4cfa0402297f7d5b963172105e5ec566a79242fa0c8a6c9",
     "MANIFEST.in": "ca6ba6c1373fcdc3600d73cea97b393368110c93370bb0b2241d92fca8e65373",
-    "README.md": "57cec53212350102c9cb8491c6cb1d15d4d02f9e5e940946b4e369ce8282779d",
+    "README.md": "5269c57cba524d63ce54dd40f3fd926b668e6a3362362665f97a86b630569f12",
     "pyproject.toml": "18e4fcfd37f871b05150943e090e8f312230b674fef611f3759c67adb2ae2b3c"
   },
   "runtime_package_resources": {
@@ -153,7 +153,7 @@
     ".gitignore": "d1d2dbcfbbaf37c9d7954ed8ef8555e456cea9597139c0ce3503fcfe929833a6",
     "LICENSE": "1f5e53970161dc04e4cfa0402297f7d5b963172105e5ec566a79242fa0c8a6c9",
     "MANIFEST.in": "ca6ba6c1373fcdc3600d73cea97b393368110c93370bb0b2241d92fca8e65373",
-    "README.md": "57cec53212350102c9cb8491c6cb1d15d4d02f9e5e940946b4e369ce8282779d",
+    "README.md": "5269c57cba524d63ce54dd40f3fd926b668e6a3362362665f97a86b630569f12",
     "pyproject.toml": "18e4fcfd37f871b05150943e090e8f312230b674fef611f3759c67adb2ae2b3c",
     "src/opendeal/__init__.py": "4e3c7f255d048bce9bd52144978651f8e9a56decae5a4ba91d822c75fc2d7584",
     "src/opendeal/agents/__init__.py": "6e0c29611d6a5c937c1bd9c6981307d4c5ad5f1e48e180e175dfec22642f62e9",
