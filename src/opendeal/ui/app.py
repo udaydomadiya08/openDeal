@@ -1,17 +1,18 @@
 """FastAPI Application Factory for OpenDeal Local UI."""
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import Optional, Set
+from typing import ClassVar
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.templating import Jinja2Templates
 
 from opendeal import __version__
 from opendeal.config.paths import resolve_database_path
-from opendeal.config.settings import settings
 from opendeal.storage.sqlite import SQLiteStorage
 from opendeal.ui.routes import (
     companies,
@@ -35,7 +36,7 @@ class PayloadTooLargeError(BaseException):
     """Exception raised when an inbound request body exceeds the configured limit."""
 
 
-def parse_host_authority(host_header: str) -> Optional[str]:
+def parse_host_authority(host_header: str) -> str | None:
     """Parse and validate Host authority, returning canonical hostname or None if malformed."""
     if not host_header:
         return ""
@@ -72,7 +73,7 @@ def parse_host_authority(host_header: str) -> Optional[str]:
         return None
 
 
-def is_host_allowed(host: str, allowed_hosts: Set[str]) -> bool:
+def is_host_allowed(host: str, allowed_hosts: set[str]) -> bool:
     """Check if host matches any allowed host or wildcard/subdomain pattern."""
     if not host:
         return False
@@ -93,10 +94,10 @@ def is_host_allowed(host: str, allowed_hosts: Set[str]) -> bool:
 class SecurityHeadersMiddleware:
     """Pure ASGI middleware enforcing secure institutional HTTP response headers, host policy, and streaming limits."""
 
-    ALLOWED_LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1", "testserver"}
-    MAX_REQUEST_BODY_BYTES = 10_000_000  # 10 MB
+    ALLOWED_LOCAL_HOSTS: ClassVar[set[str]] = {"127.0.0.1", "localhost", "::1", "testserver"}
+    MAX_REQUEST_BODY_BYTES: ClassVar[int] = 10_000_000  # 10 MB
 
-    def __init__(self, app, allowed_hosts: Optional[Set[str]] = None, demo_mode: bool = False) -> None:
+    def __init__(self, app, allowed_hosts: set[str] | None = None, demo_mode: bool = False) -> None:
         self.app = app
         self.demo_mode = demo_mode
         self.allowed_hosts = set(self.ALLOWED_LOCAL_HOSTS)
@@ -274,17 +275,17 @@ class SecurityHeadersMiddleware:
 
 
 def create_app(
-    storage: Optional[SQLiteStorage] = None,
-    db_path: Optional[str] = None,
-    demo_mode: Optional[bool] = None,
-    allowed_hosts: Optional[Set[str]] = None,
+    storage: SQLiteStorage | None = None,
+    db_path: str | None = None,
+    demo_mode: bool | None = None,
+    allowed_hosts: set[str] | None = None,
 ) -> FastAPI:
     """Create and configure the OpenDeal FastAPI application."""
     if demo_mode is None:
         demo_mode = os.environ.get("OPENDEAL_DEMO_MODE", "").strip().lower() in ("1", "true", "yes")
 
     # Determine allowed hosts for security middleware
-    effective_allowed_hosts: Set[str] = set()
+    effective_allowed_hosts: set[str] = set()
     if allowed_hosts:
         effective_allowed_hosts.update(allowed_hosts)
     env_hosts = os.environ.get("OPENDEAL_ALLOWED_HOSTS", "").strip()

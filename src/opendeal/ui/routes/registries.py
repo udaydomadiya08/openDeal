@@ -1,6 +1,7 @@
 """Global Securities Regulators & Corporate Registries UI routes."""
 
 from typing import Optional
+
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse
 

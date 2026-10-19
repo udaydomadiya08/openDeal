@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import re
-from typing import List, Optional
+from typing import Any
+
 from opendeal.entities.models import (
     CompanyEntity,
     EntityResolutionQuery,
@@ -51,16 +52,14 @@ class EntityResolver:
     - Conflicting or ambiguous matches produce POTENTIAL_MATCH_REQUIRES_REVIEW.
     """
 
-    # pyrefly: ignore[unknown-name]
-    def __init__(self, storage: Optional[Any] = None) -> None:
+    def __init__(self, storage: Any | None = None) -> None:
         self.storage = storage
 
     def resolve(
         self,
-        # pyrefly: ignore[unknown-name]
-        query: Union[str, EntityResolutionQuery],
-        jurisdiction: Optional[str] = None,
-        candidates: Optional[List[CompanyEntity]] = None,
+        query: str | EntityResolutionQuery,
+        jurisdiction: str | None = None,
+        candidates: list[CompanyEntity] | None = None,
     ) -> EntityResolutionResult:
         """Resolve a query against known entities or storage using a strict waterfall."""
         if isinstance(query, str):
@@ -78,14 +77,14 @@ class EntityResolver:
 
     @classmethod
     def resolve_candidates(
-        cls, query: EntityResolutionQuery, candidates: List[CompanyEntity]
+        cls, query: EntityResolutionQuery, candidates: list[CompanyEntity]
     ) -> EntityResolutionResult:
         """Classmethod helper to resolve query directly against candidate list."""
         return cls._resolve_waterfall(query, candidates)
 
     @staticmethod
     def _resolve_waterfall(
-        query: EntityResolutionQuery, candidates: List[CompanyEntity]
+        query: EntityResolutionQuery, candidates: list[CompanyEntity]
     ) -> EntityResolutionResult:
         """Resolve a query against candidate entities using a strict waterfall."""
         search_term = query.query.strip()
@@ -103,7 +102,7 @@ class EntityResolver:
         term_upper = search_term.upper()
 
         # 1. Exact Identifier Match (CIK, CRN, Ticker, LEI)
-        ident_matches: List[CompanyEntity] = []
+        ident_matches: list[CompanyEntity] = []
         matching_strategy = "EXACT_IDENTIFIER"
 
         for cand in candidates:
@@ -150,12 +149,12 @@ class EntityResolver:
                 continue
 
             # Check Ticker
-            if cand.ticker and cand.ticker.upper() == term_upper:
-                # If jurisdiction is specified, verify country/jurisdiction
-                if not query.jurisdiction or cand.jurisdiction.upper().startswith(query.jurisdiction.upper()):
-                    ident_matches.append(cand)
-                    matching_strategy = "EXACT_TICKER"
-                    continue
+            if cand.ticker and cand.ticker.upper() == term_upper and (
+                not query.jurisdiction or cand.jurisdiction.upper().startswith(query.jurisdiction.upper())
+            ):
+                ident_matches.append(cand)
+                matching_strategy = "EXACT_TICKER"
+                continue
 
         if len(ident_matches) == 1:
             return EntityResolutionResult(
@@ -181,7 +180,7 @@ class EntityResolver:
 
         # 2. Strong Name & Jurisdiction Match
         norm_query = normalize_corporate_name(search_term)
-        exact_legal_matches: List[CompanyEntity] = []
+        exact_legal_matches: list[CompanyEntity] = []
 
         for cand in candidates:
             norm_cand = normalize_corporate_name(cand.legal_name)
@@ -215,7 +214,7 @@ class EntityResolver:
             )
 
         # 2b. Partial / Token / Substring Name Match across entities
-        token_matches: List[CompanyEntity] = []
+        token_matches: list[CompanyEntity] = []
         for cand in candidates:
             norm_cand = normalize_corporate_name(cand.legal_name)
             cand_tokens = norm_cand.split()
@@ -248,7 +247,7 @@ class EntityResolver:
             )
 
         # 3. Former Name & Alias Check (Requires Manual Review)
-        alias_matches: List[CompanyEntity] = []
+        alias_matches: list[CompanyEntity] = []
         for cand in candidates:
             # Former names
             for fn in cand.former_names:

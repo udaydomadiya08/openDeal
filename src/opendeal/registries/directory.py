@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import re
-from typing import Dict, List, Optional, Tuple
+from pathlib import Path
 
 from opendeal.registries.models import FilingSourceResolution, JurisdictionAuthority
-
 
 # Regex patterns for common statutory enterprise identifiers
 REGEX_INDIAN_CIN = re.compile(r"^[LU][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}$", re.IGNORECASE)
@@ -22,14 +20,14 @@ REGEX_FRENCH_SIREN = re.compile(r"^\d{9}$")
 class GlobalRegistryDirectory:
     """Directory and resolution engine for international securities regulators and corporate registries."""
 
-    _instance: Optional[GlobalRegistryDirectory] = None
+    _instance: GlobalRegistryDirectory | None = None
 
-    def __init__(self, data_file: Optional[Path] = None):
+    def __init__(self, data_file: Path | None = None):
         if data_file is None:
             data_file = Path(__file__).parent / "global_authorities.json"
         self._data_file = data_file
-        self._authorities: Dict[str, JurisdictionAuthority] = {}
-        self._by_country_name: Dict[str, JurisdictionAuthority] = {}
+        self._authorities: dict[str, JurisdictionAuthority] = {}
+        self._by_country_name: dict[str, JurisdictionAuthority] = {}
         self._load()
 
     def _load(self) -> None:
@@ -52,7 +50,7 @@ class GlobalRegistryDirectory:
             cls._instance = GlobalRegistryDirectory()
         return cls._instance
 
-    def get_authority(self, country_code: str) -> Optional[JurisdictionAuthority]:
+    def get_authority(self, country_code: str) -> JurisdictionAuthority | None:
         """Lookup regulatory authority by ISO country code (case-insensitive)."""
         code = country_code.strip().upper()
         if code in self._authorities:
@@ -60,11 +58,11 @@ class GlobalRegistryDirectory:
         # Check by jurisdiction name
         return self._by_country_name.get(country_code.strip().lower())
 
-    def list_all(self) -> List[JurisdictionAuthority]:
+    def list_all(self) -> list[JurisdictionAuthority]:
         """Return all registered global authorities ordered by region and country."""
-        return sorted(list(self._authorities.values()), key=lambda a: (a.region, a.jurisdiction))
+        return sorted(self._authorities.values(), key=lambda a: (a.region, a.jurisdiction))
 
-    def list_by_region(self, region: str) -> List[JurisdictionAuthority]:
+    def list_by_region(self, region: str) -> list[JurisdictionAuthority]:
         """Return authorities filtered by economic region."""
         region_clean = region.strip().lower()
         return [
@@ -72,12 +70,12 @@ class GlobalRegistryDirectory:
             if a.region.lower() == region_clean or region_clean in a.region.lower()
         ]
 
-    def list_regions(self) -> List[str]:
+    def list_regions(self) -> list[str]:
         """Return distinct list of supported global regions."""
         regions = {a.region for a in self._authorities.values()}
-        return sorted(list(regions))
+        return sorted(regions)
 
-    def search(self, query: str) -> List[JurisdictionAuthority]:
+    def search(self, query: str) -> list[JurisdictionAuthority]:
         """Search authorities across country, regulator, registry, or exchange."""
         q = query.strip().lower()
         if not q:
@@ -96,7 +94,7 @@ class GlobalRegistryDirectory:
                 matches.append(a)
         return matches
 
-    def detect_identifier(self, identifier: str) -> Tuple[Optional[str], Optional[str]]:
+    def detect_identifier(self, identifier: str) -> tuple[str | None, str | None]:
         """Detect identifier scheme and probable country code from token format.
 
         Returns (scheme, country_code) or (None, None).
@@ -111,7 +109,7 @@ class GlobalRegistryDirectory:
             return "LEI", "GLOBAL"
         if REGEX_FRENCH_SIREN.match(ident):
             return "SIREN", "FR"
-        if ident.startswith("HRB") or ident.startswith("HRA"):
+        if ident.startswith(("HRB", "HRA")):
             return "HRB", "DE"
         # Check standard UK Companies House prefixes or 8 digits
         if REGEX_UK_CRN.match(ident) and (len(ident) == 8 or ident[:2] in ("SC", "NI", "OC", "SO", "R0")):
@@ -124,7 +122,7 @@ class GlobalRegistryDirectory:
     def resolve_filing_source(
         self,
         query: str,
-        country_hint: Optional[str] = None,
+        country_hint: str | None = None,
     ) -> FilingSourceResolution:
         """Resolve the authoritative filing source and statutory regulatory hierarchy.
 

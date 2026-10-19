@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, ClassVar
 
+from opendeal.connectors.sec.parser import SECParser
 from opendeal.core.types import (
     FactState,
     MissingDataReason,
@@ -16,7 +17,6 @@ from opendeal.entities.models import CompanyEntity
 from opendeal.evidence.models import EvidenceRecord, SourceReference
 from opendeal.facts.models import FactRecord, TransformationStep, ValidationResult
 from opendeal.storage.base import StorageInterface
-from opendeal.connectors.sec.parser import SECParser
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class FactValidator:
     """Validates standardized facts against economic constraints and domain invariants."""
 
     # Validation rules: (min_bound, max_bound, severity)
-    NUMERIC_BOUNDS: Dict[str, Tuple[Optional[float], Optional[float], ValidationSeverity]] = {
+    NUMERIC_BOUNDS: ClassVar[dict[str, tuple[float | None, float | None, ValidationSeverity]]] = {
         "revenue": (-1e12, 1e15, ValidationSeverity.WARNING),      # Extreme or negative revenue flags warning
         "total_assets": (0.0, 1e16, ValidationSeverity.ERROR),     # Assets cannot be negative
         "shares_outstanding": (0.0, 1e14, ValidationSeverity.ERROR),
@@ -80,10 +80,10 @@ class FactValidator:
     }
 
     @classmethod
-    def validate(cls, fact: FactRecord) -> Tuple[FactRecord, List[ValidationResult]]:
+    def validate(cls, fact: FactRecord) -> tuple[FactRecord, list[ValidationResult]]:
         """Evaluate validation rules against a fact record."""
         validated_fact = copy.deepcopy(fact)
-        results: List[ValidationResult] = []
+        results: list[ValidationResult] = []
 
         # 1. Check Missing Fact consistency
         if validated_fact.fact_state == FactState.MISSING_FACT or validated_fact.normalized_value is None:
@@ -122,18 +122,22 @@ class FactValidator:
             validated_fact.sign = expected_sign
 
         # 3. Check Period Chronology Invariant (for duration facts)
-        if not validated_fact.is_instant and validated_fact.period_start and validated_fact.period_end:
-            if validated_fact.period_start > validated_fact.period_end:
-                res = ValidationResult(
-                    target_id=validated_fact.fact_id,
-                    rule_name="period_chronology",
-                    passed=False,
-                    severity=ValidationSeverity.ERROR,
-                    observed_value=f"{validated_fact.period_start} > {validated_fact.period_end}",
-                    expected_range="period_start <= period_end",
-                    message=f"Reporting period start ({validated_fact.period_start}) cannot be after end ({validated_fact.period_end})",
-                )
-                results.append(res)
+        if (
+            not validated_fact.is_instant
+            and validated_fact.period_start
+            and validated_fact.period_end
+            and validated_fact.period_start > validated_fact.period_end
+        ):
+            res = ValidationResult(
+                target_id=validated_fact.fact_id,
+                rule_name="period_chronology",
+                passed=False,
+                severity=ValidationSeverity.ERROR,
+                observed_value=f"{validated_fact.period_start} > {validated_fact.period_end}",
+                expected_range="period_start <= period_end",
+                message=f"Reporting period start ({validated_fact.period_start}) cannot be after end ({validated_fact.period_end})",
+            )
+            results.append(res)
 
         # 4. Check Domain Bounds
         if var_name in cls.NUMERIC_BOUNDS:
@@ -185,11 +189,11 @@ class FactPipeline:
 
     def ingest_sec_facts(
         self,
-        facts_data: Dict[str, Any],
+        facts_data: dict[str, Any],
         entity: CompanyEntity,
         source_url: str,
-        payload_hash: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        payload_hash: str | None = None,
+    ) -> dict[str, Any]:
         """Execute full vertical slice from SEC XBRL data into validated storage."""
         # 1. Parse SEC facts, generating SourceReference, EvidenceRecords, and FactRecords
         source, evidence_records, raw_facts = SECParser.parse_company_facts_to_records(
@@ -208,8 +212,8 @@ class FactPipeline:
             self.storage.save_evidence(ev)
 
         # 4. Standardize and Validate each fact
-        validated_facts: List[FactRecord] = []
-        all_validation_results: List[ValidationResult] = []
+        validated_facts: list[FactRecord] = []
+        all_validation_results: list[ValidationResult] = []
 
         for raw in raw_facts:
             std_fact = FactStandardizer.standardize(raw)
@@ -237,10 +241,10 @@ class FactPipeline:
         self,
         entity: CompanyEntity,
         source: SourceReference,
-        evidence_records: List[EvidenceRecord],
-        raw_facts: List[FactRecord],
-        regulatory_authority: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        evidence_records: list[EvidenceRecord],
+        raw_facts: list[FactRecord],
+        regulatory_authority: str | None = None,
+    ) -> dict[str, Any]:
         """Execute vertical ingestion for facts from any global statutory authority (e.g. MCA, ESMA, BaFin, Companies House, SEC)."""
         # 1. Persist Entity & Source
         self.storage.save_entity(entity)
@@ -251,8 +255,8 @@ class FactPipeline:
             self.storage.save_evidence(ev)
 
         # 3. Standardize and Validate facts
-        validated_facts: List[FactRecord] = []
-        all_validation_results: List[ValidationResult] = []
+        validated_facts: list[FactRecord] = []
+        all_validation_results: list[ValidationResult] = []
 
         for raw in raw_facts:
             std_fact = FactStandardizer.standardize(raw)

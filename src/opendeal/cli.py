@@ -2328,14 +2328,13 @@ def workflow_plan_cmd(intent: str) -> None:
 @cli.group("registries")
 def registries_group() -> None:
     """Inspect global securities regulators, corporate registries, and filing frameworks."""
-    pass
 
 
 @registries_group.command("list")
 @click.option("--region", "-r", default=None, help="Filter by global region (e.g. Asia-Pacific, Europe, North America)")
 @click.option("--search", "-s", default=None, help="Search text across countries, regulators, and exchanges")
 @click.option("--json", "json_output", is_flag=True, help="Output in machine-readable JSON format")
-def registries_list(region: Optional[str], search: Optional[str], json_output: bool) -> None:
+def registries_list(region: str | None, search: str | None, json_output: bool) -> None:
     """List international jurisdiction authorities and statutory filing frameworks."""
     from opendeal.registries import get_global_registry
 
@@ -2400,7 +2399,7 @@ def registries_get(country_code: str, json_output: bool) -> None:
 @click.argument("identifier_or_query")
 @click.option("--country", "-c", default=None, help="Optional country hint (e.g. IN, US, GB)")
 @click.option("--json", "json_output", is_flag=True, help="Output in machine-readable JSON format")
-def registries_resolve(identifier_or_query: str, country: Optional[str], json_output: bool) -> None:
+def registries_resolve(identifier_or_query: str, country: str | None, json_output: bool) -> None:
     """Resolve authoritative regulatory framework and filing sources from an identifier."""
     from opendeal.registries import get_global_registry
 

@@ -1,7 +1,7 @@
 """Unit tests for OpenDeal Global Securities Regulators & Corporate Registries Directory."""
 
-import json
 from pathlib import Path
+
 import pytest
 from click.testing import CliRunner
 from fastapi.testclient import TestClient
@@ -10,9 +10,7 @@ from opendeal.cli import cli
 from opendeal.entities.models import CompanyEntity
 from opendeal.entities.resolution import EntityResolver, ResolutionOutcome
 from opendeal.registries import (
-    FilingSourceResolution,
     GlobalRegistryDirectory,
-    JurisdictionAuthority,
     get_global_registry,
 )
 from opendeal.ui.app import create_app
@@ -235,7 +233,8 @@ class TestCLIAndUIIntegration:
         resp = client.get("/registries")
         assert resp.status_code == 200
         html = resp.text
-        assert "Global Securities Regulators & Corporate Registries" in html
+        assert "Global Securities Regulators" in html
+        assert "Corporate Registries" in html
         assert "Ministry of Corporate Affairs" in html
         assert "ESMA" in html
 

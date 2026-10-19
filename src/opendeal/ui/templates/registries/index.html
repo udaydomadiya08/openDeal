@@ -1,17 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}Global Securities Regulators & Corporate Registries — OpenDeal{% endblock %}
+{% block title %}Global Securities Regulators &amp; Corporate Registries — OpenDeal{% endblock %}
+
+{% block breadcrumbs %}
+  <span class="sep">/</span>
+  <span>Global Registries &amp; Regulators</span>
+{% endblock %}
 
 {% block content %}
-<div class="breadcrumb">
-    <a href="/">Dashboard</a>
-    <span class="breadcrumb-separator">/</span>
-    <span class="breadcrumb-current">Global Registries & Regulators</span>
-</div>
+<style>
+.res-box-supported {
+    margin-top: 1.25rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid #10b981;
+}
+.res-box-unsupported {
+    margin-top: 1.25rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid #f59e0b;
+}
+.res-title-supported {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #065f46;
+}
+.res-title-unsupported {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #92400e;
+}
+.res-link {
+    color: #4f46e5;
+    text-decoration: underline;
+}
+</style>
 
 <div class="page-header">
-    <div>
-        <h1 class="page-title">Global Securities Regulators & Corporate Registries</h1>
+    <div class="page-title-group">
+        <h1 class="page-title">Global Securities Regulators &amp; Corporate Registries</h1>
         <p class="page-subtitle">Multi-jurisdiction directory of official securities commissions, national corporate registrars, stock exchanges, and disclosure portals</p>
     </div>
     <div class="page-actions">
@@ -23,7 +53,7 @@
 <!-- Statutory Authority & Identifier Resolver -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h2 class="card-title">Statutory Identifier & Filing Framework Resolver</h2>
+        <h2 class="card-title">Statutory Identifier &amp; Filing Framework Resolver</h2>
         <span class="badge badge-source">Multi-Jurisdiction Provenance</span>
     </div>
     <div class="card-body">
@@ -39,14 +69,18 @@
             <input type="text" name="resolve_id" class="form-control" style="flex: 1; min-width: 280px;" placeholder="Enter CIN (India), CIK (US), CRN (UK), SIREN (France), or LEI..." value="{{ resolve_id }}">
             <button type="submit" class="btn btn-primary">Resolve Authority</button>
             {% if resolve_id %}
-            <a href="/registries{% if selected_region %}?region={{ selected_region }}{% endif %}" class="btn btn-secondary">Clear</a>
+            {% if selected_region %}
+            <a href="/registries?region={{ selected_region }}" class="btn btn-secondary">Clear</a>
+            {% else %}
+            <a href="/registries" class="btn btn-secondary">Clear</a>
+            {% endif %}
             {% endif %}
         </form>
 
         {% if resolution %}
-        <div style="margin-top: 1.25rem; padding: 1.25rem; border-radius: var(--radius-md); background: {% if resolution.is_supported %}rgba(16, 185, 129, 0.08){% else %}rgba(245, 158, 11, 0.08){% endif %}; border: 1px solid {% if resolution.is_supported %}#10b981{% else %}#f59e0b{% endif %};">
+        <div class="{% if resolution.is_supported %}res-box-supported{% else %}res-box-unsupported{% endif %}">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <div style="font-weight: 700; font-size: 1rem; color: {% if resolution.is_supported %}#065f46{% else %}#92400e{% endif %};">
+                <div class="{% if resolution.is_supported %}res-title-supported{% else %}res-title-unsupported{% endif %}">
                     Resolution Status: {{ resolution.resolution_status }}
                 </div>
                 {% if resolution.detected_scheme %}
@@ -62,7 +96,7 @@
                 <div><strong>Securities Regulator:</strong> {{ resolution.authority.securities_regulator }}</div>
                 <div><strong>Corporate Registry:</strong> {{ resolution.authority.corporate_registry }}</div>
                 <div><strong>Stock Exchange:</strong> {{ resolution.authority.stock_exchange }}</div>
-                <div><strong>Official Portal:</strong> <a href="{{ resolution.recommended_filing_portal }}" target="_blank" rel="noopener noreferrer" style="color: #4f46e5; text-decoration: underline;">{{ resolution.recommended_filing_portal }}</a></div>
+                <div><strong>Official Portal:</strong> <a href="{{ resolution.recommended_filing_portal }}" target="_blank" rel="noopener noreferrer" class="res-link">{{ resolution.recommended_filing_portal }}</a></div>
                 <div><strong>Reporting Currency:</strong> {{ resolution.authority.currency }}</div>
             </div>
             {% endif %}
@@ -76,9 +110,25 @@
     <div class="card-body" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <!-- Region Pills -->
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <a href="/registries" class="btn btn-sm {% if not selected_region %}btn-primary{% else %}btn-secondary{% endif %}">All Regions</a>
+            {% if not selected_region %}
+            <a href="/registries" class="btn btn-sm btn-primary">All Regions</a>
+            {% else %}
+            <a href="/registries" class="btn btn-sm btn-secondary">All Regions</a>
+            {% endif %}
             {% for r in regions %}
-            <a href="/registries?region={{ r }}{% if search_query %}&q={{ search_query }}{% endif %}" class="btn btn-sm {% if selected_region == r %}btn-primary{% else %}btn-secondary{% endif %}">{{ r }}</a>
+            {% if selected_region == r %}
+            {% if search_query %}
+            <a href="/registries?region={{ r }}&amp;q={{ search_query }}" class="btn btn-sm btn-primary">{{ r }}</a>
+            {% else %}
+            <a href="/registries?region={{ r }}" class="btn btn-sm btn-primary">{{ r }}</a>
+            {% endif %}
+            {% else %}
+            {% if search_query %}
+            <a href="/registries?region={{ r }}&amp;q={{ search_query }}" class="btn btn-sm btn-secondary">{{ r }}</a>
+            {% else %}
+            <a href="/registries?region={{ r }}" class="btn btn-sm btn-secondary">{{ r }}</a>
+            {% endif %}
+            {% endif %}
             {% endfor %}
         </div>
 
@@ -100,7 +150,7 @@
         <span class="badge badge-source">Official Statutory Sources</span>
     </div>
     <div class="card-body" style="padding: 0;">
-        <div class="table-container">
+        <div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
